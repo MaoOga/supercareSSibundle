@@ -1,0 +1,718 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    color: #000;
+    overflow-y: auto;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-bottom: 2rem;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.header img {
+    height: 80px;
+}
+
+.header .title-main {
+    font-size: 2em;
+    font-weight: bold;
+    text-align: center;
+    text-decoration: underline;
+}
+
+.header .title-sub {
+    font-size: 1.5em;
+    font-weight: bold;
+    text-align: right;
+}
+
+.tg {
+    border-collapse: collapse;
+    border-spacing: 0;
+    width: 100%;
+    max-width: 1200px;
+    margin-bottom: 20px;
+}
+
+.tg td, .tg th {
+    border-color: black;
+    border-style: solid;
+    border-width: 1px;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    overflow: hidden;
+    padding: 10px 5px;
+    word-break: normal;
+}
+
+.tg th {
+    font-weight: normal;
+}
+
+.tg .tg-1wig {
+    font-weight: bold;
+    text-align: left;
+    vertical-align: top;
+}
+
+.tg .tg-ty4g {
+    background-color: #c8e0c8;
+    font-weight: bold;
+    text-align: center;
+    vertical-align: top;
+}
+
+.tg .tg-67s2 {
+    background-color: #e0e0e0;
+    font-weight: bold;
+    text-align: left;
+    vertical-align: top;
+}
+
+.tg .tg-k2l0 {
+    background-color: #e0e0e0;
+    font-weight: bold;
+    text-align: center;
+    vertical-align: top;
+}
+
+.tg .tg-0lax {
+    text-align: left;
+    vertical-align: top;
+}
+
+.tg .tg-c3ow {
+    border-color: inherit;
+    text-align: center;
+    vertical-align: top;
+}
+
+.tg .tg-fymr {
+    border-color: inherit;
+    font-weight: bold;
+    text-align: left;
+    vertical-align: top;
+}
+
+.tg .tg-7btt {
+    border-color: inherit;
+    font-weight: bold;
+    text-align: center;
+    vertical-align: top;
+}
+
+.tg-review-phone {
+    width: 100%;
+    max-width: 1200px;
+    table-layout: fixed;
+}
+
+.tg-review-phone td, .tg-review-phone th {
+    width: 33.33%;
+}
+
+.tg-doa-dos-dod-surgeon {
+    width: 100%;
+    max-width: 1200px;
+    table-layout: fixed;
+}
+
+.tg-doa-dos-dod-surgeon td:nth-child(1), .tg-doa-dos-dod-surgeon th:nth-child(1),
+.tg-doa-dos-dod-surgeon td:nth-child(2), .tg-doa-dos-dod-surgeon th:nth-child(2),
+.tg-doa-dos-dod-surgeon td:nth-child(3), .tg-doa-dos-dod-surgeon th:nth-child(3) {
+    width: 20%;
+}
+
+.tg-doa-dos-dod-surgeon td:nth-child(4), .tg-doa-dos-dod-surgeon th:nth-child(4) {
+    width: 40%;
+}
+
+.tg-review-sutures {
+    width: 100%;
+    max-width: 1200px;
+    table-layout: fixed;
+}
+
+.tg-review-sutures td:nth-child(1), .tg-review-sutures th:nth-child(1) {
+    width: 30%;
+}
+
+.tg-review-sutures td:nth-child(2), .tg-review-sutures th:nth-child(2) {
+    width: 70%;
+}
+
+.tg-wound-complications {
+    width: 100%;
+    max-width: 1200px;
+    table-layout: fixed;
+}
+
+.tg-wound-complications td:first-child, .tg-wound-complications th:first-child {
+    width: 30%;
+}
+
+.tg-wound-complications td:not(:first-child), .tg-wound-complications th:not(:first-child) {
+    width: 23.33%;
+}
+
+.cultural-swap {
+    width: 100%;
+    max-width: 1200px;
+    table-layout: fixed;
+}
+
+.cultural-swap td:nth-child(1), .cultural-swap th:nth-child(1) {
+    width: 30%;
+}
+
+.cultural-swap td:nth-child(2), .cultural-swap th:nth-child(2) {
+    width: 70%;
+}
+
+h3 {
+    text-align: center;
+    text-decoration: underline;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.page-break {
+    page-break-after: always;
+}
+
+.section-break {
+    margin-top: 20px;
+}
+
+.post-operative {
+    page-break-before: always;
+}
+
+.cultural-swap {
+    page-break-before: always;
+}
+
+table.tg, .tg td, .tg th {
+    border: 1px solid black !important;
+    border-collapse: collapse;
+}
+
+.input-overlay {
+    width: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    font: inherit;
+    padding: 0;
+    margin: 0;
+    resize: none;
+    box-sizing: border-box;
+}
+
+.input-full {
+    width: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    font: inherit;
+    resize: none;
+    box-sizing: border-box;
+}
+
+.label-bold {
+    font-weight: bold;
+    white-space: nowrap;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.ui-datepicker, input.datepicker::placeholder, .print-textarea::placeholder, .hide-placeholder-on-print::placeholder {
+    display: none;
+    color: transparent;
+}
+
+input[type="text"],
+input[type="radio"],
+input[type="checkbox"],
+textarea {
+    border: none !important;
+    background: transparent;
+    padding: 2px;
+    font: inherit;
+    margin-left: 4px;
+    width: auto;
+    outline: none;
+    box-shadow: none;
+    vertical-align: middle;
+}
+
+input[type="text"]:focus,
+input[type="radio"]:focus,
+input[type="checkbox"]:focus,
+textarea:focus {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+input[type="radio"],
+input[type="checkbox"] {
+    transform: scale(1.2);
+    margin-right: 4px;
+    vertical-align: middle;
+}
+
+.signature-canvas {
+    width: 300px;
+    height: 100px;
+    background: transparent;
+    border: none;
+    vertical-align: middle;
+}
+
+h2 {
+    text-align: center;
+    font-weight: bold;
+    text-decoration: underline;
+    margin-bottom: 12px;
+    font-size: 1.5em;
+}
+
+.antibiotic-table-wrapper, .post-operative-table-wrapper, .wound-complications-table-wrapper, .cultural-swap-table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+}
+
+.antibiotic-table-wrapper .tg, .post-operative-table-wrapper .tg, .wound-complications-table-wrapper .tg, .cultural-swap-table-wrapper .tg {
+    min-width: 800px;
+}
+
+.action-button {
+    background: transparent;
+    border: 1px solid #000;
+    border-radius: 4px;
+    width: 30px;
+    height: 30px;
+    font-size: 18px;
+    cursor: pointer;
+    margin-left: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #000;
+}
+
+.action-button:hover {
+    background: #f0f0f0;
+}
+
+label.flex {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+}
+
+@media screen and (max-width: 640px) {
+    body {
+        padding: 1rem;
+        overflow-y: auto;
+        overflow-x: hidden; /* Prevent horizontal scrolling site-wide */
+        min-height: 100vh;
+    }
+
+    .container {
+        max-width: 100%;
+        padding-bottom: 4rem;
+        overflow-y: visible;
+    }
+
+    .header {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .header img {
+        height: 60px;
+    }
+
+    .header .title-main {
+        font-size: 1.5em;
+    }
+
+    .header .title-sub {
+        font-size: 1.2em;
+        text-align: center;
+    }
+
+    .tg,
+    .tg-review-phone,
+    .tg-doa-dos-dod-surgeon,
+    .tg-review-sutures {
+        font-size: 12px;
+        margin-bottom: 1.5rem;
+        min-width: unset; /* Prevent horizontal scrolling for these tables */
+        max-width: 100%; /* Fit within viewport */
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .tg#antibiotic-table,
+    .tg#post-operative-table,
+    .tg-wound-complications,
+    .cultural-swap {
+        min-width: 800px; /* Enable horizontal scrolling for these tables */
+    }
+
+    .tg td,
+    .tg th,
+    .tg-review-phone td,
+    .tg-review-phone th,
+    .tg-doa-dos-dod-surgeon td,
+    .tg-doa-dos-dod-surgeon th,
+    .tg-review-sutures td,
+    .tg-review-sutures th {
+        padding: 8px;
+        white-space: normal;
+        word-break: normal;
+    }
+
+    .tg#antibiotic-table td,
+    .tg#antibiotic-table th,
+    .tg#post-operative-table td,
+    .tg#post-operative-table th,
+    .tg-wound-complications td,
+    .tg-wound-complications th,
+    .cultural-swap td,
+    .cultural-swap th {
+        min-width: 100px;
+    }
+
+    .antibiotic-table-wrapper,
+    .post-operative-table-wrapper,
+    .wound-complications-table-wrapper,
+    .cultural-swap-table-wrapper {
+        overflow-x: auto; /* Allow horizontal scrolling for these wrappers */
+    }
+
+    input[type="text"].datepicker {
+        width: 100% !important;
+        max-width: 100px !important;
+        min-width: 90px;
+        padding: 2px 20px 2px 4px;
+        font-size: 11px;
+        box-sizing: border-box;
+        border: 1px solid #d1d5db;
+        border-radius: 4px;
+        vertical-align: middle;
+    }
+
+    input[type="text"].datepicker::-webkit-calendar-picker-indicator {
+        right: 2px;
+        padding: 1px;
+        width: 16px;
+        height: 16px;
+    }
+
+    .input-overlay,
+    .input-full,
+    select {
+        font-size: 12px;
+        padding: 4px;
+        vertical-align: middle;
+        max-width: 100%; /* Prevent inputs from causing overflow */
+    }
+
+    .signature-canvas {
+        width: 200px;
+        height: 80px;
+        max-width: 100%;
+    }
+
+    .tg tr,
+    .tg-review-phone tr,
+    .tg-doa-dos-dod-surgeon tr,
+    .tg-review-sutures tr {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .tg td,
+    .tg th,
+    .tg-review-phone td,
+    .tg-review-phone th,
+    .tg-doa-dos-dod-surgeon td,
+    .tg-doa-dos-dod-surgeon th,
+    .tg-review-sutures td,
+    .tg-review-sutures th {
+        width: 100% !important;
+        display: block;
+    }
+
+    .tg#antibiotic-table tr,
+    .tg#post-operative-table tr,
+    .tg-wound-complications tr,
+    .cultural-swap tr {
+        display: table-row !important;
+    }
+
+    .tg#antibiotic-table td,
+    .tg#antibiotic-table th,
+    .tg#post-operative-table td,
+    .tg#post-operative-table th,
+    .tg-wound-complications td,
+    .tg-wound-complications th,
+    .cultural-swap td,
+    .cultural-swap th {
+        display: table-cell !important;
+        width: auto !important;
+    }
+
+    .antibiotic-table-wrapper .tg,
+    .post-operative-table-wrapper .tg,
+    .wound-complications-table-wrapper .tg,
+    .cultural-swap-table-wrapper .tg {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    h3 {
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    input[type="radio"],
+    input[type="checkbox"] {
+        width: 16px;
+        height: 16px;
+        vertical-align: middle;
+    }
+
+    .action-button {
+        width: 24px;
+        height: 24px;
+        font-size: 16px;
+    }
+
+    label.flex {
+        align-items: center;
+        flex-wrap: nowrap;
+    }
+
+    .label-bold {
+        white-space: nowrap;
+        vertical-align: middle;
+    }
+
+    .container > div:last-child {
+        flex-direction: column; /* Stack Date Completed above Signature */
+        gap: 1rem; /* Reduce gap for compact mobile layout */
+        margin-bottom: 2rem; /* Ensure space below */
+        flex-wrap: wrap; /* Retain for compatibility */
+    }
+}
+
+@media print {
+    body {
+        padding: 0;
+        margin: 0;
+        font-size: 12pt;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    .container {
+        max-width: 100%;
+        width: 100%;
+    }
+
+    .header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 10px;
+    }
+
+    .header img {
+        height: 80px;
+    }
+
+    .header .title-main {
+        font-size: 1.8em;
+    }
+
+    .header .title-sub {
+        font-size: 1.3em;
+    }
+
+    .tg,
+    .tg-review-phone,
+    .tg-doa-dos-dod-surgeon,
+    .tg-review-sutures,
+    .tg-wound-complications,
+    .cultural-swap {
+        font-size: 12pt;
+        max-width: 100%;
+        width: 100%;
+        break-inside: avoid;
+        margin-bottom: 10px;
+    }
+
+    .tg td,
+    .tg th,
+    .tg-review-phone td,
+    .tg-review-phone th,
+    .tg-doa-dos-dod-surgeon td,
+    .tg-doa-dos-dod-surgeon th,
+    .tg-review-sutures td,
+    .tg-review-sutures th,
+    .tg-wound-complications td,
+    .tg-wound-complications th,
+    .cultural-swap td,
+    .cultural-swap th {
+        padding: 8px 5px;
+        border: 1px solid black !important;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+
+    .tg .tg-ty4g {
+        background-color: #c8e0c8 !important;
+    }
+
+    .tg .tg-67s2,
+    .tg .tg-k2l0 {
+        background-color: #e0e0e0 !important;
+    }
+
+    .tg-review-phone td,
+    .tg-review-phone th {
+        width: 33.33%;
+    }
+
+    .tg-doa-dos-dod-surgeon td:nth-child(1),
+    .tg-doa-dos-dod-surgeon th:nth-child(1),
+    .tg-doa-dos-dod-surgeon td:nth-child(2),
+    .tg-doa-dos-dod-surgeon th:nth-child(2),
+    .tg-doa-dos-dod-surgeon td:nth-child(3),
+    .tg-doa-dos-dod-surgeon th:nth-child(3) {
+        width: 20%;
+    }
+
+    .tg-doa-dos-dod-surgeon td:nth-child(4),
+    .tg-doa-dos-dod-surgeon th:nth-child(4) {
+        width: 40%;
+    }
+
+    .tg-review-sutures td:nth-child(1),
+    .tg-review-sutures th:nth-child(1) {
+        width: 30%;
+    }
+
+    .tg-review-sutures td:nth-child(2),
+    .tg-review-sutures th:nth-child(2) {
+        width: 70%;
+    }
+
+    .tg-wound-complications td:first-child,
+    .tg-wound-complications th:first-child {
+        width: 30%;
+    }
+
+    .tg-wound-complications td:not(:first-child),
+    .tg-wound-complications th:not(:first-child) {
+        width: 23.33%;
+    }
+
+    .cultural-swap td:nth-child(1),
+    .cultural-swap th:nth-child(1) {
+        width: 30%;
+    }
+
+    .cultural-swap td:nth-child(2),
+    .cultural-swap th:nth-child(2) {
+        width: 70%;
+    }
+
+    .page-break {
+        page-break-after: always;
+    }
+
+    .section-break {
+        margin-top: 15px;
+    }
+
+    .post-operative,
+    .cultural-swap {
+        page-break-before: always;
+    }
+
+    .input-overlay,
+    .input-full,
+    input[type="text"],
+    textarea,
+    select {
+        border: none !important;
+        background: transparent !important;
+        font-size: 12pt !important;
+        padding: 2px;
+        vertical-align: middle;
+    }
+
+    select {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        background: transparent;
+    }
+
+    input[type="text"].datepicker::placeholder,
+    textarea::placeholder {
+        color: transparent !important;
+    }
+
+    input[type="radio"]:checked,
+    input[type="checkbox"]:checked {
+        background-color: black !important;
+        border-color: black !important;
+    }
+
+    .ui-datepicker {
+        display: none !important;
+    }
+
+    .signature-canvas {
+        border: none !important;
+        background: transparent !important;
+    }
+
+    .antibiotic-table-wrapper, .post-operative-table-wrapper, .wound-complications-table-wrapper, .cultural-swap-table-wrapper {
+        overflow-x: visible;
+    }
+
+    .action-button {
+        display: none !important;
+    }
+
+    label.flex {
+        align-items: center;
+        flex-wrap: nowrap;
+    }
+
+    .label-bold {
+        white-space: nowrap;
+        vertical-align: middle;
+    }
+}

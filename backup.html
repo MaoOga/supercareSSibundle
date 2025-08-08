@@ -1,0 +1,1306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SuperCare Hospital - Patient Form</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    .tg {
+      border-collapse: collapse;
+      border-spacing: 0;
+      width: 100%;
+    }
+    .tg td, .tg th {
+      border: 1px solid black;
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      padding: 5px;
+      vertical-align: top;
+    }
+    .tg .tg-0pky, .tg .tg-0lax {
+      text-align: left;
+      vertical-align: top;
+    }
+    .tg .tg-tl4i {
+      background-color: #e0e0e0;
+      text-align: left;
+      vertical-align: top;
+      font-weight: 700;
+    }
+    .tg .tg-0ys1 {
+      background-color: #FFF;
+      text-align: left;
+      vertical-align: middle;
+    }
+    .tg .tg-01dj, .tg .tg-h975, .tg .tg-5yq0 {
+      background-color: #C8E0C8;
+      text-align: center;
+      vertical-align: middle;
+      font-weight: 700;
+    }
+    .tg .tg-qw1v, .tg .tg-2vvi {
+      background-color: #E0E0E0;
+      text-align: left;
+      vertical-align: middle;
+      font-weight: 700;
+    }
+    .tg .tg-xpf7 {
+      background-color: #e0e0e0;
+      text-align: left;
+      vertical-align: top;
+      width: 25%;
+      font-weight: 700;
+    }
+    .tg .tg-dgl5 {
+      background-color: #FFF;
+      text-align: left;
+      vertical-align: top;
+      font-weight: 700;
+    }
+    .tg .tg-zr06 {
+      background-color: #FFF;
+      text-align: left;
+      vertical-align: middle;
+    }
+    .tg .tg-292c {
+      background-color: #e0e0e0;
+      text-align: center;
+      vertical-align: top;
+    }
+    .tg .tg-c3ow {
+      border-color: inherit;
+      text-align: center;
+      vertical-align: top;
+    }
+    .tg .tg-antibiotic-label {
+      width: 25%;
+      font-weight: 700;
+    }
+    .tg .tg-antibiotic-input {
+      width: 75%;
+    }
+    .tg-wound, .tg-wound-monitoring, .cultural-table {
+      border-collapse: collapse;
+      width: 100%;
+      min-width: 800px;
+      display: table;
+      table-layout: fixed;
+    }
+    .tg-wound td, .tg-wound-monitoring td, .cultural-table td {
+      border: 1px solid black;
+      padding: 5px;
+      text-align: center;
+      vertical-align: top;
+    }
+    .tg-wound th, .tg-wound-monitoring th, .cultural-table th {
+      border: 1px solid black;
+      padding: 5px;
+      text-align: center;
+      vertical-align: top;
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+    }
+    .tg-wound td.first-column {
+      text-align: left;
+    }
+    .tg-wound td.left-align {
+      text-align: left;
+    }
+    .tg-wound-monitoring input[type="date"] {
+      min-width: 120px;
+      padding-right: 28px;
+    }
+    .tg-wound-monitoring input[type="date"]::-webkit-calendar-picker-indicator {
+      right: 4px;
+      padding: 2px;
+    }
+    .tg-review {
+      border-collapse: collapse;
+      border-spacing: 0;
+      width: 100%;
+    }
+    .tg-review td {
+      border-color: black;
+      border-style: solid;
+      border-width: 1px;
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      overflow: hidden;
+      padding: 10px 5px;
+      word-break: normal;
+    }
+    .tg-review th {
+      border-color: black;
+      border-style: solid;
+      border-width: 1px;
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      font-weight: normal;
+      overflow: hidden;
+      padding: 10px 5px;
+      word-break: normal;
+    }
+    .tg-review .tg-0pky {
+      border-color: inherit;
+      text-align: left;
+      vertical-align: top;
+    }
+    .tg-review .tg-label {
+      width: 30%;
+    }
+    .tg-review .tg-date {
+      width: 70%;
+    }
+    .tg-review input[type="date"] {
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .tg-review-or-phone {
+      border-collapse: collapse;
+      border-spacing: 0;
+      width: 100%;
+    }
+    .tg-review-or-phone td {
+      border-color: black;
+      border-style: solid;
+      border-width: 1px;
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      overflow: hidden;
+      padding: 10px 5px;
+      word-break: normal;
+    }
+    .tg-review-or-phone th {
+      border-color: black;
+      border-style: solid;
+      border-width: 1px;
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      font-weight: normal;
+      overflow: hidden;
+      padding: 10px 5px;
+      word-break: normal;
+    }
+    .tg-review-or-phone .tg-label {
+      width: 30%;
+    }
+    .tg-review-or-phone .tg-input {
+      width: 35%;
+    }
+    .input-overlay {
+      width: 100%;
+      border: none;
+      outline: none;
+      background: transparent;
+      font: inherit;
+      padding: 0;
+      margin: 0;
+      resize: none;
+      box-sizing: border-box;
+    }
+    .input-full {
+      width: 100%;
+      border: none;
+      outline: none;
+      background: transparent;
+      font: inherit;
+      resize: none;
+      box-sizing: border-box;
+    }
+    .ssi-title, .section-title {
+      position: relative;
+      left: 0;
+      transform: none;
+      font-size: 1.25rem;
+      font-weight: 700;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      text-decoration-thickness: 2px;
+      color: #1f2931;
+      text-align: center;
+      margin-bottom: 1rem;
+      font-family: Arial, sans-serif;
+    }
+    .action-button {
+      padding: 8px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 4px;
+      background-color: #ffffff;
+      color: #1f2931;
+      font-weight: 500;
+      transition: background-color 0.2s;
+      margin: 4px;
+    }
+    .action-button:hover {
+      background-color: #e0e0e0;
+    }
+    .drug-tag {
+      display: inline-flex;
+      align-items: center;
+      background-color: #e5e7eb;
+      border-radius: 9999px;
+      padding: 4px 8px;
+      margin: 2px;
+      font-size: 12px;
+      color: #1f2931;
+    }
+    .drug-tag button {
+      margin-left: 6px;
+      background: none;
+      border: none;
+      color: #000000;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .drug-input-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-bottom: 8px;
+    }
+    .drug-input {
+      border: 1px solid #d1d5db;
+      border-radius: 4px;
+      padding: 4px 8px;
+      width: 100%;
+      font: inherit;
+    }
+    input[type="date"] {
+      position: relative;
+      appearance: none;
+      -webkit-appearance: none;
+      width: 100%;
+      padding: 4px;
+    }
+    input[type="date"]::-webkit-calendar-picker-indicator {
+      position: absolute;
+      right: 8px;
+      cursor: pointer;
+    }
+    select {
+      width: 100%;
+      padding: 4px;
+      border: 1px solid #d1d5db;
+      border-radius: 4px;
+    }
+    strong {
+      font-weight: 700;
+      font-family: Arial, sans-serif;
+    }
+    h1, h2 {
+      font-weight: 700 !important;
+      font-family: Arial, sans-serif;
+    }
+    .custom-checkbox {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      border: 2px solid #000;
+      border-radius: 4px;
+      outline: none;
+      cursor: pointer;
+      position: relative;
+      background-color: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 8px 0 0;
+      vertical-align: middle;
+    }
+    .custom-checkbox:checked {
+      background-color: #000;
+    }
+    .custom-checkbox:checked::after {
+      content: '✓';
+      color: #fff;
+      font-size: 14px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    .checkbox-label, .checkbox-label-left, .center-checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      text-align: left;
+    }
+    .center-checkbox-label {
+      justify-content: center;
+      text-align: center;
+    }
+    .checkbox-label-right {
+      display: flex;
+      flex-direction: row-reverse;
+      align-items: center;
+      gap: 8px;
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      text-align: left;
+    }
+    .date-signature-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+    }
+    .date-signature-container label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+      min-width: 200px;
+    }
+    .date-signature-container .signature {
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      white-space: nowrap;
+      flex: 1;
+      text-align: right;
+    }
+    .wound-monitoring-container, .wound-complications-container {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    @media (max-width: 640px) {
+      body {
+        padding: 1rem;
+      }
+      .tg, .tg-review, .tg-review-or-phone, .tg-wound, .tg-wound-monitoring, .cultural-table {
+        font-size: 12px;
+        margin-bottom: 1.5rem;
+      }
+      .tg td, .tg th, .tg-review td, .tg-review th, .tg-review-or-phone td, .tg-review-or-phone th {
+        padding: 8px;
+      }
+      .tg-wound, .tg-wound-monitoring {
+        min-width: 800px;
+      }
+      .tg-wound td, .tg-wound th, .tg-wound-monitoring td, .tg-wound-monitoring th {
+        padding: 1px;
+        min-width: 350px;
+        white-space: normal;
+        word-break: break-word;
+      }
+      .tg-wound-monitoring input[type="date"] {
+        width: 100% !important;
+        max-width: 100px !important;
+        min-width: 90px;
+        padding: 2px 20px 2px 4px;
+        font-size: 11px;
+        box-sizing: border-box;
+        border: 1px solid #d1d5db;
+        border-radius: 4px;
+      }
+      .tg-wound-monitoring input[type="date"]::-webkit-calendar-picker-indicator {
+        right: 2px;
+        padding: 1px;
+        width: 16px;
+        height: 16px;
+      }
+      .cultural-table td, .cultural-table th {
+        padding: 8px;
+      }
+      .tg .tg-0pky, .tg .tg-0lax, .tg .tg-tl4i, .tg .tg-xpf7 {
+        width: 100%;
+        display: block;
+      }
+      .tg tr {
+        display: flex;
+        flex-direction: column;
+      }
+      .tg th, .tg td {
+        width: 100% !important;
+        display: block;
+      }
+      .tg .tg-antibiotic-label, .tg .tg-antibiotic-input {
+        width: 100%;
+        display: block;
+      }
+      .tg-review .tg-label, .tg-review-or-phone .tg-label {
+        width: 100%;
+        text-align: left;
+      }
+      .tg-review .tg-date, .tg-review-or-phone .tg-input {
+        width: 100%;
+        text-align: left;
+      }
+      .input-overlay, .input-full, .drug-input, input[type="date"], select {
+        font-size: 12px;
+        padding: 4px;
+      }
+      .ssi-title, .section-title {
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+      }
+      .action-button {
+        padding: 6px 10px;
+        font-size: 12px;
+      }
+      .drug-tag {
+        font-size: 10px;
+        padding: 3px 6px;
+      }
+      .custom-checkbox {
+        width: 16px;
+        height: 16px;
+      }
+      .checkbox-label, .checkbox-label-left, .center-checkbox-label {
+        font-size: 12px;
+        gap: 6px;
+      }
+      .date-signature-container {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+      .date-signature-container .signature {
+        text-align: left;
+      }
+      .flex.sm\:table-row {
+        display: flex;
+        flex-direction: column;
+      }
+      .tg-wound, .tg-wound-monitoring {
+        display: table !important;
+      }
+      .tg-wound tr, .tg-wound-monitoring tr {
+        display: table-row !important;
+      }
+      .tg-wound th, .tg-wound td, .tg-wound-monitoring th, .tg-wound-monitoring td {
+        display: table-cell !important;
+      }
+    }
+    @media print {
+      body {
+        background-color: #fff;
+        color: #1f2931;
+        padding: 0;
+        margin: 0;
+        font-size: 12px;
+      }
+      .action-button {
+        display: none;
+      }
+      .page-break {
+        page-break-before: always;
+      }
+      .ssi-title, .section-title {
+        page-break-before: always;
+        font-size: 1rem;
+      }
+      .mt-6 {
+        margin-top: 0;
+      }
+      .tg, .tg-wound, .tg-wound-monitoring, .tg-review, .tg-review-or-phone, .cultural-table {
+        width: 100%;
+        min-width: 0;
+        table-layout: auto;
+      }
+      .tg td, .tg th, .tg-wound td, .tg-wound-monitoring td, .cultural-table td, .cultural-table th {
+        font-size: 12px;
+        padding: 4px;
+        word-break: break-word;
+      }
+      .tg-tl4i, .tg-xpf7, .tg-2vvi, .tg-qw1v, .tg-292c {
+        background-color: #e0e0e0 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .tg-01dj, .tg-h975, .tg-5yq0 {
+        background-color: #C8E0C8 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .drug-tag {
+        background-color: #e5e7eb !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        font-size: 10px;
+        padding: 2px 6px;
+      }
+      .custom-checkbox:checked {
+        background-color: #000 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .custom-checkbox:checked::after {
+        color: #fff !important;
+        font-size: 12px;
+      }
+      input, select, textarea {
+        border: none !important;
+        font-size: 12px;
+        padding: 2px;
+        width: 100%;
+        box-sizing: border-box;
+      }
+      input[type="date"]::-webkit-calendar-picker-indicator {
+        right: 4px;
+      }
+      .wound-monitoring-container, .wound-complications-container {
+        overflow-x: visible;
+      }
+      .wound-row, .cultural-table {
+        page-break-inside: avoid;
+      }
+      .page-section-2, .page-section-3, .page-section-4, .page-section-5, .page-section-6 {
+        page-break-before: always;
+      }
+      .signature {
+        border-bottom: 1px solid #000;
+        display: inline-block;
+        width: 200px;
+      }
+      .drug-input-container {
+        gap: 2px;
+        margin-bottom: 4px;
+      }
+      .drug-input {
+        border: none !important;
+        padding: 2px 4px;
+      }
+      .checkbox-label, .checkbox-label-left, .center-checkbox-label, .checkbox-label-right {
+        font-size: 12px;
+        gap: 4px;
+      }
+      .custom-checkbox {
+        width: 16px;
+        height: 16px;
+      }
+      .date-signature-container {
+        font-size: 12px;
+      }
+    }
+  </style>
+</head>
+<body class="bg-white p-2 sm:p-4">
+  <h2 class="ssi-title">SSI BUNDLE FORM</h2>
+  <div class="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4">
+    <img src="supercare-hospital_logo.png" alt="SuperCare Hospital Logo" class="h-16">
+    <h1 class="text-2xl text-gray-800 text-center sm:text-left">SuperCare Hospital</h1>
+  </div>
+  <!--This is the 1st Page for Print-->
+  <div class="overflow-x-auto">
+    <table class="tg">
+      <thead>
+        <tr>
+          <th class="tg-0pky w-2/6">
+            <label class="flex gap-2 items-baseline w-full">
+              <strong class="whitespace-nowrap">Name:</strong>
+              <textarea name="name" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea>
+            </label>
+          </th>
+          <th class="tg-0pky w-1/5">
+            <label class="flex gap-2 items-center w-full">
+              <strong class="whitespace-nowrap">Age:</strong>
+              <input type="number" class="input-overlay" name="age">
+            </label>
+          </th>
+          <th class="tg-0pky w-1/4">
+            <label class="flex gap-2 items-center w-full">
+              <strong class="whitespace-nowrap">Sex:</strong>
+              <select class="input-overlay" name="sex">
+                <option value="">Select Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+              </select>
+            </label>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="tg-0pky">
+            <label class="flex gap-2 items-center w-full">
+              <strong class="whitespace-nowrap">UHID:</strong>
+              <input type="text" class="input-overlay" name="uhid">
+            </label>
+          </td>
+          <td class="tg-0pky">
+            <label class="flex gap-2 items-center w-full">
+              <strong class="whitespace-nowrap">Phone No:</strong>
+              <input type="tel" class="input-overlay" name="phone">
+            </label>
+          </td>
+          <td class="tg-0pky">
+            <label class="flex gap-2 items-center w-full">
+              <strong class="whitespace-nowrap">Bed no./Ward:</strong>
+              <input type="text" class="input-overlay" name="bed">
+            </label>
+          </td>
+        </tr>
+        <tr>
+          <td class="tg-0pky" colspan="3">
+            <label class="flex gap-2 items-baseline w-full">
+              <strong class="whitespace-nowrap">Address:</strong>
+              <textarea class="input-overlay input-full" name="address" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea>
+            </label>
+          </td>
+        </tr>
+        <tr>
+          <td class="tg-0lax" colspan="3">
+            <label class="flex gap-2 items-baseline w-full">
+              <strong class="whitespace-nowrap">Primary Diagnosis:</strong>
+              <textarea class="input-overlay input-full" name="diagnosis" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea>
+            </label>
+          </td>
+        </tr>
+        <tr>
+          <td class="tg-0lax" colspan="3">
+            <label class="flex gap-2 items-baseline w-full">
+              <strong class="whitespace-nowrap">Surgical Procedure:</strong>
+              <textarea class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea>
+            </label>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="overflow-x-auto mt-4">
+    <table class="tg w-full">
+      <thead>
+        <tr class="flex flex-col sm:table-row w-full">
+          <th class="tg-0pky w-full sm:w-1/5">
+            <label class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 w-full px-2">
+              <strong class="whitespace-nowrap">DOA:</strong>
+              <input type="date" name="doa" class="border border-gray-300 rounded px-2 py-1 w-full sm:w-auto flex-1" onclick="this.showPicker()" value="2025-07-16">
+            </label>
+          </th>
+          <th class="tg-0pky w-full sm:w-1/5">
+            <label class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 w-full px-2">
+              <strong class="whitespace-nowrap">DOS:</strong>
+              <input type="date" name="dos" class="border border-gray-300 rounded px-2 py-1 w-full sm:w-auto flex-1" onclick="this.showPicker()" value="2025-07-16">
+            </label>
+          </th>
+          <th class="tg-0pky w-full sm:w-1/5">
+            <label class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 w-full px-2">
+              <strong class="whitespace-nowrap">DOD:</strong>
+              <input type="date" name="dod" class="border border-gray-300 rounded px-2 py-1 w-full sm:w-auto flex-1" onclick="this.showPicker()" value="2025-07-16">
+            </label>
+          </th>
+          <th class="tg-0lax w-full sm:w-[40%]">
+            <label class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 w-full px-2">
+              <strong class="whitespace-nowrap">Surgeon:</strong>
+              <select name="surgeon" class="border border-gray-300 rounded px-2 py-1 w-full sm:w-auto flex-1">
+                <option value="">Select</option>
+                <option value="Dr. John Smith">Dr. John Smith</option>
+                <option value="Dr. Jane Doe">Dr. Jane Doe</option>
+                <option value="Dr. Ramesh Patel">Dr. Ramesh Patel</option>
+                <option value="Dr. Priya Sen">Dr. Priya Sen</option>
+              </select>
+            </label>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="tg-0pky" colspan="4">
+            <label class="flex flex-col sm:flex-row gap-2 items-baseline w-full px-2 py-2">
+              <strong class="whitespace-nowrap">Duration Of Operation:</strong>
+              <textarea name="operation_duration" class="input-overlay input-full" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea>
+            </label>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="mt-6 overflow-x-auto">
+    <table class="tg bg-white rounded shadow-md">
+      <thead>
+        <tr>
+          <th class="tg-01dj" colspan="4">
+            <span class="text-base">Surgical Skin Preparation Monitoring</span>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="tg-qw1v">Pre op bath/shower</td>
+          <td class="tg-0pky">
+            <label class="flex items-center gap-2">
+              <input type="radio" name="preop_bath" value="Yes" class="form-radio text-blue-600"> Yes
+            </label>
+          </td>
+          <td class="tg-0pky" colspan="2">
+            <label class="flex items-center gap-2">
+              <input type="radio" name="preop_bath" value="No" class="form-radio text-blue-600"> No
+            </label>
+          </td>
+        </tr>
+        <tr>
+          <td class="tg-tl4i"><strong>Hair Removal</strong></td>
+          <td class="tg-0pky">
+            <label class="flex items-center gap-2">
+              <input type="radio" name="hair_removal" value="Razor" class="form-radio text-blue-600"> Razor
+            </label>
+          </td>
+          <td class="tg-0pky">
+            <label class="flex items-center gap-2">
+              <input type="radio" name="hair_removal" value="Trimmer" class="form-radio text-blue-600"> Trimmer
+            </label>
+          </td>
+          <td class="tg-0pky">
+            <label class="flex items-center gap-2">
+              <input type="radio" name="hair_removal" value="Not Done" class="form-radio text-blue-600"> Not Done
+            </label>
+          </td>
+        </tr>
+        <tr>
+          <td class="tg-tl4i"><strong>Where was hair removal done?</strong></td>
+          <td class="tg-0ys1">
+            <label class="flex items-center gap-2">
+              <input type="radio" name="hair_removal_place" value="Ward" class="form-radio text-blue-600"> Ward
+            </label>
+          </td>
+          <td class="tg-0ys1">
+            <label class="flex items-center gap-2">
+              <input type="radio" name="hair_removal_place" value="ICU/HDU" class="form-radio text-blue-600"> ICU/HDU
+            </label>
+          </td>
+          <td class="tg-0pky">
+            <label class="flex items-center gap-2">
+              <input type="radio" name="hair_removal_place" value="OT/LR" class="form-radio text-blue-600"> OT/LR
+            </label>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <!--This is the 2nd Page for Print-->
+  <div class="mt-6 overflow-x-auto page-section-2">
+    <table class="tg bg-white rounded shadow-md">
+      <thead>
+        <tr>
+          <th class="tg-h975" colspan="4">
+            <span class="text-base">Implanted Material</span>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="tg-xpf7"><strong>Implanted Used:</strong></td>
+          <td class="tg-0pky">
+            <label class="flex items-center gap-2">
+              <input type="radio" name="implanted_used" value="Yes" class="form-radio text-blue-600"> Yes
+            </label>
+          </td>
+          <td class="tg-0pky" colspan="2">
+            <label class="flex items-center gap-2">
+              <input type="radio" name="implanted_used" value="No" class="form-radio text-blue-600"> No
+            </label>
+          </td>
+        </tr>
+        <tr>
+          <td class="tg-0pky">
+            <label class="flex gap-2 items-baseline w-full">
+              <strong class="whitespace-nowrap">Metal:</strong>
+              <textarea name="metal" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea>
+            </label>
+          </td>
+          <td class="tg-0pky">
+            <label class="flex gap-2 items-baseline w-full">
+              <strong class="whitespace-nowrap">Graft:</strong>
+              <textarea name="graft" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea>
+            </label>
+          </td>
+          <td class="tg-0pky">
+            <label class="flex gap-2 items-baseline w-full">
+              <strong class="whitespace-nowrap">Patch:</strong>
+              <textarea name="patch" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea>
+            </label>
+          </td>
+          <td class="tg-dgl5">
+            <label class="flex gap-2 items-baseline w-full">
+              <strong class="whitespace-nowrap">Shunt/Stent:</strong>
+              <textarea name="shunt_stent" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea>
+            </label>
+          </td>
+        </tr>
+        <tr>
+          <td class="tg-2vvi"><strong>Drain Used:</strong></td>
+          <td class="tg-zr06">
+            <label class="flex items-center gap-2">
+              <input type="radio" name="drain_used" value="Yes" class="form-radio text-blue-600"> Yes
+            </label>
+          </td>
+          <td class="tg-0pky" colspan="2">
+            <label class="flex items-center gap-2">
+              <input type="radio" name="drain_used" value="No" class="form-radio text-blue-600"> No
+            </label>
+          </td>
+        </tr>
+        <tbody id="drain-rows">
+          <tr class="drain-row">
+            <td class="tg-0pky" colspan="4">
+              <label class="flex gap-2 items-baseline w-full">
+                <strong class="whitespace-nowrap">1.</strong>
+                <textarea name="drain_1" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea>
+              </label>
+            </td>
+          </tr>
+          <tr class="drain-row">
+            <td class="tg-0pky" colspan="4">
+              <label class="flex gap-2 items-baseline w-full">
+                <strong class="whitespace-nowrap">2.</strong>
+                <textarea name="drain_2" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea>
+              </label>
+            </td>
+          </tr>
+          <tr class="drain-row">
+            <td class="tg-0pky" colspan="4">
+              <label class="flex gap-2 items-baseline w-full">
+                <strong class="whitespace-nowrap">3.</strong>
+                <textarea name="drain_3" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea>
+              </label>
+            </td>
+          </tr>
+        </tbody>
+      </tbody>
+    </table>
+    <div class="mt-4 text-right">
+      <button onclick="addDrainRow()" class="action-button">+</button>
+      <button onclick="removeDrainRow()" class="action-button">−</button>
+    </div>
+  </div>
+  <div class="mt-6 overflow-x-auto">
+    <table class="tg bg-white rounded shadow-md">
+      <thead>
+        <tr>
+          <th class="tg-5yq0" colspan="2">
+            <span class="text-base">Antibiotic Usage</span>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="tg-tl4i tg-antibiotic-label"><strong>Name Of The Drug</strong></td>
+          <td class="tg-0pky tg-antibiotic-input">
+            <div class="drug-input-container" id="drug-tags"></div>
+            <textarea class="drug-input" rows="1" oninput="autoGrow(this)" onkeydown="handleDrugInput(event)" style="min-height:28px; line-height:1.2;"></textarea>
+          </td>
+        </tr>
+        <tr>
+          <td class="tg-tl4i tg-antibiotic-label"><strong>Dosage/Route/Frequency</strong></td>
+          <td class="tg-0pky tg-antibiotic-input">
+            <textarea name="dosage" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea>
+          </td>
+        </tr>
+        <tr>
+          <td class="tg-tl4i tg-antibiotic-label"><strong>Started on</strong></td>
+          <td class="tg-0pky tg-antibiotic-input">
+            <input type="date" name="started_on" class="border border-gray-300 rounded px-2 py-1 w-full" onclick="this.showPicker()" value="2025-07-16">
+          </td>
+        </tr>
+        <tr>
+          <td class="tg-tl4i tg-antibiotic-label"><strong>Stopped on</strong></td>
+          <td class="tg-0pky tg-antibiotic-input">
+            <input type="date" name="stopped_on" class="border border-gray-300 rounded px-2 py-1 w-full" onclick="this.showPicker()" value="2025-07-16">
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <!--This is the 3rd can increase to more if + added more Page for Print-->
+  <div class="mt-6 overflow-x-auto wound-monitoring-container relative page-section-3">
+    <h2 class="section-title">Post-Operative Wound Monitoring</h2>
+    <table class="tg-wound-monitoring bg-white rounded shadow-md mt-8">
+      <thead>
+        <tr>
+          <th class="tg-292c">Day</th>
+          <th class="tg-292c">Date</th>
+          <th class="tg-292c">Discharge</th>
+          <th class="tg-292c">Type Of Discharge/Fluid</th>
+          <th class="tg-292c">Tenderness/Pain</th>
+          <th class="tg-292c">Swelling</th>
+          <th class="tg-292c">Fever</th>
+        </tr>
+      </thead>
+      <tbody id="wound-rows">
+        <tr class="wound-row">
+          <td class="tg-0pky">
+            <label class="flex gap-2 items-baseline w-full">
+              <strong class="whitespace-nowrap">1</strong>
+            </label>
+          </td>
+          <td class="tg-0pky">
+            <input type="date" name="wound_date_1" class="border border-gray-300 rounded px-2 py-1 w-full" style="max-width: 80px;" onclick="this.showPicker()" value="2025-07-16">
+          </td>
+          <td class="tg-0pky">
+            <textarea name="discharge_1" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea>
+          </td>
+          <td class="tg-0pky">
+            <textarea name="discharge_type_1" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea>
+          </td>
+          <td class="tg-0pky">
+            <textarea name="tenderness_1" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea>
+          </td>
+          <td class="tg-0pky">
+            <textarea name="swelling_1" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea>
+          </td>
+          <td class="tg-0pky">
+            <textarea name="fever_1" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="mt-4 text-right">
+      <button onclick="addWoundRow()" class="action-button">+</button>
+      <button onclick="removeWoundRow()" class="action-button">−</button>
+    </div>
+  </div>
+  <!--This is the next page after the Post operative and by use + button it makes new page for Print-->
+  <div class="mt-6 overflow-x-auto relative page-section-4">
+    <h2 class="section-title">Cultural Swap and Dressing/Finding</h2>
+    <div id="cultural-tables">
+      <table class="tg bg-white rounded shadow-md mt-8 cultural-table">
+        <thead>
+          <tr>
+            <th class="tg-xpf7">Cultural Swap</th>
+            <th class="tg-0lax">
+              <textarea name="cultural_swap_1" class="input-overlay input-full" rows="10" oninput="autoGrow(this)" style="min-height:140px; line-height:1.2;"></textarea>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="tg-xpf7">Dressing/Finding</td>
+            <td class="tg-0lax">
+              <textarea name="dressing_finding_1" class="input-overlay input-full" rows="30" oninput="autoGrow(this)" style="min-height:420px; line-height:1.2;"></textarea>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="mt-4 text-right">
+      <button onclick="addCulturalTable()" class="action-button">+</button>
+      <button onclick="removeCulturalTable()" class="action-button">−</button>
+    </div>
+  </div>
+  <!--This is next page after the cultural swap and dressing for Print-->
+  <div class="mt-6 overflow-x-auto wound-complications-container page-section-5">
+    <table class="tg-wound bg-white rounded shadow-md">
+      <tr>
+        <td rowspan="6" class="first-column">
+          <span style="font-weight: 700">Wound Complications</span><br>
+          <span style="font-weight: 700">SSI--> Tick Criteria--></span><br>
+          <span style="font-weight: 700">Date:</span>
+          <input type="date" name="wound_date" class="border border-gray-300 rounded px-2 py-1 w-full sm:w-auto" onclick="this.showPicker()" value="2025-07-16"><br><br>
+          <span style="font-weight: 700">Non-Infectious Complications</span><br>
+          <label class="checkbox-label-left">
+            Wound Dehiscence                     <input type="checkbox" name="wound_dehiscence" class="custom-checkbox">
+          </label><br>
+          <label class="checkbox-label-left">
+            Allergic Reaction To Dressing     <input type="checkbox" name="allergic_reaction" class="custom-checkbox">
+          </label><br>
+          <label class="checkbox-label-left">
+            Bleeding / Haemorrhage            <input type="checkbox" name="bleeding" class="custom-checkbox">
+          </label><br>
+          <label class="checkbox-label-left">
+            Other                                           <input type="checkbox" name="other" class="custom-checkbox">
+          </label><br>
+          <span style="font-weight: 700">Specify: </span><textarea name="specify" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea><br><br><br><br><br>
+          <span style="font-weight: 700">Notes:</span> <textarea name="notes" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea>
+        </td>
+        <td class="c3ow">
+          <label class="checkbox-label-center">
+            <input type="checkbox" name="superficial_ssi" class="custom-checkbox"> <span style="font-weight: 700">Superficial SSI</span><br><span style="font-weight: 700">(Skin/Sub-Cutaneous)</span>
+          </label>
+        </td>
+        <td class="c3ow">
+          <label class="checkbox-label-center">
+            <input type="checkbox" name="deep_ssi" class="custom-checkbox"> <span style="font-weight: 700">Deep SSI</span><br><span style="font-weight: 700">(Fascia/Muscle)</span>
+          </label>
+        </td>
+        <td class="c3ow">
+          <label class="checkbox-label-center">
+            <input type="checkbox" name="organ_space_ssi" class="custom-checkbox"> <span style="font-weight: 700">Organ/Space SSI</span>
+          </label>
+        </td>
+      </tr>
+      <tr>
+        <td class="c3ow">
+          <label class="center-checkbox-label">Presence of purulent<br>discharge from<br>the surgical site <input type="checkbox" name="purulent_discharge_superficial" class="custom-checkbox"></label>
+        </td>
+        <td class="c3ow" rowspan="2">
+          <label class="center-checkbox-label"><br><br>Purulent discharge from<br>the surgical site<br><br> <input type="checkbox" name="purulent_discharge_deep" class="custom-checkbox"></label>
+        </td>
+        <td class="c3ow">
+          <label class="center-checkbox-label">Purulent discharge from a drain<br>placed in the organ,<br>space, or cavity <input type="checkbox" name="purulent_discharge_organ" class="custom-checkbox"></label>
+        </td>
+      </tr>
+      <tr>
+        <td class="c3ow">
+          <label class="center-checkbox-label">Identification of an<br>organism from the<br>surgical site <input type="checkbox" name="organism_superficial" class="custom-checkbox"></label>
+        </td>
+        <td class="c3ow">
+          <label class="center-checkbox-label">Identification of an isolated<br>organism from the involved<br>organ, cavity, or related abscess <input type="checkbox" name="organism_organ" class="custom-checkbox"></label>
+        </td>
+      </tr>
+      <tr>
+        <td class="c3ow">
+          <label class="center-checkbox-label"><br><br>Clinical diagnosis of a <br>SSI by the surgeon<br><br><br> <input type="checkbox" name="clinical_diagnosis_superficial" class="custom-checkbox"></label>
+        </td>
+        <td class="c3ow">
+          <label class="center-checkbox-label">Deliberate reopening of a deep<br>incision by the surgeon for<br>suspected infection, or wound<br>spontaneously dehisces, and<br>a positive wound culture and<br>≥1 infectious symptoms<br>(e.g, localized pain, or tenderness) <input type="checkbox" name="reopening_deep" class="custom-checkbox"></label>
+        </td>
+        <td class="c3ow">
+          <label class="center-checkbox-label"><br><br>Evidence of abscess or infection<br>involving the organ, cavity, or<br>anatomic space, as observed<br>on CT<br><br> <input type="checkbox" name="abscess_organ" class="custom-checkbox"></label>
+        </td>
+      </tr>
+      <tr>
+        <td class="c3ow">
+          <label class="center-checkbox-label">Deliberate opening of the<br>wound by the surgeon,<br>and ≥1 infectious symptom<br>(e.g, swelling, erythema,<br>or<br>localized pain or warmth) <input type="checkbox" name="opening_superficial" class="custom-checkbox"></label>
+        </td>
+        <td class="c3ow">
+          <label class="center-checkbox-label"><br>Evidence of abscess formation<br>or infection involving deep<br>tissues as observed on CT<br><br><br> <input type="checkbox" name="abscess_deep" class="custom-checkbox"></label>
+        </td>
+        <td class="c3ow">
+          <label class="center-checkbox-label">A wound is not considered<br>infected if only a stitch abscess,<br>localized cellulitis, or infected<br>superficial stab puncture<br>is present<br><br> <input type="checkbox" name="not_infected" class="custom-checkbox"></label>
+        </td>
+      </tr>
+      <tr>
+        <td class="c3ow left-align">
+          <span style="font-weight: 700">Surgeon's opinion:</span><br>
+          <textarea name="surgeon_opinion_superficial" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea><br><br><br>
+        </td>
+        <td class="c3ow left-align">
+          <span style="font-weight: 700">Surgeon's opinion:</span><br>
+          <textarea name="surgeon_opinion_deep" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea>
+        </td>
+        <td class="c3ow left-align">
+          <span style="font-weight: 700">Surgeon's opinion:</span><br>
+          <textarea name="surgeon_opinion_organ" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea>
+        </td>
+      </tr>
+    </table>
+  </div>
+  <div class="mt-6 overflow-x-auto page-section-6">
+    <table class="tg-review bg-white rounded shadow-md">
+      <thead>
+        <tr>
+          <th class="tg-0pky tg-label">Review On</th>
+          <th class="tg-0pky tg-date">
+            <input type="date" name="review_date" class="border border-gray-300 rounded px-2 py-1 w-full" onclick="this.showPicker()" value="2025-07-16">
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="tg-0pky tg-label">Sutures/Clips Removed On</td>
+          <td class="tg-0pky tg-date">
+            <input type="date" name="sutures_removed_date" class="border border-gray-300 rounded px-2 py-1 w-full" onclick="this.showPicker()" value="2025-07-16">
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <!--This is the next page after wound compilation and it's the last Page for Print-->
+  <div class="mt-6 overflow-x-auto">
+    <table class="tg tg-review-or-phone bg-white rounded shadow-md">
+      <thead>
+        <tr>
+          <th class="tg-5yq0" colspan="3">Review or Phone Call</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="tg-292c" colspan="3">
+            <label class="flex gap-2 items-center w-full justify-center">
+              <strong class="whitespace-nowrap">Date:</strong>
+              <input type="date" name="review_phone_date" class="border border-gray-300 rounded px-2 py-1 w-full max-w-xs" onclick="this.showPicker()" value="2025-07-16">
+            </label>
+          </td>
+        </tr>
+        <tr>
+          <td class="tg-tl4i tg-label">Patient Identification:</td>
+          <td class="tg-0pky tg-input">
+            <label class="flex items-center gap-2">
+              <input type="radio" name="patient_identification" value="Yes" class="form-radio text-blue-600"> Yes
+            </label>
+          </td>
+          <td class="tg-0pky tg-input">
+            <label class="flex items-center gap-2">
+              <input type="radio" name="patient_identification" value="No" class="form-radio text-blue-600"> No
+            </label>
+          </td>
+        </tr>
+        <tr>
+          <td class="tg-tl4i tg-label">Pain:</td>
+          <td class="tg-0pky tg-input">
+            <label class="flex items-center gap-2">
+              <input type="radio" name="pain" value="Yes" class="form-radio text-blue-600"> Yes
+            </label>
+          </td>
+          <td class="tg-0pky tg-input">
+            <label class="flex items-center gap-2">
+              <input type="radio" name="pain" value="No" class="form-radio text-blue-600"> No
+            </label>
+          </td>
+        </tr>
+        <tr>
+          <td class="tg-tl4i tg-label">Pus:</td>
+          <td class="tg-0pky tg-input">
+            <label class="flex items-center gap-2">
+              <input type="radio" name="pus" value="Yes" class="form-radio text-blue-600"> Yes
+            </label>
+          </td>
+          <td class="tg-0pky tg-input">
+            <label class="flex items-center gap-2">
+              <input type="radio" name="pus" value="No" class="form-radio text-blue-600"> No
+            </label>
+          </td>
+        </tr>
+        <tr>
+          <td class="tg-tl4i tg-label">Bleeding:</td>
+          <td class="tg-0pky tg-input">
+            <label class="flex items-center gap-2">
+              <input type="radio" name="bleeding" value="Yes" class="form-radio text-blue-600"> Yes
+            </label>
+          </td>
+          <td class="tg-0pky tg-input">
+            <label class="flex items-center gap-2">
+              <input type="radio" name="bleeding" value="No" class="form-radio text-blue-600"> No
+            </label>
+          </td>
+        </tr>
+        <tr>
+          <td class="tg-tl4i tg-label">Others:</td>
+          <td class="tg-0pky tg-input" colspan="2">
+            <textarea name="others" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="mt-6 date-signature-container">
+    <label>
+      <strong>Date Completed:</strong>
+      <input type="date" name="date_completed" class="border border-gray-300 rounded px-2 py-1 max-w-xs" onclick="this.showPicker()" value="2025-07-16">
+    </label>
+    <span class="signature"><strong>Signature:</strong> _________________</span>
+  </div>
+  <div class="mt-4 text-center">
+    <button onclick="printForm()" class="action-button">Print Form</button>
+  </div>
+  <script>
+    function autoGrow(textarea) {
+      textarea.style.height = "auto";
+      textarea.style.height = (textarea.scrollHeight) + "px";
+    }
+    function addDrainRow() {
+      const drainRows = document.getElementById('drain-rows');
+      const rowCount = drainRows.children.length + 1;
+      const newRow = document.createElement('tr');
+      newRow.className = 'drain-row';
+      newRow.innerHTML = `
+        <td class="tg-0pky" colspan="4">
+          <label class="flex gap-2 items-baseline w-full">
+            <strong class="whitespace-nowrap">${rowCount}.</strong>
+            <textarea name="drain_${rowCount}" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea>
+          </label>
+        </td>
+      `;
+      drainRows.appendChild(newRow);
+    }
+    function removeDrainRow() {
+      const drainRows = document.getElementById('drain-rows');
+      if (drainRows.children.length > 1) {
+        drainRows.lastElementChild.remove();
+      }
+    }
+    function addWoundRow() {
+      const woundRows = document.getElementById('wound-rows');
+      const rowCount = woundRows.children.length + 1;
+      const newRow = document.createElement('tr');
+      newRow.className = 'wound-row';
+      newRow.innerHTML = `
+        <td class="tg-0pky">
+          <label class="flex gap-2 items-baseline w-full">
+            <strong class="whitespace-nowrap">${rowCount}</strong>
+          </label>
+        </td>
+        <td class="tg-0pky">
+          <input type="date" name="wound_date_${rowCount}" class="border border-gray-300 rounded px-2 py-1 w-full" style="max-width: 80px;" onclick="this.showPicker()" value="2025-07-16">
+        </td>
+        <td class="tg-0pky">
+          <textarea name="discharge_${rowCount}" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea>
+        </td>
+        <td class="tg-0pky">
+          <textarea name="discharge_type_${rowCount}" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea>
+        </td>
+        <td class="tg-0pky">
+          <textarea name="tenderness_${rowCount}" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea>
+        </td>
+        <td class="tg-0pky">
+          <textarea name="swelling_${rowCount}" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea>
+        </td>
+        <td class="tg-0pky">
+          <textarea name="fever_${rowCount}" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea>
+        </td>
+      `;
+      woundRows.appendChild(newRow);
+    }
+    function removeWoundRow() {
+      const woundRows = document.getElementById('wound-rows');
+      if (woundRows.children.length > 1) {
+        woundRows.lastElementChild.remove();
+      }
+    }
+    function addCulturalTable() {
+      const culturalTables = document.getElementById('cultural-tables');
+      const tableCount = culturalTables.children.length + 1;
+      const newTable = document.createElement('table');
+      newTable.className = 'tg bg-white rounded shadow-md mt-8 cultural-table';
+      newTable.innerHTML = `
+        <thead>
+          <tr>
+            <th class="tg-xpf7">Cultural Swap</th>
+            <th class="tg-0lax">
+              <textarea name="cultural_swap_${tableCount}" class="input-overlay input-full" rows="10" oninput="autoGrow(this)" style="min-height:140px; line-height:1.2;"></textarea>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="tg-xpf7">Dressing/Finding</td>
+            <td class="tg-0lax">
+              <textarea name="dressing_finding_${tableCount}" class="input-overlay input-full" rows="30" oninput="autoGrow(this)" style="min-height:420px; line-height:1.2;"></textarea>
+            </td>
+          </tr>
+        </tbody>
+      `;
+      culturalTables.appendChild(newTable);
+    }
+    function removeCulturalTable() {
+      const culturalTables = document.getElementById('cultural-tables');
+      if (culturalTables.children.length > 1) {
+        culturalTables.lastElementChild.remove();
+      }
+    }
+    function handleDrugInput(event) {
+      if (event.key === 'Enter' && event.target.value.trim() !== '') {
+        event.preventDefault();
+        const drugName = event.target.value.trim();
+        const drugTags = document.getElementById('drug-tags');
+        const tag = document.createElement('span');
+        tag.className = 'drug-tag';
+        tag.innerHTML = `${drugName} <button onclick="this.parentElement.remove()">×</button>`;
+        drugTags.appendChild(tag);
+        event.target.value = '';
+      }
+    }
+    function printForm() {
+      window.print();
+    }
+  </script>
+</body>
+</html>
