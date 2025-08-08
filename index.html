@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,6 +11,7 @@
     <script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
     <link rel="stylesheet" type="text/css" href="style.css">
 </head>
+
 <body>
     <div class="container">
         <div class="header">
@@ -21,16 +23,21 @@
             <thead>
                 <tr>
                     <th class="tg-1wig">
-                        <label class="flex gap-2 items-center w-full">Name: 
-                            <textarea name="name" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea>
-                        </label></th>
+                        <label class="flex gap-2 items-center w-full">Name:
+                            <textarea name="name" class="input-overlay input-full" rows="1" oninput="autoGrow(this)"
+                                style="min-height:28px; line-height:1.2;"></textarea>
+                        </label>
+                    </th>
                     <th class="tg-1wig">
-                        <label class="flex gap-2 items-center w-full">Age: 
+                        <label class="flex gap-2 items-center w-full">Age:
                             <input type="number" class="input-overlay" name="age">
-                        </label></th>
+                        </label>
+                    </th>
                     <th class="tg-1wig">
-                        <label class="flex gap-2 items-center w-full">Sex: 
-                            <select name="Sex" class="surgeon-select" style="width: 80%; margin-left: 8px; font-size: 15px; border: none; height:30px; vertical-align: middle;" required>
+                        <label class="flex gap-2 items-center w-full">Sex:
+                            <select name="Sex" class="surgeon-select"
+                                style="width: 80%; margin-left: 8px; font-size: 15px; border: none; height:30px; vertical-align: middle;"
+                                required>
                                 <option value="">Select Gender</option>
                                 <option value="Male">Male</option>
                                 <option value="Female">Female</option>
@@ -41,38 +48,41 @@
             </thead>
             <tbody>
                 <tr>
-                    <td class="tg-1wig"><label class="flex gap-2 items-center w-full">UHID: 
+                    <td class="tg-1wig"><label class="flex gap-2 items-center w-full">UHID:
                             <input type="text" class="input-overlay" name="uhid">
-                            </label></td>
+                        </label></td>
                     <td class="tg-1wig"><label class="flex gap-2 items-center w-full">
                             <span class="whitespace-nowrap label-bold">Phone No: </span>
                             <input type="tel" class="input-overlay" name="phone">
-                            </label></td>
-                    <td class="tg-1wig"><label class="flex gap-2 items-center w-full">Bed no./Ward: 
+                        </label></td>
+                    <td class="tg-1wig"><label class="flex gap-2 items-center w-full">Bed no./Ward:
                             <input type="text" class="input-overlay" name="bed">
-                            </label></td>
+                        </label></td>
                 </tr>
                 <tr>
                     <td class="tg-1wig" colspan="3">
                         <label class="flex gap-2 items-center w-full">
                             <span class="whitespace-nowrap label-bold">Address: </span>
-                            <textarea class="input-overlay input-full" name="address" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea>
+                            <textarea class="input-overlay input-full" name="address" rows="1" oninput="autoGrow(this)"
+                                style="min-height:28px; line-height:1.2;"></textarea>
                         </label>
                     </td>
                 </tr>
                 <tr>
                     <td class="tg-1wig" colspan="3">
                         <label class="flex gap-2 items-center w-full">
-                            <span class="whitespace-nowrap label-bold">Primary Diagnosis:</span> 
-                            <textarea class="input-overlay input-full" name="diagnosis" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea>
+                            <span class="whitespace-nowrap label-bold">Primary Diagnosis:</span>
+                            <textarea class="input-overlay input-full" name="diagnosis" rows="1"
+                                oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea>
                         </label>
                     </td>
                 </tr>
                 <tr>
                     <td class="tg-1wig" colspan="3">
                         <label class="flex gap-2 items-center w-full">
-                            <span class="whitespace-nowrap label-bold">Surgical Procedure:</span> 
-                            <textarea class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea>
+                            <span class="whitespace-nowrap label-bold">Surgical Procedure:</span>
+                            <textarea class="input-overlay input-full" rows="1" oninput="autoGrow(this)"
+                                style="min-height:28px; line-height:1.2;"></textarea>
                         </label>
                     </td>
                 </tr>
@@ -82,62 +92,67 @@
         <table class="tg tg-doa-dos-dod-surgeon">
             <thead>
                 <tr>
-                    <th class="tg-1wig"><label class="flex gap-2 items-center">DOA: 
-                        <input type="text" name="patient_info[doa]" class="datepicker" placeholder="dd/mm/yyyy" style="width: 100px;" value="">
-                    </label></th>
-                    <th class="tg-1wig"><label class="flex gap-2 items-center">DOS: 
-                        <input type="text" name="patient_info[dos]" class="datepicker" placeholder="dd/mm/yyyy" style="width: 100px;" value="">
-                    </label></th>
-                    <th class="tg-1wig"><label class="flex gap-2 items-center">DOD: 
-                        <input type="text" name="patient_info[dod]" class="datepicker" placeholder="dd/mm/yyyy" style="width: 100px;" value="">
-                    </label></th>
-                    <th class="tg-1wig"><label class="flex gap-2 items-center">Surgeon: 
-                    <select name="patient_info[surgeon]" class="surgeon-select" style="width: 80%; margin-left: 8px; font-size: 15px; border: none; height:30px; vertical-align: middle;" required>
-                        <option value="">Select</option>
-                        <option value="Dr Rangksan Singh Thangkhiew">Dr Rangksan Singh Thangkhiew</option>
-                        <option value="Dr A N Mahesh Chengappa">Dr A N Mahesh Chengappa</option>
-                        <option value="Dr Janardhan Bordoloi">Dr Janardhan Bordoloi</option>
-                        <option value="Dr Sangeeta Kar">Dr Sangeeta Kar</option>
-                        <option value="Dr Samuel Pamei">Dr Samuel Pamei</option>
-                        <option value="Dr Sarungbam Malem Devi">Dr Sarungbam Malem Devi</option>
-                        <option value="Dr Ajay Kumar Thakur">Dr Ajay Kumar Thakur</option>
-                        <option value="Dr Bernard Trench Lyngdoh">Dr Bernard Trench Lyngdoh</option>
-                        <option value="Dr Reuel Pamei Nongrum">Dr Reuel Pamei Nongrum</option>
-                        <option value="Dr Donald R Bareh">Dr Donald R Bareh</option>
-                        <option value="Dr Rishan Singh Nongbet">Dr Rishan Singh Nongbet</option>
-                        <option value="Dr Gideon Lyngsyun Rynjah">Dr Gideon Lyngsyun Rynjah</option>
-                        <option value="Dr Vinodrai Gondalia">Dr Vinodrai Gondalia</option>
-                        <option value="Dr Bobby Linda Majaw">Dr Bobby Linda Majaw</option>
-                        <option value="Dr Doreen Kharwalang">Dr Doreen Kharwalang</option>
-                        <option value="Dr Pankaj Jain">Dr Pankaj Jain</option>
-                        <option value="Dr Chayanika Sarma">Dr Chayanika Sarma</option>                      
-                        <option value="Dr Mario Danny Hek">Dr Mario Danny Hek</option>
-                        <option value="Dr Anamika Mall">Dr Anamika Mall</option>
-                        <option value="Dr Synrang Batngen Warjri">Dr Synrang Batngen Warjri</option>
-                        <option value="Dr Sunita Thangkhiew">Dr Sunita Thangkhiew</option>
-                        <option value="Dr Emisaka Sumer">Dr Emisaka Sumer</option>
-                        <option value="Dr Velvette Rose Shabong">Dr Velvette Rose Shabong</option>
-                        <option value="Dr Manoj Kumar Sharma">Dr Manoj Kumar Sharma</option>
-                        <option value="Dr Andrew Rahmi Lyngdoh">Dr Andrew Rahmi Lyngdoh</option>
-                        <option value="Dr Danquale Vance Kynshikhar">Dr Danquale Vance Kynshikhar</option>
-                        <option value="Dr Mezhuneituo Raleng">Dr Mezhuneituo Raleng</option>
-                        <option value="Dr Eugeane Mary Kharmalki">Dr Eugeane Mary Kharmalki</option>
-                        <option value="Dr Konsam Gunamani Singh">Dr Konsam Gunamani Singh</option>
-                        <option value="Dr Pranjal Deka">Dr Pranjal Deka</option>
-                        <option value="Dr Daminot Phanbuh">Dr Daminot Phanbuh</option>
-                        <option value="Dr Amlan Jyoti Sarmah">Dr Amlan Jyoti Sarmah</option>
-                        <option value="Dr Tonmoy Das">Dr Tonmoy Das</option>
-                        <option value="Dr Ashutosh Vatsyayan">Dr Ashutosh Vatsyayan</option>
-                        <option value="Dr Kishore Kalita">Dr Kishore Kalita</option>
-                        <option value="Dr Sharon A L Rymbai">Dr Sharon A L Rymbai</option>
-                        <option value="Dr Indakiewlin Kharbuli">Dr Indakiewlin Kharbuli</option>
-                        <option value="Dr Damaelari Phylla Sohkhlet">Dr Damaelari Phylla Sohkhlet</option>
-                        <option value="Dr Credence Carryne Syiem">Dr Credence Carryne Syiem</option>
-                        <option value="Dr Jeetendra Gurung">Dr Jeetendra Gurung</option>
-                        <option value="Dr Syed Adam Mousom">Dr Syed Adam Mousom</option>
-                    </select>
-                    <span class="surgeon-print" style="display: none; margin-left: 8px;"></span>
-                    </label></th>
+                    <th class="tg-1wig"><label class="flex gap-2 items-center">DOA:
+                            <input type="text" name="patient_info[doa]" class="datepicker" placeholder="dd/mm/yyyy"
+                                style="width: 100px;" value="">
+                        </label></th>
+                    <th class="tg-1wig"><label class="flex gap-2 items-center">DOS:
+                            <input type="text" name="patient_info[dos]" class="datepicker" placeholder="dd/mm/yyyy"
+                                style="width: 100px;" value="">
+                        </label></th>
+                    <th class="tg-1wig"><label class="flex gap-2 items-center">DOD:
+                            <input type="text" name="patient_info[dod]" class="datepicker" placeholder="dd/mm/yyyy"
+                                style="width: 100px;" value="">
+                        </label></th>
+                    <th class="tg-1wig"><label class="flex gap-2 items-center">Surgeon:
+                            <select name="patient_info[surgeon]" class="surgeon-select"
+                                style="width: 80%; margin-left: 8px; font-size: 15px; border: none; height:30px; vertical-align: middle;"
+                                required>
+                                <option value="">Select</option>
+                                <option value="Dr Rangksan Singh Thangkhiew">Dr Rangksan Singh Thangkhiew</option>
+                                <option value="Dr A N Mahesh Chengappa">Dr A N Mahesh Chengappa</option>
+                                <option value="Dr Janardhan Bordoloi">Dr Janardhan Bordoloi</option>
+                                <option value="Dr Sangeeta Kar">Dr Sangeeta Kar</option>
+                                <option value="Dr Samuel Pamei">Dr Samuel Pamei</option>
+                                <option value="Dr Sarungbam Malem Devi">Dr Sarungbam Malem Devi</option>
+                                <option value="Dr Ajay Kumar Thakur">Dr Ajay Kumar Thakur</option>
+                                <option value="Dr Bernard Trench Lyngdoh">Dr Bernard Trench Lyngdoh</option>
+                                <option value="Dr Reuel Pamei Nongrum">Dr Reuel Pamei Nongrum</option>
+                                <option value="Dr Donald R Bareh">Dr Donald R Bareh</option>
+                                <option value="Dr Rishan Singh Nongbet">Dr Rishan Singh Nongbet</option>
+                                <option value="Dr Gideon Lyngsyun Rynjah">Dr Gideon Lyngsyun Rynjah</option>
+                                <option value="Dr Vinodrai Gondalia">Dr Vinodrai Gondalia</option>
+                                <option value="Dr Bobby Linda Majaw">Dr Bobby Linda Majaw</option>
+                                <option value="Dr Doreen Kharwalang">Dr Doreen Kharwalang</option>
+                                <option value="Dr Pankaj Jain">Dr Pankaj Jain</option>
+                                <option value="Dr Chayanika Sarma">Dr Chayanika Sarma</option>
+                                <option value="Dr Mario Danny Hek">Dr Mario Danny Hek</option>
+                                <option value="Dr Anamika Mall">Dr Anamika Mall</option>
+                                <option value="Dr Synrang Batngen Warjri">Dr Synrang Batngen Warjri</option>
+                                <option value="Dr Sunita Thangkhiew">Dr Sunita Thangkhiew</option>
+                                <option value="Dr Emisaka Sumer">Dr Emisaka Sumer</option>
+                                <option value="Dr Velvette Rose Shabong">Dr Velvette Rose Shabong</option>
+                                <option value="Dr Manoj Kumar Sharma">Dr Manoj Kumar Sharma</option>
+                                <option value="Dr Andrew Rahmi Lyngdoh">Dr Andrew Rahmi Lyngdoh</option>
+                                <option value="Dr Danquale Vance Kynshikhar">Dr Danquale Vance Kynshikhar</option>
+                                <option value="Dr Mezhuneituo Raleng">Dr Mezhuneituo Raleng</option>
+                                <option value="Dr Eugeane Mary Kharmalki">Dr Eugeane Mary Kharmalki</option>
+                                <option value="Dr Konsam Gunamani Singh">Dr Konsam Gunamani Singh</option>
+                                <option value="Dr Pranjal Deka">Dr Pranjal Deka</option>
+                                <option value="Dr Daminot Phanbuh">Dr Daminot Phanbuh</option>
+                                <option value="Dr Amlan Jyoti Sarmah">Dr Amlan Jyoti Sarmah</option>
+                                <option value="Dr Tonmoy Das">Dr Tonmoy Das</option>
+                                <option value="Dr Ashutosh Vatsyayan">Dr Ashutosh Vatsyayan</option>
+                                <option value="Dr Kishore Kalita">Dr Kishore Kalita</option>
+                                <option value="Dr Sharon A L Rymbai">Dr Sharon A L Rymbai</option>
+                                <option value="Dr Indakiewlin Kharbuli">Dr Indakiewlin Kharbuli</option>
+                                <option value="Dr Damaelari Phylla Sohkhlet">Dr Damaelari Phylla Sohkhlet</option>
+                                <option value="Dr Credence Carryne Syiem">Dr Credence Carryne Syiem</option>
+                                <option value="Dr Jeetendra Gurung">Dr Jeetendra Gurung</option>
+                                <option value="Dr Syed Adam Mousom">Dr Syed Adam Mousom</option>
+                            </select>
+                            <span class="surgeon-print" style="display: none; margin-left: 8px;"></span>
+                        </label></th>
                 </tr>
             </thead>
             <tbody>
@@ -145,7 +160,8 @@
                     <td class="tg-1wig" colspan="4">
                         <label class="flex gap-2 items-center w-full">
                             <span class="whitespace-nowrap label-bold">Duration Of Operation: </span>
-                        <textarea name="operation_duration" class="input-overlay input-full" oninput="autoGrow(this)" style="min-height:28px; line-height:1.3;"></textarea>
+                            <textarea name="operation_duration" class="input-overlay input-full"
+                                oninput="autoGrow(this)" style="min-height:28px; line-height:1.3;"></textarea>
                         </label>
                     </td>
                 </tr>
@@ -172,7 +188,8 @@
                     <td class="tg-1wig" colspan="4">
                         <label class="flex gap-2 items-center w-full">
                             <span class="whitespace-nowrap label-bold">If not done (Reason): </span>
-                        <textarea class="input-overlay input-full" name="pre-notdone" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea>
+                            <textarea class="input-overlay input-full" name="pre-notdone" rows="1"
+                                oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea>
                         </label>
                     </td>
                 </tr>
@@ -191,8 +208,9 @@
                 <tr>
                     <td class="tg-1wig" colspan="4">
                         <label class="flex gap-2 items-center w-full">
-                            <span class="whitespace-nowrap label-bold">If not done (Reason):</span> 
-                            <textarea class="input-overlay input-full" name="hair-notdone" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea>
+                            <span class="whitespace-nowrap label-bold">If not done (Reason):</span>
+                            <textarea class="input-overlay input-full" name="hair-notdone" rows="1"
+                                oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea>
                         </label>
                     </td>
                 </tr>
@@ -231,25 +249,29 @@
                     <td class="tg-1wig">
                         <label class="flex gap-2 items-center w-full">
                             <span class="whitespace-nowrap label-bold">Metal: </span>
-                        <textarea name="metal" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea>
+                            <textarea name="metal" class="input-overlay input-full" rows="1" oninput="autoGrow(this)"
+                                style="min-height:28px; line-height:1.2;"></textarea>
                         </label>
                     </td>
                     <td class="tg-1wig">
                         <label class="flex gap-2 items-center w-full">
                             <span class="whitespace-nowrap label-bold">Graft: </span>
-                        <textarea name="graft" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea>
+                            <textarea name="graft" class="input-overlay input-full" rows="1" oninput="autoGrow(this)"
+                                style="min-height:28px; line-height:1.2;"></textarea>
                         </label>
                     </td>
                     <td class="tg-1wig">
                         <label class="flex gap-2 items-center w-full">
                             <span class="whitespace-nowrap label-bold">Patch: </span>
-                        <textarea name="Patch" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea>
+                            <textarea name="Patch" class="input-overlay input-full" rows="1" oninput="autoGrow(this)"
+                                style="min-height:28px; line-height:1.2;"></textarea>
                         </label>
                     </td>
                     <td class="tg-1wig">
                         <label class="flex gap-2 items-center w-full">
                             <span class="whitespace-nowrap label-bold">Shunt/Stent: </span>
-                        <textarea name="Shunt" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea>
+                            <textarea name="Shunt" class="input-overlay input-full" rows="1" oninput="autoGrow(this)"
+                                style="min-height:28px; line-height:1.2;"></textarea>
                         </label>
                     </td>
                 </tr>
@@ -270,7 +292,8 @@
                     <td class="tg-1wig" colspan="4">
                         <label class="flex gap-2 items-center w-full">
                             <span class="whitespace-nowrap label-bold">1. </span>
-                        <textarea name="drain_1" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea>
+                            <textarea name="drain_1" class="input-overlay input-full" rows="1" oninput="autoGrow(this)"
+                                style="min-height:28px; line-height:1.2;"></textarea>
                         </label>
                     </td>
                 </tr>
@@ -278,7 +301,8 @@
                     <td class="tg-1wig" colspan="4">
                         <label class="flex gap-2 items-center w-full">
                             <span class="whitespace-nowrap label-bold">2. </span>
-                        <textarea name="drain_2" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea>
+                            <textarea name="drain_2" class="input-overlay input-full" rows="1" oninput="autoGrow(this)"
+                                style="min-height:28px; line-height:1.2;"></textarea>
                         </label>
                     </td>
                 </tr>
@@ -286,7 +310,8 @@
                     <td class="tg-1wig" colspan="4">
                         <label class="flex gap-2 items-center w-full">
                             <span class="whitespace-nowrap label-bold">3. </span>
-                        <textarea name="drain_3" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea>
+                            <textarea name="drain_3" class="input-overlay input-full" rows="1" oninput="autoGrow(this)"
+                                style="min-height:28px; line-height:1.2;"></textarea>
                         </label>
                     </td>
                 </tr>
@@ -314,24 +339,36 @@
                     </tr>
                     <tr class="antibiotic-row">
                         <td class="tg-k2l0">1</td>
-                        <td class="tg-1wig"><textarea name="drug-name_1" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea></td>
-                        <td class="tg-1wig"><textarea name="dosage_1" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea></td>
-                        <td class="tg-1wig"><input type="text" name="antibiotic_usage[startedon]_1" class="datepicker" placeholder="dd/mm/yyyy" style="width: 100px;" value=""></td>
-                        <td class="tg-1wig"><input type="text" name="antibiotic_usage[stoppeon]_1" class="datepicker" placeholder="dd/mm/yyyy" style="width: 100px;" value=""></td>
+                        <td class="tg-1wig"><textarea name="drug-name_1" class="input-overlay input-full" rows="1"
+                                oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea></td>
+                        <td class="tg-1wig"><textarea name="dosage_1" class="input-overlay input-full" rows="1"
+                                oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea></td>
+                        <td class="tg-1wig"><input type="text" name="antibiotic_usage[startedon]_1" class="datepicker"
+                                placeholder="dd/mm/yyyy" style="width: 100px;" value=""></td>
+                        <td class="tg-1wig"><input type="text" name="antibiotic_usage[stoppeon]_1" class="datepicker"
+                                placeholder="dd/mm/yyyy" style="width: 100px;" value=""></td>
                     </tr>
                     <tr class="antibiotic-row">
                         <td class="tg-k2l0">2</td>
-                        <td class="tg-1wig"><textarea name="drug-name_2" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea></td>
-                        <td class="tg-1wig"><textarea name="dosage_2" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea></td>
-                        <td class="tg-1wig"><input type="text" name="antibiotic_usage[startedon]_2" class="datepicker" placeholder="dd/mm/yyyy" style="width: 100px;" value=""></td>
-                        <td class="tg-1wig"><input type="text" name="antibiotic_usage[stoppeon]_2" class="datepicker" placeholder="dd/mm/yyyy" style="width: 100px;" value=""></td>
+                        <td class="tg-1wig"><textarea name="drug-name_2" class="input-overlay input-full" rows="1"
+                                oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea></td>
+                        <td class="tg-1wig"><textarea name="dosage_2" class="input-overlay input-full" rows="1"
+                                oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea></td>
+                        <td class="tg-1wig"><input type="text" name="antibiotic_usage[startedon]_2" class="datepicker"
+                                placeholder="dd/mm/yyyy" style="width: 100px;" value=""></td>
+                        <td class="tg-1wig"><input type="text" name="antibiotic_usage[stoppeon]_2" class="datepicker"
+                                placeholder="dd/mm/yyyy" style="width: 100px;" value=""></td>
                     </tr>
                     <tr class="antibiotic-row">
                         <td class="tg-k2l0">3</td>
-                        <td class="tg-1wig"><textarea name="drug-name_3" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea></td>
-                        <td class="tg-1wig"><textarea name="dosage_3" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea></td>
-                        <td class="tg-1wig"><input type="text" name="antibiotic_usage[startedon]_3" class="datepicker" placeholder="dd/mm/yyyy" style="width: 100px;" value=""></td>
-                        <td class="tg-1wig"><input type="text" name="antibiotic_usage[stoppeon]_3" class="datepicker" placeholder="dd/mm/yyyy" style="width: 100px;" value=""></td>
+                        <td class="tg-1wig"><textarea name="drug-name_3" class="input-overlay input-full" rows="1"
+                                oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea></td>
+                        <td class="tg-1wig"><textarea name="dosage_3" class="input-overlay input-full" rows="1"
+                                oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea></td>
+                        <td class="tg-1wig"><input type="text" name="antibiotic_usage[startedon]_3" class="datepicker"
+                                placeholder="dd/mm/yyyy" style="width: 100px;" value=""></td>
+                        <td class="tg-1wig"><input type="text" name="antibiotic_usage[stoppeon]_3" class="datepicker"
+                                placeholder="dd/mm/yyyy" style="width: 100px;" value=""></td>
                     </tr>
                 </tbody>
             </table>
@@ -341,7 +378,8 @@
             <button onclick="removeAntibioticRow()" class="action-button">−</button>
         </div>
         <div class="page-break"></div>
-        <h3 class="post-operative" style="text-align: center; text-decoration: underline; font-weight: bold;">Post-Operative Wound Monitoring</h3>
+        <h3 class="post-operative" style="text-align: center; text-decoration: underline; font-weight: bold;">
+            Post-Operative Wound Monitoring</h3>
         <div class="post-operative-table-wrapper">
             <table class="tg" id="post-operative-table">
                 <thead>
@@ -358,30 +396,63 @@
                 <tbody>
                     <tr class="post-operative-row">
                         <td class="tg-k2l0">1</td>
-                        <td class="tg-0lax"><input type="text" name="post-operative[date]_1" class="datepicker" placeholder="dd/mm/yyyy" style="width: 100px;" value=""></td>
-                        <td class="tg-0lax"><textarea name="post-dosage_1" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2; text-align:center;"></textarea></td>
-                        <td class="tg-0lax"><textarea name="type-ofdischarge_1" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2; text-align:center;"></textarea></td>
-                        <td class="tg-0lax"><textarea name="tenderness-pain_1" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2; text-align:center;"></textarea></td>
-                        <td class="tg-0lax"><textarea name="swelling_1" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2; text-align:center;"></textarea></td>
-                        <td class="tg-0lax"><textarea name="Fever_1" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2; text-align:center;"></textarea></td>
+                        <td class="tg-0lax"><input type="text" name="post-operative[date]_1" class="datepicker"
+                                placeholder="dd/mm/yyyy" style="width: 100px;" value=""></td>
+                        <td class="tg-0lax"><textarea name="post-dosage_1" class="input-overlay input-full" rows="1"
+                                oninput="autoGrow(this)"
+                                style="min-height:28px; line-height:1.2; text-align:center;"></textarea></td>
+                        <td class="tg-0lax"><textarea name="type-ofdischarge_1" class="input-overlay input-full"
+                                rows="1" oninput="autoGrow(this)"
+                                style="min-height:28px; line-height:1.2; text-align:center;"></textarea></td>
+                        <td class="tg-0lax"><textarea name="tenderness-pain_1" class="input-overlay input-full" rows="1"
+                                oninput="autoGrow(this)"
+                                style="min-height:28px; line-height:1.2; text-align:center;"></textarea></td>
+                        <td class="tg-0lax"><textarea name="swelling_1" class="input-overlay input-full" rows="1"
+                                oninput="autoGrow(this)"
+                                style="min-height:28px; line-height:1.2; text-align:center;"></textarea></td>
+                        <td class="tg-0lax"><textarea name="Fever_1" class="input-overlay input-full" rows="1"
+                                oninput="autoGrow(this)"
+                                style="min-height:28px; line-height:1.2; text-align:center;"></textarea></td>
                     </tr>
                     <tr class="post-operative-row">
                         <td class="tg-k2l0">2</td>
-                        <td class="tg-0lax"><input type="text" name="post-operative[date]_2" class="datepicker" placeholder="dd/mm/yyyy" style="width: 100px;" value=""></td>
-                        <td class="tg-0lax"><textarea name="post-dosage_2" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2; text-align:center;"></textarea></td>
-                        <td class="tg-0lax"><textarea name="type-ofdischarge_2" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2; text-align:center;"></textarea></td>
-                        <td class="tg-0lax"><textarea name="tenderness-pain_2" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2; text-align:center;"></textarea></td>
-                        <td class="tg-0lax"><textarea name="swelling_2" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2; text-align:center;"></textarea></td>
-                        <td class="tg-0lax"><textarea name="Fever_2" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2; text-align:center;"></textarea></td>
+                        <td class="tg-0lax"><input type="text" name="post-operative[date]_2" class="datepicker"
+                                placeholder="dd/mm/yyyy" style="width: 100px;" value=""></td>
+                        <td class="tg-0lax"><textarea name="post-dosage_2" class="input-overlay input-full" rows="1"
+                                oninput="autoGrow(this)"
+                                style="min-height:28px; line-height:1.2; text-align:center;"></textarea></td>
+                        <td class="tg-0lax"><textarea name="type-ofdischarge_2" class="input-overlay input-full"
+                                rows="1" oninput="autoGrow(this)"
+                                style="min-height:28px; line-height:1.2; text-align:center;"></textarea></td>
+                        <td class="tg-0lax"><textarea name="tenderness-pain_2" class="input-overlay input-full" rows="1"
+                                oninput="autoGrow(this)"
+                                style="min-height:28px; line-height:1.2; text-align:center;"></textarea></td>
+                        <td class="tg-0lax"><textarea name="swelling_2" class="input-overlay input-full" rows="1"
+                                oninput="autoGrow(this)"
+                                style="min-height:28px; line-height:1.2; text-align:center;"></textarea></td>
+                        <td class="tg-0lax"><textarea name="Fever_2" class="input-overlay input-full" rows="1"
+                                oninput="autoGrow(this)"
+                                style="min-height:28px; line-height:1.2; text-align:center;"></textarea></td>
                     </tr>
                     <tr class="post-operative-row">
                         <td class="tg-k2l0">3</td>
-                        <td class="tg-0lax"><input type="text" name="post-operative[date]_3" class="datepicker" placeholder="dd/mm/yyyy" style="width: 100px;" value=""></td>
-                        <td class="tg-0lax"><textarea name="post-dosage_3" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2; text-align:center;"></textarea></td>
-                        <td class="tg-0lax"><textarea name="type-ofdischarge_3" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2; text-align:center;"></textarea></td>
-                        <td class="tg-0lax"><textarea name="tenderness-pain_3" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2; text-align:center;"></textarea></td>
-                        <td class="tg-0lax"><textarea name="swelling_3" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2; text-align:center;"></textarea></td>
-                        <td class="tg-0lax"><textarea name="Fever_3" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2; text-align:center;"></textarea></td>
+                        <td class="tg-0lax"><input type="text" name="post-operative[date]_3" class="datepicker"
+                                placeholder="dd/mm/yyyy" style="width: 100px;" value=""></td>
+                        <td class="tg-0lax"><textarea name="post-dosage_3" class="input-overlay input-full" rows="1"
+                                oninput="autoGrow(this)"
+                                style="min-height:28px; line-height:1.2; text-align:center;"></textarea></td>
+                        <td class="tg-0lax"><textarea name="type-ofdischarge_3" class="input-overlay input-full"
+                                rows="1" oninput="autoGrow(this)"
+                                style="min-height:28px; line-height:1.2; text-align:center;"></textarea></td>
+                        <td class="tg-0lax"><textarea name="tenderness-pain_3" class="input-overlay input-full" rows="1"
+                                oninput="autoGrow(this)"
+                                style="min-height:28px; line-height:1.2; text-align:center;"></textarea></td>
+                        <td class="tg-0lax"><textarea name="swelling_3" class="input-overlay input-full" rows="1"
+                                oninput="autoGrow(this)"
+                                style="min-height:28px; line-height:1.2; text-align:center;"></textarea></td>
+                        <td class="tg-0lax"><textarea name="Fever_3" class="input-overlay input-full" rows="1"
+                                oninput="autoGrow(this)"
+                                style="min-height:28px; line-height:1.2; text-align:center;"></textarea></td>
                     </tr>
                 </tbody>
             </table>
@@ -396,51 +467,100 @@
                 <thead>
                     <tr>
                         <th class="tg-67s2">Cultural Swap<br><br><br><br><br><br><br><br><br><br></th>
-                        <td class="tg-0lax"><textarea name="Cultural-Swap" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2; width:800px;"></textarea></td>
+                        <td class="tg-0lax"><textarea name="Cultural-Swap" class="input-overlay input-full" rows="1"
+                                oninput="autoGrow(this)"
+                                style="min-height:28px; line-height:1.2; width:800px;"></textarea></td>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td class="tg-67s2">Dressing/Finding<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br></td>
-                        <td class="tg-0lax"><textarea name="Dressing-Finding" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2; width:800px;"></textarea></td>
+                        <td class="tg-67s2">
+                            Dressing/Finding<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+                        </td>
+                        <td class="tg-0lax"><textarea name="Dressing-Finding" class="input-overlay input-full" rows="1"
+                                oninput="autoGrow(this)"
+                                style="min-height:28px; line-height:1.2; width:800px;"></textarea></td>
                     </tr>
                 </tbody>
             </table>
         </div>
         <div class="page-break"></div>
         <div class="wound-complications-table-wrapper">
-            <h3 class="Wound-Complications" style="text-align: center; text-decoration: underline; font-weight: bold;">Wound Complications</h3>
+            <h3 class="Wound-Complications" style="text-align: center; text-decoration: underline; font-weight: bold;">
+                Wound Complications</h3>
             <table class="tg tg-wound-complications">
                 <thead>
                     <tr>
-                        <td class="tg-fymr" rowspan="6">Wound Complications<br>SSI--> Tick Criteria--><br>Date:<input type="text" name="Wound-Complication Date" class="datepicker" placeholder="dd/mm/yyyy" style="width: 100px;" value=""><br><br>OR<br><br>Non-Infectious&nbsp;Complications<br><br>Wound Dehiscence <input type="radio" name="wounddehiscene" value="No" class="form-radio text-blue-600"><br><br>Allergic Reaction To Dressing <input type="radio" name="AllergicR" value="No" class="form-radio text-blue-600"><br><br>Bleeding/ Haemorrhage<input type="radio" name="BleedingH" value="No" class="form-radio text-blue-600"><br><br>Other <input type="radio" name="Other" value="No" class="form-radio text-blue-600"><br><br>Specify:<br><textarea name="WoundD-Specify" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea><br><br><br><br><br><br><br>Notes:<br><textarea name="WoundD-Notes" class="input-overlay input-full" rows="1"  style="min-height:28px; line-height:1.2;"></textarea><br><br><br><br><br><br><br><br><br><br></td>
-                        <td class="tg-7btt"><input type="radio" name="SuperficialSSI" value="No" class="form-radio text-blue-600"> Superficial SSI<br>(Skin/Sub-Cutaneoous)</td>
-                        <td class="tg-7btt"><input type="radio" name="DeepSI" value="No" class="form-radio text-blue-600"> Deep SI<br>(Fascia/Muscle)</td>
-                        <td class="tg-7btt"><input type="radio" name="OrganSI" value="No" class="form-radio text-blue-600"> Organ/Space SSI</td>
+                        <td class="tg-fymr" rowspan="6">Wound Complications<br>SSI--> Tick Criteria--><br>Date:<input
+                                type="text" name="Wound-Complication Date" class="datepicker" placeholder="dd/mm/yyyy"
+                                style="width: 100px;"
+                                value=""><br><br>OR<br><br>Non-Infectious&nbsp;Complications<br><br>Wound Dehiscence
+                            <input type="radio" name="wounddehiscene" value="No"
+                                class="form-radio text-blue-600"><br><br>Allergic Reaction To Dressing <input
+                                type="radio" name="AllergicR" value="No"
+                                class="form-radio text-blue-600"><br><br>Bleeding/ Haemorrhage<input type="radio"
+                                name="BleedingH" value="No" class="form-radio text-blue-600"><br><br>Other <input
+                                type="radio" name="Other" value="No"
+                                class="form-radio text-blue-600"><br><br>Specify:<br><textarea name="WoundD-Specify"
+                                class="input-overlay input-full" rows="1" oninput="autoGrow(this)"
+                                style="min-height:28px; line-height:1.2;"></textarea><br><br><br><br><br><br><br>Notes:<br><textarea
+                                name="WoundD-Notes" class="input-overlay input-full" rows="1"
+                                style="min-height:28px; line-height:1.2;"></textarea><br><br><br><br><br><br><br><br><br><br>
+                        </td>
+                        <td class="tg-7btt"><input type="radio" name="SuperficialSSI" value="No"
+                                class="form-radio text-blue-600"> Superficial SSI<br>(Skin/Sub-Cutaneoous)</td>
+                        <td class="tg-7btt"><input type="radio" name="DeepSI" value="No"
+                                class="form-radio text-blue-600"> Deep SI<br>(Fascia/Muscle)</td>
+                        <td class="tg-7btt"><input type="radio" name="OrganSI" value="No"
+                                class="form-radio text-blue-600"> Organ/Space SSI</td>
                     </tr>
                     <tr>
-                        <td class="tg-c3ow"><br>Presence of purulent discharge from the surgical site <input type="radio" name="wtd1-1" value="No" class="form-radio text-blue-600"></td>
-                        <td class="tg-c3ow" rowspan="2"><br><br><br>Purulent discharge from the surgical site <input type="radio" name="wtd1-2" value="No" class="form-radio text-blue-600"></td>
-                        <td class="tg-c3ow">Purulent discharge from a drain placed in the organ, space, or cavity <input type="radio" name="wtd1-3" value="No" class="form-radio text-blue-600"></td>
+                        <td class="tg-c3ow"><br>Presence of purulent discharge from the surgical site <input
+                                type="radio" name="wtd1-1" value="No" class="form-radio text-blue-600"></td>
+                        <td class="tg-c3ow" rowspan="2"><br><br><br>Purulent discharge from the surgical site <input
+                                type="radio" name="wtd1-2" value="No" class="form-radio text-blue-600"></td>
+                        <td class="tg-c3ow">Purulent discharge from a drain placed in the organ, space, or cavity <input
+                                type="radio" name="wtd1-3" value="No" class="form-radio text-blue-600"></td>
                     </tr>
                     <tr>
-                        <td class="tg-c3ow">Identification of an organism from the surgical site <input type="radio" name="wtd2-1" value="No" class="form-radio text-blue-600"></td>
-                        <td class="tg-c3ow">Identification of an isolated organism from the involved organ, cavity, or related abscess <input type="radio" name="wtd2-2" value="No" class="form-radio text-blue-600"></td>
+                        <td class="tg-c3ow">Identification of an organism from the surgical site <input type="radio"
+                                name="wtd2-1" value="No" class="form-radio text-blue-600"></td>
+                        <td class="tg-c3ow">Identification of an isolated organism from the involved organ, cavity, or
+                            related abscess <input type="radio" name="wtd2-2" value="No"
+                                class="form-radio text-blue-600"></td>
                     </tr>
                     <tr>
-                        <td class="tg-c3ow"><br><br>Clinical diagnosis of a SSI <br>by the surgeon <input type="radio" name="wtd3-1" value="No" class="form-radio text-blue-600"></td>
-                        <td class="tg-c3ow">Deliberate reopening of a deep incision by the surgeon for suspected infection, or wound spontaneously dehisces, and a positive wound culture and ≥1 infectious symptoms (e.g, localized pain, or tenderness) <input type="radio" name="wtd3-2" value="No" class="form-radio text-blue-600"></td>
-                        <td class="tg-c3ow"><br><br>Evidence of abscess or infection involving the organ, cavity, <br>or anatomic space, as observed on CT <input type="radio" name="wtd3-3" value="No" class="form-radio text-blue-600"></td>
+                        <td class="tg-c3ow"><br><br>Clinical diagnosis of a SSI <br>by the surgeon <input type="radio"
+                                name="wtd3-1" value="No" class="form-radio text-blue-600"></td>
+                        <td class="tg-c3ow">Deliberate reopening of a deep incision by the surgeon for suspected
+                            infection, or wound spontaneously dehisces, and a positive wound culture and ≥1 infectious
+                            symptoms (e.g, localized pain, or tenderness) <input type="radio" name="wtd3-2" value="No"
+                                class="form-radio text-blue-600"></td>
+                        <td class="tg-c3ow"><br><br>Evidence of abscess or infection involving the organ, cavity, <br>or
+                            anatomic space, as observed on CT <input type="radio" name="wtd3-3" value="No"
+                                class="form-radio text-blue-600"></td>
                     </tr>
                     <tr>
-                        <td class="tg-c3ow">Deliberate opening of the<br>wound by the surgeon, and <br>≥1 infectious symptom<br>(e.g, swelling, erythema,<br>or<br>localized pain or warmth) <input type="radio" name="wtd4-1" value="No" class="form-radio text-blue-600"></td>
-                        <td class="tg-c3ow"><br>Evidence of abscess formation or <br>infection involving deep tissues as observed on CT <input type="radio" name="wtd4-2" value="No" class="form-radio text-blue-600"></td>
-                        <td class="tg-c3ow">A wound is not considered<br>infected if only a stitch abscess,<br>localized cellulitis, or infected<br>superficial stab puncture<br>is present <input type="radio" name="wtd4-3" value="No" class="form-radio text-blue-600"></td>
+                        <td class="tg-c3ow">Deliberate opening of the<br>wound by the surgeon, and <br>≥1 infectious
+                            symptom<br>(e.g, swelling, erythema,<br>or<br>localized pain or warmth) <input type="radio"
+                                name="wtd4-1" value="No" class="form-radio text-blue-600"></td>
+                        <td class="tg-c3ow"><br>Evidence of abscess formation or <br>infection involving deep tissues as
+                            observed on CT <input type="radio" name="wtd4-2" value="No"
+                                class="form-radio text-blue-600"></td>
+                        <td class="tg-c3ow">A wound is not considered<br>infected if only a stitch abscess,<br>localized
+                            cellulitis, or infected<br>superficial stab puncture<br>is present <input type="radio"
+                                name="wtd4-3" value="No" class="form-radio text-blue-600"></td>
                     </tr>
                     <tr>
-                        <td class="tg-fymr">Surgeon's Opinion:<br><textarea name="SurgeonOpinion1" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea><br><br><br><br></td>
-                        <td class="tg-fymr">Surgeon's Opinion:<br><textarea name="SurgeonOpinion2" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea></td>
-                        <td class="tg-fymr">Surgeon's Opinion:<br><textarea name="SurgeonOpinion3" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea></td>
+                        <td class="tg-fymr">Surgeon's Opinion:<br><textarea name="SurgeonOpinion1"
+                                class="input-overlay input-full" rows="1" oninput="autoGrow(this)"
+                                style="min-height:28px; line-height:1.2;"></textarea><br><br><br><br></td>
+                        <td class="tg-fymr">Surgeon's Opinion:<br><textarea name="SurgeonOpinion2"
+                                class="input-overlay input-full" rows="1" oninput="autoGrow(this)"
+                                style="min-height:28px; line-height:1.2;"></textarea></td>
+                        <td class="tg-fymr">Surgeon's Opinion:<br><textarea name="SurgeonOpinion3"
+                                class="input-overlay input-full" rows="1" oninput="autoGrow(this)"
+                                style="min-height:28px; line-height:1.2;"></textarea></td>
                     </tr>
                 </thead>
             </table>
@@ -450,13 +570,15 @@
             <thead>
                 <tr>
                     <th class="tg-1wig">Review On</th>
-                    <th class="tg-0lax"><input type="text" name="ReviewOn" class="datepicker" placeholder="dd/mm/yyyy" style="width: 100px;" value=""></th>
+                    <th class="tg-0lax"><input type="text" name="ReviewOn" class="datepicker" placeholder="dd/mm/yyyy"
+                            style="width: 100px;" value=""></th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
                     <td class="tg-1wig">Sutures/Clips Removed On</td>
-                    <td class="tg-0lax"><input type="text" name="SuturesROn" class="datepicker" placeholder="dd/mm/yyyy" style="width: 100px;" value=""></td>
+                    <td class="tg-0lax"><input type="text" name="SuturesROn" class="datepicker" placeholder="dd/mm/yyyy"
+                            style="width: 100px;" value=""></td>
                 </tr>
             </tbody>
         </table>
@@ -469,45 +591,58 @@
             </thead>
             <tbody>
                 <tr>
-                    <td class="tg-k2l0" colspan="3">Date:<input type="text" name="RevieworPhoneDate" class="datepicker" placeholder="dd/mm/yyyy" style="width: 100px;" value=""></td>
+                    <td class="tg-k2l0" colspan="3">Date:<input type="text" name="RevieworPhoneDate" class="datepicker"
+                            placeholder="dd/mm/yyyy" style="width: 100px;" value=""></td>
                 </tr>
                 <tr>
                     <td class="tg-1wig">Patient Identification:</td>
-                    <td class="tg-0lax"><input type="radio" name="reviewp" value="Yes" class="form-radio text-blue-600"> Yes</td>
-                    <td class="tg-0lax"><input type="radio" name="reviewp" value="No" class="form-radio text-blue-600"> No</td>
+                    <td class="tg-0lax"><input type="radio" name="reviewp" value="Yes" class="form-radio text-blue-600">
+                        Yes</td>
+                    <td class="tg-0lax"><input type="radio" name="reviewp" value="No" class="form-radio text-blue-600">
+                        No</td>
                 </tr>
                 <tr>
                     <td class="tg-1wig">Pain:</td>
-                    <td class="tg-0lax"><input type="radio" name="reviewppain" value="Yes" class="form-radio text-blue-600"> Yes</td>
-                    <td class="tg-0lax"><input type="radio" name="reviewppain" value="No" class="form-radio text-blue-600"> No</td>
+                    <td class="tg-0lax"><input type="radio" name="reviewppain" value="Yes"
+                            class="form-radio text-blue-600"> Yes</td>
+                    <td class="tg-0lax"><input type="radio" name="reviewppain" value="No"
+                            class="form-radio text-blue-600"> No</td>
                 </tr>
                 <tr>
                     <td class="tg-1wig">Pus:</td>
-                    <td class="tg-0lax"><input type="radio" name="reviewpus" value="Yes" class="form-radio text-blue-600"> Yes</td>
-                    <td class="tg-0lax"><input type="radio" name="reviewpus" value="No" class="form-radio text-blue-600"> No</td>
+                    <td class="tg-0lax"><input type="radio" name="reviewpus" value="Yes"
+                            class="form-radio text-blue-600"> Yes</td>
+                    <td class="tg-0lax"><input type="radio" name="reviewpus" value="No"
+                            class="form-radio text-blue-600"> No</td>
                 </tr>
                 <tr>
                     <td class="tg-1wig">Bleeding:</td>
-                    <td class="tg-0lax"><input type="radio" name="reviewbleed" value="Yes" class="form-radio text-blue-600"> Yes</td>
-                    <td class="tg-0lax"><input type="radio" name="reviewbleed" value="No" class="form-radio text-blue-600"> No</td>
+                    <td class="tg-0lax"><input type="radio" name="reviewbleed" value="Yes"
+                            class="form-radio text-blue-600"> Yes</td>
+                    <td class="tg-0lax"><input type="radio" name="reviewbleed" value="No"
+                            class="form-radio text-blue-600"> No</td>
                 </tr>
                 <tr>
                     <td class="tg-1wig">Others</td>
-                    <td class="tg-0lax"><input type="radio" name="reviewother" value="Yes" class="form-radio text-blue-600"> Yes</td>
-                    <td class="tg-0lax"><input type="radio" name="reviewother" value="No" class="form-radio text-blue-600"> No</td>
+                    <td class="tg-0lax"><input type="radio" name="reviewother" value="Yes"
+                            class="form-radio text-blue-600"> Yes</td>
+                    <td class="tg-0lax"><input type="radio" name="reviewother" value="No"
+                            class="form-radio text-blue-600"> No</td>
                 </tr>
             </tbody>
         </table>
         <div class="section-break"></div>
         <div style="display: flex; justify-content: space-between; align-items: center; gap: 2rem;">
-            <label class="flex gap-2 items-center"><span class="label-bold">Date Completed:</span> 
-                <input type="text" name="date_completed" class="datepicker" placeholder="dd/mm/yyyy" style="width: 100px;" value="">
+            <label class="flex gap-2 items-center"><span class="label-bold">Date Completed:</span>
+                <input type="text" name="date_completed" class="datepicker" placeholder="dd/mm/yyyy"
+                    style="width: 100px;" value="">
             </label>
-            <label class="flex gap-2 items-center"><span class="label-bold">Signature:</span> 
+            <label class="flex gap-2 items-center"><span class="label-bold">Signature:</span>
                 <canvas id="signatureCanvas" class="signature-canvas"></canvas>
             </label>
         </div>
     </div>
     <script src="script.js" defer></script>
 </body>
+
 </html>
