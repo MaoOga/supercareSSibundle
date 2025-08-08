@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Search - SSI Nurse Panel</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+  <style>
+    :root {
+      --bg-body: #f3f4f6;
+      --bg-header: #ffffff;
+      --bg-card: #ffffff;
+      --text-primary: #111827;
+      --text-secondary: #6b7280;
+      --button-bg: rgb(26, 175, 81);
+      --button-bg-hover: rgb(22, 163, 74);
+      --button-text: #ffffff;
+      --border-secondary: #e5e7eb;
+    }
+    body { font-family: 'Inter', sans-serif; background-color: var(--bg-body); color: var(--text-primary); }
+  </style>
+  </head>
+<body>
+  <header class="shadow-lg sticky top-0 z-20 border-b" style="background-color: var(--bg-header); border-color: var(--button-bg);">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <img src="supercare-hospital_logo.png" alt="Hospital Logo" style="height: 56px; width: 56px;">
+        <div>
+          <h1 class="text-xl font-bold">Search</h1>
+          <p class="text-sm" style="color: var(--text-secondary);">Find patient records</p>
+        </div>
+      </div>
+      <a href="nurse.html" class="px-4 py-2 rounded-lg text-white" style="background-color: var(--button-bg);">Back</a>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <div class="rounded-xl shadow-lg p-6 border" style="background-color: var(--bg-card); border-color: var(--border-secondary);">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-end">
+        <div class="lg:col-span-5">
+          <label class="block text-sm font-medium mb-1" style="color: var(--text-secondary);">Search</label>
+          <div class="relative">
+            <input id="query" type="text" placeholder="UHID, Name, Surgeon" class="w-full p-3 pl-10 border rounded-lg shadow-sm focus:outline-none" style="border-color: var(--border-secondary);">
+            <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+          </div>
+        </div>
+        <div class="lg:col-span-2">
+          <label class="block text-sm font-medium mb-1" style="color: var(--text-secondary);">Status</label>
+          <select id="status" class="w-full p-3 border rounded-lg shadow-sm focus:outline-none" style="border-color: var(--border-secondary);">
+            <option value="all">All</option>
+            <option value="complications">With Complications</option>
+            <option value="no-complications">No Complications</option>
+            <option value="pending-review">Pending Review</option>
+            <option value="completed-review">Completed Review</option>
+          </select>
+        </div>
+        <div class="lg:col-span-5">
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="block text-sm font-medium mb-1" style="color: var(--text-secondary);">From</label>
+              <input id="startDate" type="date" class="w-full p-3 border rounded-lg shadow-sm focus:outline-none" style="border-color: var(--border-secondary);" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1" style="color: var(--text-secondary);">To</label>
+              <input id="endDate" type="date" class="w-full p-3 border rounded-lg shadow-sm focus:outline-none" style="border-color: var(--border-secondary);" />
+            </div>
+          </div>
+        </div>
+        <div class="lg:col-span-12 flex gap-2 lg:justify-end">
+          <button id="runSearch" class="px-4 py-3 rounded-lg text-white" style="background-color: var(--button-bg);">Search</button>
+          <button id="clear" class="px-4 py-3 rounded-lg" style="background-color: #e5e7eb;">Clear</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="results" class="mt-6 rounded-xl shadow-lg p-4 border" style="background-color: var(--bg-card); border-color: var(--border-secondary);">
+      <p class="text-sm" style="color: var(--text-secondary);">No results yet. Run a search.</p>
+    </div>
+  </main>
+
+  <script>
+    // Demo: echo inputs; integrate with real data later
+    const runBtn = document.getElementById('runSearch');
+    const clearBtn = document.getElementById('clear');
+    const query = document.getElementById('query');
+    const status = document.getElementById('status');
+    const results = document.getElementById('results');
+    const startDate = document.getElementById('startDate');
+    const endDate = document.getElementById('endDate');
+
+    runBtn.addEventListener('click', () => {
+      const q = query.value.trim();
+      const s = status.value;
+      results.innerHTML = `<p class=\"text-sm\" style=\"color: var(--text-secondary);\">Showing results for: <strong>${q || '—'}</strong>, status: <strong>${s}</strong>, range: <strong>${startDate.value || '—'} → ${endDate.value || '—'}</strong></p>`;
+    });
+    clearBtn.addEventListener('click', () => {
+      query.value = '';
+      status.value = 'all';
+      startDate.value = '';
+      endDate.value = '';
+      results.innerHTML = `<p class=\"text-sm\" style=\"color: var(--text-secondary);\">No results yet. Run a search.</p>`;
+    });
+  </script>
+</body>
+</html>
+

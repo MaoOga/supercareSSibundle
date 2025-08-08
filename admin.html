@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SSI Admin Panel</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
+  <style>
+    :root {
+      --bg-body: #f3f4f6;
+      --bg-header: #ffffff;
+      --bg-card: #ffffff;
+      --bg-table-header: #fee2e2; /* red-200 */
+      --text-primary: #111827;
+      --text-secondary: #6b7280;
+      --text-icon: #dc2626; /* red-600 */
+      --border-primary: #fecaca; /* red-300 */
+      --border-secondary: #e5e7eb;
+      --button-bg: #dc2626; /* red-600 */
+      --button-bg-hover: #b91c1c; /* red-700 */
+      --button-text: #ffffff;
+      --link-text: #dc2626;
+      --link-text-hover: #b91c1c;
+      --table-row-hover: #fef2f2; /* red-50 */
+      --dropdown-bg: #ffffff;
+      --dropdown-border: #e5e7eb;
+      --dropdown-hover-bg: #fee2e2;
+      --dropdown-hover-text: #b91c1c;
+      --label-color: #ef4444; /* red-500 */
+      --search-icon: #9ca3af;
+      --clear-button-bg: #e5e7eb;
+      --clear-button-bg-hover: #d1d5db;
+      --clear-button-text: #374151;
+    }
+    body { font-family: 'Inter', sans-serif; background-color: var(--bg-body); color: var(--text-primary); overflow-x: hidden; }
+    *, *::before, *::after { box-sizing: border-box; }
+    .stat-card { background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%); color: #fff; border-radius: 0.75rem; padding: 1rem; box-shadow: 0 4px 6px rgba(0,0,0,.08); }
+    .mobile-bottom-nav { -webkit-tap-highlight-color: transparent; backdrop-filter: blur(4px); }
+    .mobile-bottom-nav .nav-item { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:10px 6px; color:var(--text-primary); text-decoration:none; }
+    .mobile-bottom-nav .nav-item i { font-size: 18px; line-height: 1; }
+    .mobile-bottom-nav .nav-item span { font-size: 11px; margin-top: 2px; }
+    .mobile-bottom-nav .nav-item.is-active { color: var(--button-bg); }
+    @media (max-width: 640px) {
+      header .max-w-7xl { padding-top: .5rem !important; padding-bottom: .5rem !important; }
+      header img[alt="Hospital Logo"] { height: 48px !important; width: 48px !important; }
+    }
+  </style>
+  <script>
+    // Simple localStorage data store for static prototype
+    const STORAGE_KEYS = {
+      nurses: 'admin_nurses',
+      surgeons: 'admin_surgeons',
+      audit: 'admin_audit_logs',
+    };
+
+    function loadStore(key, fallback) {
+      try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch { return fallback; }
+    }
+    function saveStore(key, value) { localStorage.setItem(key, JSON.stringify(value)); }
+
+    function nowIso() { return new Date().toISOString(); }
+    function addAudit(action, entity, details) {
+      const logs = loadStore(STORAGE_KEYS.audit, []);
+      logs.unshift({ id: crypto.randomUUID?.() || String(Date.now()), ts: nowIso(), action, entity, ...details });
+      saveStore(STORAGE_KEYS.audit, logs);
+      renderAudit();
+    }
+
+    // Nurses CRUD
+    function renderNurses() {
+      const tbody = document.getElementById('nurseTableBody');
+      const nurses = loadStore(STORAGE_KEYS.nurses, []);
+      tbody.innerHTML = nurses.length === 0
+        ? '<tr><td colspan="5" class="p-3 text-center text-sm" style="color: var(--text-secondary);">No nurses yet</td></tr>'
+        : nurses.map((n, idx) => `
+          <tr class="border-b" style="border-color: var(--border-secondary);">
+            <td class="p-3">${idx + 1}</td>
+            <td class="p-3 font-medium">${n.nurseId}</td>
+            <td class="p-3">${n.name || '—'}</td>
+            <td class="p-3">${n.email || '—'}</td>
+            <td class="p-3"><span class="inline-block px-2 py-1 bg-gray-100 rounded text-xs">${n.password ? '••••••' : '—'}</span></td>
+            <td class="p-3 text-right">
+              <button class="px-2 py-1 text-xs rounded border" style="border-color: var(--border-secondary);" onclick="editNurse('${n.id}')"><i class="fas fa-edit mr-1"></i>Edit</button>
+              <button class="ml-2 px-2 py-1 text-xs rounded border" style="border-color: var(--border-secondary);" onclick="deleteNurse('${n.id}')"><i class="fas fa-trash mr-1"></i>Delete</button>
+            </td>
+          </tr>
+        `).join('');
+    }
+    function handleNurseSubmit(e) {
+      e.preventDefault();
+      const form = e.target;
+      const id = form.dataset.editingId || (crypto.randomUUID?.() || String(Date.now()))
+      const nurse = {
+        id,
+        nurseId: form.nurseId.value.trim(),
+        name: form.name.value.trim(),
+        email: form.email.value.trim(),
+        password: form.password.value,
+        role: form.role.value,
+      };
+      const nurses = loadStore(STORAGE_KEYS.nurses, []);
+      const existingIdx = nurses.findIndex(n => n.id === id);
+      if (existingIdx >= 0) {
+        const old = nurses[existingIdx];
+        nurses[existingIdx] = nurse;
+        addAudit('update', 'nurse', { id, before: old, after: nurse });
+      } else {
+        nurses.push(nurse);
+        addAudit('create', 'nurse', { id, after: nurse });
+      }
+      saveStore(STORAGE_KEYS.nurses, nurses);
+      form.reset();
+      form.dataset.editingId = '';
+      document.getElementById('nurseSubmit').innerText = 'Create Nurse';
+      renderNurses();
+    }
+    function editNurse(id) {
+      const nurses = loadStore(STORAGE_KEYS.nurses, []);
+      const n = nurses.find(n => n.id === id);
+      if (!n) return;
+      const form = document.getElementById('nurseForm');
+      form.dataset.editingId = id;
+      form.nurseId.value = n.nurseId || '';
+      form.name.value = n.name || '';
+      form.email.value = n.email || '';
+      form.role.value = n.role || 'nurse';
+      document.getElementById('nurseSubmit').innerText = 'Update Nurse';
+      window.scrollTo({ top: form.getBoundingClientRect().top + window.scrollY - 80, behavior: 'smooth' });
+    }
+    function deleteNurse(id) {
+      const nurses = loadStore(STORAGE_KEYS.nurses, []);
+      const idx = nurses.findIndex(n => n.id === id);
+      if (idx < 0) return;
+      const removed = nurses.splice(idx, 1)[0];
+      saveStore(STORAGE_KEYS.nurses, nurses);
+      addAudit('delete', 'nurse', { id, before: removed });
+      renderNurses();
+    }
+
+    // Surgeons CRUD
+    function renderSurgeons() {
+      const tbody = document.getElementById('surgeonTableBody');
+      const surgeons = loadStore(STORAGE_KEYS.surgeons, []);
+      tbody.innerHTML = surgeons.length === 0
+        ? '<tr><td colspan="3" class="p-3 text-center text-sm" style="color: var(--text-secondary);">No surgeons yet</td></tr>'
+        : surgeons.map((s, idx) => `
+          <tr class="border-b" style="border-color: var(--border-secondary);">
+            <td class="p-3">${idx + 1}</td>
+            <td class="p-3 font-medium">${s.name}</td>
+            <td class="p-3 text-right">
+              <button class="px-2 py-1 text-xs rounded border" style="border-color: var(--border-secondary);" onclick="deleteSurgeon('${s.id}')"><i class="fas fa-trash mr-1"></i>Delete</button>
+            </td>
+          </tr>
+        `).join('');
+    }
+    function handleSurgeonSubmit(e) {
+      e.preventDefault();
+      const form = e.target;
+      const surgeons = loadStore(STORAGE_KEYS.surgeons, []);
+      const entry = { id: crypto.randomUUID?.() || String(Date.now()), name: form.surgeonName.value.trim() };
+      surgeons.push(entry);
+      saveStore(STORAGE_KEYS.surgeons, surgeons);
+      addAudit('create', 'surgeon', { id: entry.id, after: entry });
+      form.reset();
+      renderSurgeons();
+    }
+    function deleteSurgeon(id) {
+      const surgeons = loadStore(STORAGE_KEYS.surgeons, []);
+      const idx = surgeons.findIndex(s => s.id === id);
+      if (idx < 0) return;
+      const removed = surgeons.splice(idx, 1)[0];
+      saveStore(STORAGE_KEYS.surgeons, surgeons);
+      addAudit('delete', 'surgeon', { id, before: removed });
+      renderSurgeons();
+    }
+
+    // Audit
+    function renderAudit() {
+      const tbody = document.getElementById('auditTableBody');
+      const logs = loadStore(STORAGE_KEYS.audit, []);
+      tbody.innerHTML = logs.length === 0
+        ? '<tr><td colspan="6" class="p-3 text-center text-sm" style="color: var(--text-secondary);">No changes recorded</td></tr>'
+        : logs.map(l => `
+          <tr class="border-b" style="border-color: var(--border-secondary);">
+            <td class="p-3">${new Date(l.ts).toLocaleString()}</td>
+            <td class="p-3">${l.entity}</td>
+            <td class="p-3">${l.action}</td>
+            <td class="p-3"><code class="text-xs">${(l.before && JSON.stringify(l.before)) || '—'}</code></td>
+            <td class="p-3"><code class="text-xs">${(l.after && JSON.stringify(l.after)) || '—'}</code></td>
+            <td class="p-3">${l.id}</td>
+          </tr>
+        `).join('');
+    }
+
+    // Export/Import
+    function exportData() {
+      const data = {
+        nurses: loadStore(STORAGE_KEYS.nurses, []),
+        surgeons: loadStore(STORAGE_KEYS.surgeons, []),
+        audit: loadStore(STORAGE_KEYS.audit, []),
+      };
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = `ssi-admin-backup-${Date.now()}.json`; a.click();
+      URL.revokeObjectURL(url);
+    }
+    function importData(file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const obj = JSON.parse(reader.result);
+          if (obj.nurses) saveStore(STORAGE_KEYS.nurses, obj.nurses);
+          if (obj.surgeons) saveStore(STORAGE_KEYS.surgeons, obj.surgeons);
+          if (obj.audit) saveStore(STORAGE_KEYS.audit, obj.audit);
+          renderNurses(); renderSurgeons(); renderAudit();
+          alert('Import successful');
+        } catch (e) { alert('Invalid JSON'); }
+      };
+      reader.readAsText(file);
+    }
+
+    function clearAll() {
+      if (!confirm('Clear all admin data?')) return;
+      saveStore(STORAGE_KEYS.nurses, []);
+      saveStore(STORAGE_KEYS.surgeons, []);
+      saveStore(STORAGE_KEYS.audit, []);
+      renderNurses(); renderSurgeons(); renderAudit();
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('nurseForm').addEventListener('submit', handleNurseSubmit);
+      document.getElementById('surgeonForm').addEventListener('submit', handleSurgeonSubmit);
+      document.getElementById('exportBtn').addEventListener('click', exportData);
+      document.getElementById('importInput').addEventListener('change', e => importData(e.target.files[0]));
+      document.getElementById('clearBtn').addEventListener('click', clearAll);
+      renderNurses(); renderSurgeons(); renderAudit();
+    });
+  </script>
+</head>
+<body>
+  <header class="shadow-lg sticky top-0 z-20 border-b" style="background-color: var(--bg-header); border-color: var(--border-primary);">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <div class="flex justify-between items-center">
+        <div class="flex items-center gap-3">
+          <img src="supercare-hospital_logo.png" alt="Hospital Logo" style="height: 70px; width: 70px;" />
+          <div>
+            <h1 class="text-xl sm:text-2xl font-bold" style="color: var(--text-primary);">Supercare Hospital SSI Admin Panel</h1>
+            <p class="text-sm hidden sm:block" style="color: var(--text-secondary);">Manage users, surgeons, and audit analytics</p>
+          </div>
+        </div>
+        <div class="hidden sm:flex items-center gap-3 sm:gap-4">
+          <a href="nurse.html" class="px-3 sm:px-4 py-2 rounded-lg flex items-center justify-center gap-2 text-sm sm:text-base hover:bg-[var(--button-bg-hover)]" style="background-color: var(--button-bg); color: var(--button-text);">
+            <i class="fas fa-user-nurse"></i>
+            <span>Nurse Panel</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-24 sm:pb-6">
+    <!-- Top Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
+      <div class="stat-card p-4 sm:p-6 shadow-lg">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-white/90 text-sm font-medium">Total Nurses</p>
+            <p id="statNurses" class="text-2xl sm:text-3xl font-bold">—</p>
+          </div>
+          <i class="fas fa-user-nurse text-2xl sm:text-3xl text-white/80"></i>
+        </div>
+      </div>
+      <div class="stat-card p-4 sm:p-6 shadow-lg">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-white/90 text-sm font-medium">Total Surgeons</p>
+            <p id="statSurgeons" class="text-2xl sm:text-3xl font-bold">—</p>
+          </div>
+          <i class="fas fa-user-md text-2xl sm:text-3xl text-white/80"></i>
+        </div>
+      </div>
+      <div class="stat-card p-4 sm:p-6 shadow-lg">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-white/90 text-sm font-medium">Changes (7d)</p>
+            <p id="statChanges7d" class="text-2xl sm:text-3xl font-bold">—</p>
+          </div>
+          <i class="fas fa-history text-2xl sm:text-3xl text-white/80"></i>
+        </div>
+      </div>
+      <div class="stat-card p-4 sm:p-6 shadow-lg">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-white/90 text-sm font-medium">Audit Entries</p>
+            <p id="statAudit" class="text-2xl sm:text-3xl font-bold">—</p>
+          </div>
+          <i class="fas fa-clipboard-check text-2xl sm:text-3xl text-white/80"></i>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Update stats after DOM ready renders tables
+      function updateStats() {
+        const nurses = loadStore(STORAGE_KEYS.nurses, []);
+        const surgeons = loadStore(STORAGE_KEYS.surgeons, []);
+        const audit = loadStore(STORAGE_KEYS.audit, []);
+        document.getElementById('statNurses').innerText = nurses.length;
+        document.getElementById('statSurgeons').innerText = surgeons.length;
+        document.getElementById('statAudit').innerText = audit.length;
+        const weekAgo = Date.now() - 7*24*60*60*1000;
+        const last7 = audit.filter(a => new Date(a.ts).getTime() >= weekAgo).length;
+        document.getElementById('statChanges7d').innerText = last7;
+      }
+      document.addEventListener('DOMContentLoaded', () => setTimeout(updateStats, 0));
+    </script>
+
+    <!-- Nurse Accounts -->
+    <section class="rounded-xl shadow-lg p-4 sm:p-6 mb-6 border" style="background-color: var(--bg-card); border-color: var(--border-primary);">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg sm:text-xl font-semibold">Nurse Accounts</h2>
+        <div class="flex gap-2">
+          <button id="exportBtn" class="px-3 py-2 rounded border text-sm" style="border-color: var(--border-secondary);"><i class="fas fa-file-export mr-1"></i>Export</button>
+          <label class="px-3 py-2 rounded border text-sm cursor-pointer" style="border-color: var(--border-secondary);">
+            <i class="fas fa-file-import mr-1"></i>Import
+            <input id="importInput" type="file" accept="application/json" class="hidden" />
+          </label>
+          <button id="clearBtn" class="px-3 py-2 rounded border text-sm" style="border-color: var(--border-secondary);"><i class="fas fa-trash mr-1"></i>Clear</button>
+        </div>
+      </div>
+      <form id="nurseForm" class="grid grid-cols-1 md:grid-cols-6 gap-3 mb-4">
+        <input name="nurseId" placeholder="Nurse ID" class="p-3 border rounded focus:outline-none" style="border-color: var(--border-secondary);" required />
+        <input name="name" placeholder="Full Name" class="p-3 border rounded focus:outline-none" style="border-color: var(--border-secondary);" />
+        <input name="email" placeholder="Email" type="email" class="p-3 border rounded focus:outline-none" style="border-color: var(--border-secondary);" />
+        <input name="password" placeholder="Password" type="password" class="p-3 border rounded focus:outline-none" style="border-color: var(--border-secondary);" required />
+        <select name="role" class="p-3 border rounded focus:outline-none" style="border-color: var(--border-secondary);">
+          <option value="nurse">Nurse</option>
+          <option value="supervisor">Supervisor</option>
+          <option value="admin">Admin</option>
+        </select>
+        <button id="nurseSubmit" type="submit" class="px-4 py-3 rounded text-white" style="background-color: var(--button-bg);">Create Nurse</button>
+      </form>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead style="background-color: var(--bg-table-header);">
+            <tr>
+              <th class="p-3 text-left">#</th>
+              <th class="p-3 text-left">Nurse ID</th>
+              <th class="p-3 text-left">Name</th>
+              <th class="p-3 text-left">Email</th>
+              <th class="p-3 text-left">Password</th>
+              <th class="p-3 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="nurseTableBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Surgeon Management -->
+    <section class="rounded-xl shadow-lg p-4 sm:p-6 mb-6 border" style="background-color: var(--bg-card); border-color: var(--border-primary);">
+      <div class="mb-4">
+        <h2 class="text-lg sm:text-xl font-semibold">Surgeon Directory</h2>
+      </div>
+      <form id="surgeonForm" class="flex flex-wrap gap-3 mb-4">
+        <input name="surgeonName" placeholder="Surgeon Full Name" class="flex-1 min-w-[220px] p-3 border rounded focus:outline-none" style="border-color: var(--border-secondary);" required />
+        <button type="submit" class="px-4 py-3 rounded text-white" style="background-color: var(--button-bg);">Add Surgeon</button>
+      </form>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead style="background-color: var(--bg-table-header);">
+            <tr>
+              <th class="p-3 text-left">#</th>
+              <th class="p-3 text-left">Name</th>
+              <th class="p-3 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="surgeonTableBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Analytics / Audit Log -->
+    <section class="rounded-xl shadow-lg p-4 sm:p-6 mb-6 border" style="background-color: var(--bg-card); border-color: var(--border-primary);">
+      <div class="mb-4 flex items-center justify-between">
+        <h2 class="text-lg sm:text-xl font-semibold">Data Analytics & Audit Log</h2>
+        <div class="text-sm" style="color: var(--text-secondary);">Tracks what changed, where, and when</div>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead style="background-color: var(--bg-table-header);">
+            <tr>
+              <th class="p-3 text-left">Timestamp</th>
+              <th class="p-3 text-left">Entity</th>
+              <th class="p-3 text-left">Action</th>
+              <th class="p-3 text-left">Before</th>
+              <th class="p-3 text-left">After</th>
+              <th class="p-3 text-left">ID</th>
+            </tr>
+          </thead>
+          <tbody id="auditTableBody"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <!-- Mobile Bottom Navigation -->
+  <nav class="mobile-bottom-nav sm:hidden fixed bottom-0 left-0 right-0 border-t shadow-lg z-30" style="background-color: var(--bg-card); border-color: var(--border-secondary); padding-bottom: max(env(safe-area-inset-bottom), 8px);">
+    <div class="grid grid-cols-3 items-stretch">
+      <a href="nurse.html" class="nav-item">
+        <i class="fas fa-user-nurse"></i>
+        <span>Nurse</span>
+      </a>
+      <a href="#" class="nav-item is-active">
+        <i class="fas fa-shield-halved"></i>
+        <span>Admin</span>
+      </a>
+      <a href="#top" class="nav-item" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+        <i class="fas fa-arrow-up"></i>
+        <span>Top</span>
+      </a>
+    </div>
+  </nav>
+</body>
+</html>
+
+

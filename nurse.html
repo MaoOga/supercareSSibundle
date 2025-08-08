@@ -7,8 +7,7 @@
     <title>SSI Bundle Checklist - Nurse Panel</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    
     <style>
         :root {
             --bg-body: #f3f4f6;
@@ -305,6 +304,27 @@
                 overflow-wrap: anywhere; 
             }
         }
+
+        /* Mobile bottom nav improvements */
+        .mobile-bottom-nav {
+            -webkit-tap-highlight-color: transparent;
+            backdrop-filter: blur(4px);
+        }
+        .mobile-bottom-nav .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 6px;
+            color: var(--text-primary);
+            text-decoration: none;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        .mobile-bottom-nav .nav-item i { font-size: 18px; line-height: 1; }
+        .mobile-bottom-nav .nav-item span { font-size: 11px; line-height: 1; margin-top: 2px; }
+        .mobile-bottom-nav .nav-item.is-active { color: var(--button-bg); }
+        .mobile-bottom-nav .nav-item:active { transform: translateY(1px); }
     </style>
 </head>
 
@@ -320,6 +340,18 @@
                     </div>
                 </div>
                 <div class="hidden sm:flex items-center gap-3 sm:gap-4">
+                    <a href="search.html"
+                       class="px-3 sm:px-4 py-2 rounded-lg flex items-center justify-center gap-2 text-sm sm:text-base hover:bg-[var(--button-bg-hover)]"
+                       style="background-color: var(--button-bg); color: var(--button-text);">
+                        <i class="fas fa-search"></i>
+                        <span>Search</span>
+                    </a>
+                    <a href="stats.html"
+                       class="px-3 sm:px-4 py-2 rounded-lg flex items-center justify-center gap-2 text-sm sm:text-base hover:bg-[var(--button-bg-hover)]"
+                       style="background-color: var(--button-bg); color: var(--button-text);">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>Stats</span>
+                    </a>
                     <a id="newPatientButton" href="index.html"
                         target="_blank"
                         rel="noopener noreferrer"
@@ -328,38 +360,12 @@
                         <i class="fas fa-plus"></i>
                         <span>New Patient</span>
                     </a>
-                    <button id="logoutButton" class="px-3 sm:px-4 py-2 rounded-lg flex items-center justify-center gap-2 text-sm sm:text-base hover:bg-[var(--clear-button-bg-hover)]" style="background-color: var(--clear-button-bg); color: var(--clear-button-text); display: none;">
-                        <i class="fas fa-sign-out-alt"></i>
-                        <span>Logout</span>
-                    </button>
                 </div>
             </div>
         </div>
     </header>
 
-    <!-- Login Section -->
-    <section id="loginSection" class="max-w-md mx-auto mt-8 px-4 sm:px-6 lg:px-8 pb-24 sm:pb-0">
-        <div class="rounded-xl shadow-lg p-6 border" style="background-color: var(--bg-card); border-color: var(--border-primary);">
-            <h2 class="text-xl font-semibold mb-4" style="color: var(--text-primary);">Nurse Login</h2>
-            <form id="loginForm" class="space-y-4">
-                <div>
-                    <label for="nurseId" class="block text-sm font-medium mb-1" style="color: var(--text-secondary);">Nurse ID</label>
-                    <input id="nurseId" name="nurseId" type="text" required autocomplete="off" class="w-full p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 text-sm sm:text-base" style="border-color: var(--border-secondary); background-color: var(--bg-card); color: var(--text-primary); --tw-ring-color: var(--button-bg);">
-                </div>
-                <div>
-                    <label for="password" class="block text-sm font-medium mb-1" style="color: var(--text-secondary);">Password</label>
-                    <input id="password" name="password" type="password" required autocomplete="off" class="w-full p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 text-sm sm:text-base" style="border-color: var(--border-secondary); background-color: var(--bg-card); color: var(--text-primary); --tw-ring-color: var(--button-bg);">
-                </div>
-                <p id="loginError" class="text-red-600 text-sm hidden">Please enter both Nurse ID and Password.</p>
-                <button type="submit" class="w-full px-4 py-3 rounded-lg flex items-center justify-center gap-2 text-sm sm:text-base hover:bg-[var(--button-bg-hover)]" style="background-color: var(--button-bg); color: var(--button-text);">
-                    <i class="fas fa-sign-in-alt"></i>
-                    <span>Login</span>
-                </button>
-            </form>
-        </div>
-    </section>
-
-    <main id="mainContent" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-24 sm:pb-6" style="display: none;">
+    <main id="mainContent" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-24 sm:pb-6">
         <div class="grid stat-grid gap-4 sm:gap-6 mb-6 sm:mb-8">
             <div class="stat-card text-white p-4 sm:p-6 rounded-xl shadow-lg">
                 <div class="flex items-center justify-between">
@@ -400,57 +406,25 @@
         </div>
 
         <div class="rounded-xl shadow-lg p-4 sm:p-6 mb-6 border" style="background-color: var(--bg-card); border-color: var(--border-primary);">
-            <div class="search-container flex flex-col sm:flex-row items-stretch gap-4">
-                <div class="relative flex-1">
+            <div class="search-container flex flex-wrap items-end gap-3">
+                <div class="relative w-full min-w-0 md:flex-1 md:min-w-[240px]">
                     <input type="text" id="searchInput" placeholder="Search by UHID, Name, or Surgeon..."
                         class="w-full p-3 pl-10 border rounded-lg shadow-sm focus:outline-none focus:ring-2 text-sm sm:text-base"
                         style="border-color: var(--border-secondary); background-color: var(--bg-card); color: var(--text-primary); --tw-ring-color: var(--button-bg);">
                     <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2" style="color: var(--search-icon);"></i>
                 </div>
-                <select id="filterStatus" class="p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 text-sm sm:text-base"
-                    style="border-color: var(--border-secondary); background-color: var(--bg-card); color: var(--text-primary); --tw-ring-color: var(--button-bg);">
-                    <option value="all">All Status</option>
-                    <option value="complications">With Complications</option>
-                    <option value="no-complications">No Complications</option>
-                    <option value="pending-review">Pending Review</option>
-                    <option value="completed-review">Completed Review</option>
-                </select>
-                <div class="flex flex-col gap-2 w-full sm:w-auto">
-                    <div class="flex gap-2">
-                        <div class="relative">
-                            <input type="text" id="startDate" placeholder="dd/mm/yyyy" class="p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 text-sm sm:text-base w-40"
-                                style="border-color: var(--border-secondary); background-color: var(--bg-card); color: var(--text-primary); --tw-ring-color: var(--button-bg);">
-                        </div>
-                        <span class="p-3 text-sm sm:text-base" style="color: var(--text-primary);">to</span>
-                        <div class="relative">
-                            <input type="text" id="endDate" placeholder="dd/mm/yyyy" class="p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 text-sm sm:text-base w-40"
-                                style="border-color: var(--border-secondary); background-color: var(--bg-card); color: var(--text-primary); --tw-ring-color: var(--button-bg);">
-                        </div>
-                    </div>
-                    <div class="date-range-dropdown relative w-full">
-                        <button id="dateRangeToggle" class="w-full sm:w-auto p-3 border rounded-lg shadow-sm flex items-center justify-center sm:justify-start gap-2 text-sm sm:text-base hover:bg-[var(--button-bg-hover)]"
-                            style="border-color: var(--border-secondary); background-color: var(--bg-card); color: var(--text-primary);">
-                            <i class="fas fa-calendar-alt" style="color: var(--text-icon);"></i>
-                            <span>Quick Ranges</span>
-                            <i class="fas fa-chevron-down text-xs"></i>
-                        </button>
-                        <div id="dateRangeMenu" class="date-range-menu absolute left-0 mt-2 w-48 rounded-lg shadow-xl border hidden z-30">
-                            <button class="block w-full text-left px-4 py-2 text-sm hover:bg-[var(--dropdown-hover-bg)] hover:text-[var(--dropdown-hover-text)]"
-                                style="color: var(--text-primary); background-color: var(--dropdown-bg);" data-range="last-month">Last Month</button>
-                            <button class="block w-full text-left px-4 py-2 text-sm hover:bg-[var(--dropdown-hover-bg)] hover:text-[var(--dropdown-hover-text)]"
-                                style="color: var(--text-primary); background-color: var(--dropdown-bg);" data-range="3-months">3 Months Ago</button>
-                            <button class="block w-full text-left px-4 py-2 text-sm hover:bg-[var(--dropdown-hover-bg)] hover:text-[var(--dropdown-hover-text)]"
-                                style="color: var(--text-primary); background-color: var(--dropdown-bg);" data-range="5-months">5 Months Ago</button>
-                            <button class="block w-full text-left px-4 py-2 text-sm hover:bg-[var(--dropdown-hover-bg)] hover:text-[var(--dropdown-hover-text)]"
-                                style="color: var(--text-primary); background-color: var(--dropdown-bg);" data-range="8-months">8 Months Ago</button>
-                            <button class="block w-full text-left px-4 py-2 text-sm hover:bg-[var(--dropdown-hover-bg)] hover:text-[var(--dropdown-hover-text)]"
-                                style="color: var(--text-primary); background-color: var(--dropdown-bg);" data-range="12-months">12 Months Ago</button>
-                            <button class="block w-full text-left px-4 py-2 text-sm rounded-b-lg hover:bg-[var(--dropdown-hover-bg)] hover:text-[var(--dropdown-hover-text)]"
-                                style="color: var(--text-primary); background-color: var(--dropdown-bg);" data-range="2-years">2 Years Ago</button>
-                        </div>
-                    </div>
+                <div class="w-full md:w-56">
+                    <select id="filterStatus" class="w-full p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 text-sm sm:text-base"
+                        style="border-color: var(--border-secondary); background-color: var(--bg-card); color: var(--text-primary); --tw-ring-color: var(--button-bg);">
+                        <option value="all">All Status</option>
+                        <option value="complications">With Complications</option>
+                        <option value="no-complications">No Complications</option>
+                        <option value="pending-review">Pending Review</option>
+                        <option value="completed-review">Completed Review</option>
+                    </select>
                 </div>
-                <div class="flex gap-2">
+                
+                <div class="w-full md:w-auto md:ml-auto flex gap-2">
                     <button id="applyFilters" class="px-4 py-3 rounded-lg flex items-center justify-center gap-2 text-sm sm:text-base hover:bg-[var(--button-bg-hover)]"
                         style="background-color: var(--button-bg); color: var(--button-text);">
                         <i class="fas fa-filter"></i>
@@ -572,26 +546,26 @@
     </main>
 
     <!-- Mobile Bottom Navigation -->
-    <nav id="mobileNav" class="sm:hidden fixed bottom-0 left-0 right-0 border-t shadow-lg z-30" style="background-color: var(--bg-card); border-color: var(--border-secondary); padding-bottom: env(safe-area-inset-bottom);">
-        <div class="flex justify-between items-center px-4 py-2">
-            <button id="navHome" class="flex flex-col items-center text-xs" style="color: var(--text-primary);">
-                <i class="fas fa-home text-base"></i>
+    <nav id="mobileNav" class="mobile-bottom-nav sm:hidden fixed bottom-0 left-0 right-0 border-t shadow-lg z-30" style="background-color: var(--bg-card); border-color: var(--border-secondary); padding-bottom: max(env(safe-area-inset-bottom), 8px);">
+        <div class="grid grid-cols-5 items-stretch">
+            <button id="navHome" class="nav-item">
+                <i class="fas fa-home"></i>
                 <span>Home</span>
             </button>
-            <button id="navSearch" class="flex flex-col items-center text-xs" style="color: var(--text-primary);">
-                <i class="fas fa-search text-base"></i>
+            <a id="navSearch" href="search.html" class="nav-item">
+                <i class="fas fa-search"></i>
                 <span>Search</span>
-            </button>
-            <a id="navAdd" href="index.html" target="_blank" rel="noopener noreferrer" class="flex flex-col items-center text-xs" style="color: var(--text-primary); display: none;">
-                <i class="fas fa-plus-circle text-base"></i>
+            </a>
+            <a id="navAdd" href="index.html" target="_blank" rel="noopener noreferrer" class="nav-item">
+                <i class="fas fa-plus-circle"></i>
                 <span>New</span>
             </a>
-            <button id="navStats" class="flex flex-col items-center text-xs" style="color: var(--text-primary);">
-                <i class="fas fa-chart-bar text-base"></i>
+            <a id="navStats" href="stats.html" class="nav-item">
+                <i class="fas fa-chart-bar"></i>
                 <span>Stats</span>
-            </button>
-            <button id="navLogout" class="flex flex-col items-center text-xs" style="color: var(--text-primary); display: none;">
-                <i class="fas fa-sign-out-alt text-base"></i>
+            </a>
+            <button id="navLogout" class="nav-item">
+                <i class="fas fa-sign-out-alt"></i>
                 <span>Logout</span>
             </button>
         </div>
@@ -610,164 +584,36 @@
         // DOM elements
         const searchInput = document.getElementById('searchInput');
         const filterStatus = document.getElementById('filterStatus');
-        const startDateInput = document.getElementById('startDate');
-        const endDateInput = document.getElementById('endDate');
-        const dateRangeToggle = document.getElementById('dateRangeToggle');
-        const dateRangeMenu = document.getElementById('dateRangeMenu');
+        // Date inputs and range controls are handled on search.html only
         const applyFilters = document.getElementById('applyFilters');
         const clearFilters = document.getElementById('clearFilters');
         const filterFeedback = document.getElementById('filterFeedback');
         const tableBody = document.getElementById('patientTableBody');
         const recordCount = document.getElementById('recordCount');
-        const logoutButton = document.getElementById('logoutButton');
-        const newPatientButton = document.getElementById('newPatientButton');
-        const loginSection = document.getElementById('loginSection');
         const mainContent = document.getElementById('mainContent');
-        const loginForm = document.getElementById('loginForm');
-        const loginError = document.getElementById('loginError');
         // Mobile nav elements
         const mobileNav = document.getElementById('mobileNav');
         const navHome = document.getElementById('navHome');
         const navSearch = document.getElementById('navSearch');
         const navAdd = document.getElementById('navAdd');
         const navStats = document.getElementById('navStats');
-        const navLogout = document.getElementById('navLogout');
-
-        // Simple auth gating (client-side only)
-        function updateAuthUI() {
-            const isLoggedIn = localStorage.getItem('nurseLoggedIn') === 'true';
-            loginSection.style.display = isLoggedIn ? 'none' : '';
-            mainContent.style.display = isLoggedIn ? '' : 'none';
-            logoutButton.style.display = isLoggedIn ? '' : 'none';
-            newPatientButton.style.display = isLoggedIn ? '' : 'none';
-            // Mobile nav visibility based on auth state
-            navAdd.style.display = isLoggedIn ? '' : 'none';
-            navLogout.style.display = isLoggedIn ? '' : 'none';
-        }
-
-        function handleLogin(e) {
-            e.preventDefault();
-            const nurseId = document.getElementById('nurseId').value.trim();
-            const password = document.getElementById('password').value.trim();
-            if (!nurseId || !password) {
-                loginError.classList.remove('hidden');
-                return;
-            }
-            loginError.classList.add('hidden');
-            // NOTE: This is demo-only. Replace with real authentication.
-            localStorage.setItem('nurseLoggedIn', 'true');
-            localStorage.setItem('nurseId', nurseId);
-            updateAuthUI();
-        }
-
-        function handleLogout() {
-            localStorage.removeItem('nurseLoggedIn');
-            localStorage.removeItem('nurseId');
-            updateAuthUI();
-        }
-
-        loginForm.addEventListener('submit', handleLogin);
-        logoutButton.addEventListener('click', handleLogout);
-        navLogout.addEventListener('click', handleLogout);
-        // Mobile nav simple scroll helpers
+        // No auth gating: page is always visible
+        // Mobile nav: Home scroll-to-top; Search/Stats navigate; Logout returns to top (placeholder)
         navHome.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
-        navSearch.addEventListener('click', () => document.querySelector('.search-container')?.scrollIntoView({ behavior: 'smooth' }));
-        navStats.addEventListener('click', () => document.querySelector('.stat-card')?.scrollIntoView({ behavior: 'smooth' }));
-        updateAuthUI();
-
-        // Parse DD/MM/YYYY date string to Date object
-        function parseDateFromDDMMYYYY(dateStr) {
-            if (!dateStr || dateStr === '') return null;
-            const [day, month, year] = dateStr.split('/').map(Number);
-            if (!day || !month || !year || isNaN(day) || isNaN(month) || isNaN(year)) {
-                return null;
-            }
-            return new Date(year, month - 1, day);
-        }
-
-        // Format date to DD/MM/YYYY for display and input
-        function formatDateForDisplay(date) {
-            const day = String(date.getDate()).padStart(2, '0');
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const year = date.getFullYear();
-            return `${day}/${month}/${year}`;
-        }
-
-        // Set date range based on dropdown selection
-        function setDateRange(range) {
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            const endDate = new Date(today);
-            const startDate = new Date(today);
-
-            switch (range) {
-                case 'last-month':
-                    startDate.setMonth(today.getMonth() - 1);
-                    startDate.setDate(1);
-                    break;
-                case '3-months':
-                    startDate.setMonth(today.getMonth() - 3);
-                    startDate.setDate(1);
-                    break;
-                case '5-months':
-                    startDate.setMonth(today.getMonth() - 5);
-                    startDate.setDate(1);
-                    break;
-                case '8-months':
-                    startDate.setMonth(today.getMonth() - 8);
-                    startDate.setDate(1);
-                    break;
-                case '12-months':
-                    startDate.setMonth(today.getMonth() - 12);
-                    startDate.setDate(1);
-                    break;
-                case '2-years':
-                    startDate.setFullYear(today.getFullYear() - 2);
-                    startDate.setDate(1);
-                    startDate.setMonth(0);
-                    break;
-            }
-
-            startDateInput.value = formatDateForDisplay(startDate);
-            endDateInput.value = formatDateForDisplay(endDate);
-            dateRangeMenu.classList.add('hidden');
-        }
-
-        // Date range dropdown toggle
-        dateRangeToggle.addEventListener('click', (e) => {
-            e.preventDefault();
-            dateRangeMenu.classList.toggle('hidden');
+        document.getElementById('navLogout').addEventListener('click', () => {
+            // Placeholder action for static build
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            alert('Logged out (placeholder).');
         });
 
-        // Handle date range menu clicks
-        dateRangeMenu.querySelectorAll('button').forEach(button => {
-            button.addEventListener('click', () => {
-                setDateRange(button.dataset.range);
-            });
-        });
-
-        // Close date range dropdown when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!dateRangeToggle.contains(e.target) && !dateRangeMenu.contains(e.target)) {
-                dateRangeMenu.classList.add('hidden');
-            }
-        });
+        // Date range selection removed from this page
 
         // Search and filter functionality
         function performSearch() {
             const searchTerm = searchInput.value.toLowerCase().trim();
             const statusFilter = filterStatus.value;
-            const startDate = parseDateFromDDMMYYYY(startDateInput.value);
-            const endDate = parseDateFromDDMMYYYY(endDateInput.value);
             const rows = tableBody.getElementsByTagName('tr');
             let visibleCount = 0;
-
-            // Validate date range
-            if (startDate && endDate && startDate > endDate) {
-                filterFeedback.textContent = 'Error: Start date cannot be after end date';
-                filterFeedback.classList.add('active', 'text-red-600');
-                return;
-            }
 
             // Prepare feedback message
             let messages = [];
@@ -777,9 +623,6 @@
             if (statusFilter !== 'all') {
                 const statusText = filterStatus.options[filterStatus.selectedIndex].text;
                 messages.push(`status: ${statusText}`);
-            }
-            if (startDate && endDate) {
-                messages.push(`date range: ${startDateInput.value} to ${endDateInput.value}`);
             }
             if (messages.length > 0) {
                 filterFeedback.textContent = `Filters applied: ${messages.join(', ')}`;
@@ -798,11 +641,8 @@
                 const surgeon = (row.dataset.surgeon || '').toLowerCase();
                 const complications = row.dataset.complications || '';
                 const reviewStatus = row.dataset.review || '';
-                const dos = row.dataset.dos || '9999-12-31';
-
                 let matchSearch = true;
                 let matchFilter = true;
-                let matchDate = true;
 
                 // Search match
                 if (searchTerm) {
@@ -829,23 +669,8 @@
                     }
                 }
 
-                // Date filter match
-                if (startDate && endDate && dos !== '9999-12-31' && dos !== '0000-00-00') {
-                    const recordDate = new Date(dos);
-                    if (isNaN(recordDate.getTime())) {
-                        matchDate = false;
-                    } else {
-                        recordDate.setHours(0, 0, 0, 0);
-                        startDate.setHours(0, 0, 0, 0);
-                        endDate.setHours(0, 0, 0, 0);
-                        matchDate = recordDate >= startDate && recordDate <= endDate;
-                    }
-                } else if ((dos === '9999-12-31' || dos === '0000-00-00') && startDate && endDate) {
-                    matchDate = false;
-                }
-
-                row.style.display = (matchSearch && matchFilter && matchDate) ? '' : 'none';
-                if (matchSearch && matchFilter && matchDate) {
+                row.style.display = (matchSearch && matchFilter) ? '' : 'none';
+                if (matchSearch && matchFilter) {
                     visibleCount++;
                 }
             }
@@ -861,11 +686,8 @@
         clearFilters.addEventListener('click', () => {
             searchInput.value = '';
             filterStatus.value = 'all';
-            startDateInput.value = '';
-            endDateInput.value = '';
             filterFeedback.textContent = '';
             filterFeedback.classList.remove('active', 'text-red-600');
-            dateRangeMenu.classList.add('hidden');
             performSearch();
         });
     </script>
