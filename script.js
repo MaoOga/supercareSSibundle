@@ -3,6 +3,55 @@
             textarea.style.height = (textarea.scrollHeight) + "px";
         }
 
+// ======== Audit logging (shared with admin.html via localStorage) ========
+const AUDIT_KEY = 'admin_audit_logs';
+function loadAuditLogs() {
+    try { return JSON.parse(localStorage.getItem(AUDIT_KEY)) || []; } catch { return []; }
+}
+function saveAuditLogs(logs) { localStorage.setItem(AUDIT_KEY, JSON.stringify(logs)); }
+function nowIso() { return new Date().toISOString(); }
+function getNurseIdForAudit() {
+    try { return localStorage.getItem('nurseId') || 'Nurse'; } catch { return 'Nurse'; }
+}
+function getUHIDForAudit() {
+    const el = document.querySelector('input[name="uhid"]');
+    return el ? el.value : '';
+}
+function addAudit(action, entity, details) {
+    const logs = loadAuditLogs();
+    const entry = {
+        id: (crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now()),
+        ts: nowIso(),
+        action,
+        entity,
+        nurse: getNurseIdForAudit(),
+        page: 'index',
+        uhid: getUHIDForAudit(),
+        ...details
+    };
+    logs.unshift(entry);
+    saveAuditLogs(logs);
+}
+
+// Track field edits: record before/after
+const previousFieldValues = new WeakMap();
+document.addEventListener('focusin', function(e) {
+    const t = e.target;
+    if (!(t instanceof HTMLInputElement || t instanceof HTMLTextAreaElement || t instanceof HTMLSelectElement)) return;
+    const before = (t.type === 'checkbox' || t.type === 'radio') ? t.checked : t.value;
+    previousFieldValues.set(t, before);
+});
+document.addEventListener('change', function(e) {
+    const t = e.target;
+    if (!(t instanceof HTMLInputElement || t instanceof HTMLTextAreaElement || t instanceof HTMLSelectElement)) return;
+    const before = previousFieldValues.get(t);
+    const after = (t.type === 'checkbox' || t.type === 'radio') ? t.checked : t.value;
+    const fieldName = t.name || t.id || 'unknown_field';
+    if (before !== after) {
+        addAudit('update', 'form_field', { field: fieldName, before, after });
+    }
+});
+
         $(function() {
             $('.datepicker').datepicker({
                 changeMonth: true,
@@ -143,6 +192,7 @@
                 spellcheck: 'false'
             });
             updateAntibioticRowNumbers();
+            addAudit('create', 'antibiotic_row', { after: { count: rowCount } });
         }
 
         function removeAntibioticRow() {
@@ -151,6 +201,7 @@
             if (rows.length > 1) {
                 rows.last().remove();
                 updateAntibioticRowNumbers();
+                addAudit('delete', 'antibiotic_row', { before: { remaining: rows.length - 1 } });
             } else {
                 showMessage('At least one row must remain.', 'error');
             }
@@ -183,6 +234,7 @@
             `;
             table.append(newRow);
             table.find('textarea').off('input').on('input', function() { autoGrow(this); });
+            addAudit('create', 'drain_row', { after: { count: rowCount } });
         }
 
         function removeDrainRow() {
@@ -191,6 +243,7 @@
             if (rows.length > 1) {
                 rows.last().remove();
                 updateDrainRowNumbers();
+                addAudit('delete', 'drain_row', { before: { remaining: rows.length - 1 } });
             } else {
                 showMessage('At least one row must remain.', 'error');
             }
@@ -232,6 +285,7 @@
             });
             table.find('textarea').off('input').on('input', function() { autoGrow(this); });
             updatePostOperativeRowNumbers();
+            addAudit('create', 'post_op_row', { after: { count: rowCount } });
         }
 
         function removePostOperativeRow() {
@@ -240,6 +294,7 @@
             if (rows.length > 1) {
                 rows.last().remove();
                 updatePostOperativeRowNumbers();
+                addAudit('delete', 'post_op_row', { before: { remaining: rows.length - 1 } });
             } else {
                 showMessage('At least one row must remain.', 'error');
             }
