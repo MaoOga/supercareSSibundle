@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SSI Bundle Checklist - Nurse Panel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <style>
+        :root {
+            --bg-body: #f3f4f6;
+            --bg-header: #ffffff;
+            --bg-card: #ffffff;
+            --bg-table-header: #ecfdf5;
+            --text-primary: #111827;
+            --text-secondary: #6b7280;
+            --text-icon: rgb(26, 175, 81);
+            --border-primary: #86efac;
+            --border-secondary: #e5e7eb;
+            --button-bg: rgb(26, 175, 81);
+            --button-bg-hover: rgb(22, 163, 74);
+            --button-text: #ffffff;
+            --link-text: rgb(26, 175, 81);
+            --link-text-hover: rgb(22, 163, 74);
+            --table-row-hover: #f9fafb;
+            --dropdown-bg: #ffffff;
+            --dropdown-border: #e5e7eb;
+            --dropdown-hover-bg: #ecfdf5;
+            --dropdown-hover-text: rgb(26, 175, 81);
+            --label-color: rgb(46, 226, 130);
+            --search-icon: #9ca3af;
+            --clear-button-bg: #e5e7eb;
+            --clear-button-bg-hover: #d1d5db;
+            --clear-button-text: #374151;
+        }
+
+        .dark {
+            --bg-body: #1f2937;
+            --bg-header: #374151;
+            --bg-card: #374151;
+            --bg-table-header: #064e3b;
+            --text-primary: #f9fafb;
+            --text-secondary: #d1d5db;
+            --text-icon: #6ee7b7;
+            --border-primary: #064e3b;
+            --border-secondary: #4b5563;
+            --button-bg: #4ade80;
+            --button-bg-hover: #22c55e;
+            --button-text: #1f2937;
+            --link-text: #4ade80;
+            --link-text-hover: #22c55e;
+            --table-row-hover: #4b5563;
+            --dropdown-bg: #374151;
+            --dropdown-border: #4b5563;
+            --dropdown-hover-bg: #064e3b;
+            --dropdown-hover-text: #22c55e;
+            --label-color: #6ee7b7;
+            --search-icon: #d1d5db;
+            --clear-button-bg: #4b5563;
+            --clear-button-bg-hover: #6b7280;
+            --clear-button-text: #f9fafb;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-primary);
+            overflow-x: hidden;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; }
+
+        .table-container {
+            max-height: 65vh;
+            overflow-y: auto;
+        }
+
+        .table-row {
+            transition: all 0.2s ease;
+        }
+
+        .table-row:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            background-color: var(--table-row-hover);
+        }
+
+        .sort-icon {
+            transition: transform 0.2s ease;
+        }
+
+        .sort-icon.asc {
+            transform: rotate(180deg);
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, rgb(110, 210, 130) 0%, rgb(56, 161, 105) 100%);
+            color: #ffffff;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .dark .stat-card {
+            background: linear-gradient(135deg, rgb(74, 222, 128) 0%, rgb(34, 197, 94) 100%);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .complication-badge {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.7;
+            }
+        }
+
+        .filter-feedback {
+            display: none;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+
+        .filter-feedback.active {
+            display: block;
+        }
+
+        .date-range-dropdown {
+            position: relative;
+        }
+
+        .date-range-menu {
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            transform-origin: top left;
+            background-color: var(--dropdown-bg);
+            border-color: var(--dropdown-border);
+        }
+
+        .date-range-menu.hidden {
+            opacity: 0;
+            transform: scale(0.95);
+            pointer-events: none;
+        }
+
+        @media (max-width: 640px) {
+            .nurse-table {
+                display: block;
+                overflow-x: hidden;
+                white-space: normal;
+                width: 100%;
+            }
+
+            .nurse-table thead {
+                display: none;
+            }
+
+            .nurse-table tbody,
+            .nurse-table tr {
+                display: block;
+                white-space: normal;
+            }
+
+            .nurse-table tr {
+                margin-bottom: 1rem;
+                border: 1px solid var(--border-secondary);
+                border-radius: 0.75rem;
+                padding: 1rem;
+                background: var(--bg-card);
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            }
+
+            .nurse-table td {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 0.25rem 0;
+                border: none;
+                min-width: 0;
+                word-break: break-word;
+                overflow-wrap: anywhere;
+            }
+
+            .nurse-table td:before {
+                content: attr(data-label);
+                font-weight: 600;
+                color: var(--label-color);
+                width: 40%;
+                flex-shrink: 0;
+            }
+
+            .action-button {
+                width: 100%;
+                max-width: 200px;
+                justify-content: center;
+                margin-top: 0.5rem;
+                margin-left: auto;
+                margin-right: auto;
+                border-radius: 0.25rem;
+                padding: 0.5rem 1rem;
+                font-size: 0.875rem;
+            }
+
+            .new-patient-button,
+            .theme-toggle {
+                width: 100%;
+                border-radius: 0.25rem;
+                padding: 0.75rem;
+            }
+
+            .stat-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .search-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .search-container input,
+            .search-container select,
+            .search-container button {
+                width: 100%;
+            }
+
+            .table-container { max-width: 100vw; overflow-x: hidden; }
+
+            .date-range-dropdown {
+                width: 100%;
+            }
+
+            .date-range-menu {
+                width: 100%;
+            }
+
+            .filter-feedback {
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .new-patient-button {
+                width: 100%;
+                border-radius: 0.25rem;
+                padding: 0.1rem 0.25rem;
+            }
+
+            .theme-toggle {
+                width: auto;
+                padding: 0.5rem;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .stat-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        /* Mobile visual refinements */
+        @media (max-width: 640px) {
+            header .max-w-7xl {
+                padding-top: 0.5rem !important;
+                padding-bottom: 0.5rem !important;
+            }
+            header img[alt="Hospital Logo"] {
+                height: 48px !important;
+                width: 48px !important;
+            }
+
+            header h1, header p { 
+                word-break: break-word; 
+                overflow-wrap: anywhere; 
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="shadow-lg sticky top-0 z-20 border-b" style="background-color: var(--bg-header); border-color: var(--border-primary);">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <img src="supercare-hospital_logo.png" alt="Hospital Logo" style="height: 70px; width: 70px;">
+                    <div>
+                        <h1 class="text-xl sm:text-2xl font-bold" style="color: var(--text-primary);">Supercare Hospital SSI Nurse Panel</h1>
+                        <p class="text-sm hidden sm:block" style="color: var(--text-secondary);">Surgical Site Infection Monitoring System</p>
+                    </div>
+                </div>
+                <div class="hidden sm:flex items-center gap-3 sm:gap-4">
+                    <a id="newPatientButton" href="index.html"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="new-patient-button text-white px-3 sm:px-4 py-2 rounded-lg flex items-center justify-center gap-2 transition-all duration-300 text-sm sm:text-base hover:bg-[var(--button-bg-hover)]"
+                        style="background-color: var(--button-bg);">
+                        <i class="fas fa-plus"></i>
+                        <span>New Patient</span>
+                    </a>
+                    <button id="logoutButton" class="px-3 sm:px-4 py-2 rounded-lg flex items-center justify-center gap-2 text-sm sm:text-base hover:bg-[var(--clear-button-bg-hover)]" style="background-color: var(--clear-button-bg); color: var(--clear-button-text); display: none;">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Login Section -->
+    <section id="loginSection" class="max-w-md mx-auto mt-8 px-4 sm:px-6 lg:px-8 pb-24 sm:pb-0">
+        <div class="rounded-xl shadow-lg p-6 border" style="background-color: var(--bg-card); border-color: var(--border-primary);">
+            <h2 class="text-xl font-semibold mb-4" style="color: var(--text-primary);">Nurse Login</h2>
+            <form id="loginForm" class="space-y-4">
+                <div>
+                    <label for="nurseId" class="block text-sm font-medium mb-1" style="color: var(--text-secondary);">Nurse ID</label>
+                    <input id="nurseId" name="nurseId" type="text" required autocomplete="off" class="w-full p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 text-sm sm:text-base" style="border-color: var(--border-secondary); background-color: var(--bg-card); color: var(--text-primary); --tw-ring-color: var(--button-bg);">
+                </div>
+                <div>
+                    <label for="password" class="block text-sm font-medium mb-1" style="color: var(--text-secondary);">Password</label>
+                    <input id="password" name="password" type="password" required autocomplete="off" class="w-full p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 text-sm sm:text-base" style="border-color: var(--border-secondary); background-color: var(--bg-card); color: var(--text-primary); --tw-ring-color: var(--button-bg);">
+                </div>
+                <p id="loginError" class="text-red-600 text-sm hidden">Please enter both Nurse ID and Password.</p>
+                <button type="submit" class="w-full px-4 py-3 rounded-lg flex items-center justify-center gap-2 text-sm sm:text-base hover:bg-[var(--button-bg-hover)]" style="background-color: var(--button-bg); color: var(--button-text);">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span>Login</span>
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <main id="mainContent" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-24 sm:pb-6" style="display: none;">
+        <div class="grid stat-grid gap-4 sm:gap-6 mb-6 sm:mb-8">
+            <div class="stat-card text-white p-4 sm:p-6 rounded-xl shadow-lg">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-white/90 text-sm font-medium">Total Patients</p>
+                        <p class="text-2xl sm:text-3xl font-bold">150</p>
+                    </div>
+                    <i class="fas fa-users text-2xl sm:text-3xl text-white/80"></i>
+                </div>
+            </div>
+            <div class="stat-card text-white p-4 sm:p-6 rounded-xl shadow-lg">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-white/90 text-sm font-medium">Complications</p>
+                        <p class="text-2xl sm:text-3xl font-bold">10</p>
+                    </div>
+                    <i class="fas fa-exclamation-triangle text-2xl sm:text-3xl text-white/80"></i>
+                </div>
+            </div>
+            <div class="stat-card text-white p-4 sm:p-6 rounded-xl shadow-lg">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-white/90 text-sm font-medium">Recent Surgeries (30d)</p>
+                        <p class="text-2xl sm:text-3xl font-bold">25</p>
+                    </div>
+                    <i class="fas fa-calendar-day text-2xl sm:text-3xl text-white/80"></i>
+                </div>
+            </div>
+            <div class="stat-card text-white p-4 sm:p-6 rounded-xl shadow-lg">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-white/90 text-sm font-medium">Pending Reviews</p>
+                        <p class="text-2xl sm:text-3xl font-bold">15</p>
+                    </div>
+                    <i class="fas fa-clock text-2xl sm:text-3xl text-white/80"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="rounded-xl shadow-lg p-4 sm:p-6 mb-6 border" style="background-color: var(--bg-card); border-color: var(--border-primary);">
+            <div class="search-container flex flex-col sm:flex-row items-stretch gap-4">
+                <div class="relative flex-1">
+                    <input type="text" id="searchInput" placeholder="Search by UHID, Name, or Surgeon..."
+                        class="w-full p-3 pl-10 border rounded-lg shadow-sm focus:outline-none focus:ring-2 text-sm sm:text-base"
+                        style="border-color: var(--border-secondary); background-color: var(--bg-card); color: var(--text-primary); --tw-ring-color: var(--button-bg);">
+                    <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2" style="color: var(--search-icon);"></i>
+                </div>
+                <select id="filterStatus" class="p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 text-sm sm:text-base"
+                    style="border-color: var(--border-secondary); background-color: var(--bg-card); color: var(--text-primary); --tw-ring-color: var(--button-bg);">
+                    <option value="all">All Status</option>
+                    <option value="complications">With Complications</option>
+                    <option value="no-complications">No Complications</option>
+                    <option value="pending-review">Pending Review</option>
+                    <option value="completed-review">Completed Review</option>
+                </select>
+                <div class="flex flex-col gap-2 w-full sm:w-auto">
+                    <div class="flex gap-2">
+                        <div class="relative">
+                            <input type="text" id="startDate" placeholder="dd/mm/yyyy" class="p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 text-sm sm:text-base w-40"
+                                style="border-color: var(--border-secondary); background-color: var(--bg-card); color: var(--text-primary); --tw-ring-color: var(--button-bg);">
+                        </div>
+                        <span class="p-3 text-sm sm:text-base" style="color: var(--text-primary);">to</span>
+                        <div class="relative">
+                            <input type="text" id="endDate" placeholder="dd/mm/yyyy" class="p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 text-sm sm:text-base w-40"
+                                style="border-color: var(--border-secondary); background-color: var(--bg-card); color: var(--text-primary); --tw-ring-color: var(--button-bg);">
+                        </div>
+                    </div>
+                    <div class="date-range-dropdown relative w-full">
+                        <button id="dateRangeToggle" class="w-full sm:w-auto p-3 border rounded-lg shadow-sm flex items-center justify-center sm:justify-start gap-2 text-sm sm:text-base hover:bg-[var(--button-bg-hover)]"
+                            style="border-color: var(--border-secondary); background-color: var(--bg-card); color: var(--text-primary);">
+                            <i class="fas fa-calendar-alt" style="color: var(--text-icon);"></i>
+                            <span>Quick Ranges</span>
+                            <i class="fas fa-chevron-down text-xs"></i>
+                        </button>
+                        <div id="dateRangeMenu" class="date-range-menu absolute left-0 mt-2 w-48 rounded-lg shadow-xl border hidden z-30">
+                            <button class="block w-full text-left px-4 py-2 text-sm hover:bg-[var(--dropdown-hover-bg)] hover:text-[var(--dropdown-hover-text)]"
+                                style="color: var(--text-primary); background-color: var(--dropdown-bg);" data-range="last-month">Last Month</button>
+                            <button class="block w-full text-left px-4 py-2 text-sm hover:bg-[var(--dropdown-hover-bg)] hover:text-[var(--dropdown-hover-text)]"
+                                style="color: var(--text-primary); background-color: var(--dropdown-bg);" data-range="3-months">3 Months Ago</button>
+                            <button class="block w-full text-left px-4 py-2 text-sm hover:bg-[var(--dropdown-hover-bg)] hover:text-[var(--dropdown-hover-text)]"
+                                style="color: var(--text-primary); background-color: var(--dropdown-bg);" data-range="5-months">5 Months Ago</button>
+                            <button class="block w-full text-left px-4 py-2 text-sm hover:bg-[var(--dropdown-hover-bg)] hover:text-[var(--dropdown-hover-text)]"
+                                style="color: var(--text-primary); background-color: var(--dropdown-bg);" data-range="8-months">8 Months Ago</button>
+                            <button class="block w-full text-left px-4 py-2 text-sm hover:bg-[var(--dropdown-hover-bg)] hover:text-[var(--dropdown-hover-text)]"
+                                style="color: var(--text-primary); background-color: var(--dropdown-bg);" data-range="12-months">12 Months Ago</button>
+                            <button class="block w-full text-left px-4 py-2 text-sm rounded-b-lg hover:bg-[var(--dropdown-hover-bg)] hover:text-[var(--dropdown-hover-text)]"
+                                style="color: var(--text-primary); background-color: var(--dropdown-bg);" data-range="2-years">2 Years Ago</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    <button id="applyFilters" class="px-4 py-3 rounded-lg flex items-center justify-center gap-2 text-sm sm:text-base hover:bg-[var(--button-bg-hover)]"
+                        style="background-color: var(--button-bg); color: var(--button-text);">
+                        <i class="fas fa-filter"></i>
+                        <span>Apply Filters</span>
+                    </button>
+                    <button id="clearFilters" class="px-4 py-3 rounded-lg flex items-center justify-center gap-2 text-sm sm:text-base hover:bg-[var(--clear-button-bg-hover)]"
+                        style="background-color: var(--clear-button-bg); color: var(--clear-button-text);">
+                        <i class="fas fa-times"></i>
+                        <span>Clear</span>
+                    </button>
+                </div>
+            </div>
+            <div id="filterFeedback" class="filter-feedback"></div>
+        </div>
+
+        <div class="rounded-xl shadow-lg border fade-in" style="background-color: var(--bg-card); border-color: var(--border-primary);">
+            <div class="p-4 sm:p-6 border-b" style="border-color: var(--border-secondary);">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <h2 class="text-lg sm:text-xl font-semibold" style="color: var(--text-primary);">
+                        Patient Records (<span id="recordCount">2</span> total)
+                    </h2>
+                </div>
+            </div>
+            <div class="table-container">
+                <table class="nurse-table w-full text-sm sm:text-base">
+                    <thead class="sticky top-0 z-10" style="background-color: var(--bg-table-header);">
+                        <tr style="color: var(--text-primary);">
+                            <th class="p-3 sm:p-4 text-left font-semibold">UHID</th>
+                            <th class="p-3 sm:p-4 text-left font-semibold">Name</th>
+                            <th class="p-3 sm:p-4 text-left font-semibold">Age/Sex</th>
+                            <th class="p-3 sm:p-4 text-left font-semibold">Ward</th>
+                            <th class="p-3 sm:p-4 text-left font-semibold">Surgeon</th>
+                            <th class="p-3 sm:p-4 text-left font-semibold">Surgery Date</th>
+                            <th class="p-3 sm:p-4 text-left font-semibold">Status</th>
+                            <th class="p-3 sm:p-4 text-left font-semibold"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="patientTableBody">
+                        <!-- Sample patient data -->
+                        <tr class="table-row border-b"
+                            style="background-color: var(--bg-card); border-color: var(--border-secondary);"
+                            data-uhid="UHID123"
+                            data-name="John Doe"
+                            data-surgeon="Dr. Smith"
+                            data-dos="2025-07-15"
+                            data-complications="Yes"
+                            data-review="Pending">
+                            <td class="p-3 sm:p-4" data-label="UHID">
+                                <span class="font-medium">UHID123</span>
+                            </td>
+                            <td class="p-3 sm:p-4" data-label="Name">
+                                <span class="font-medium">John Doe</span>
+                            </td>
+                            <td class="p-3 sm:p-4" data-label="Age/Sex">45/M</td>
+                            <td class="p-3 sm:p-4" data-label="Ward">Ward A</td>
+                            <td class="p-3 sm:p-4" data-label="Surgeon">Dr. Smith</td>
+                            <td class="p-3 sm:p-4" data-label="Surgery Date">15/07/2025</td>
+                            <td class="p-3 sm:p-4" data-label="Status">
+                                <div class="flex flex-col gap-1 sm:gap-2">
+                                    <span class="complication-badge bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs font-semibold">
+                                        <i class="fas fa-exclamation-triangle mr-1"></i>Complications
+                                    </span>
+                                    <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-semibold">Pending</span>
+                                </div>
+                            </td>
+                            <td class="p-3 sm:p-4">
+                                <div class="flex justify-center">
+                                    <a href="view.html?patient_id=1"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        class="action-button w-full max-w-[200px] mx-auto sm:mx-0 text-white px-3 sm:px-4 py-2 rounded-lg flex items-center justify-center gap-2 transition-all duration-300 text-sm hover:bg-[var(--button-bg-hover)]"
+                                        style="background-color: var(--button-bg);">
+                                        <i class="fas fa-eye"></i>
+                                        <span>View/Edit</span>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="table-row border-b"
+                            style="background-color: var(--bg-card); border-color: var(--border-secondary);"
+                            data-uhid="UHID456"
+                            data-name="Jane Smith"
+                            data-surgeon="Dr. Jones"
+                            data-dos="2025-06-20"
+                            data-complications="No"
+                            data-review="Completed">
+                            <td class="p-3 sm:p-4" data-label="UHID">
+                                <span class="font-medium">UHID456</span>
+                            </td>
+                            <td class="p-3 sm:p-4" data-label="Name">
+                                <span class="font-medium">Jane Smith</span>
+                            </td>
+                            <td class="p-3 sm:p-4" data-label="Age/Sex">32/F</td>
+                            <td class="p-3 sm:p-4" data-label="Ward">Ward B</td>
+                            <td class="p-3 sm:p-4" data-label="Surgeon">Dr. Jones</td>
+                            <td class="p-3 sm:p-4" data-label="Surgery Date">20/06/2025</td>
+                            <td class="p-3 sm:p-4" data-label="Status">
+                                <div class="flex flex-col gap-1 sm:gap-2">
+                                    <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-semibold">Completed</span>
+                                </div>
+                            </td>
+                            <td class="p-3 sm:p-4">
+                                <div class="flex justify-center">
+                                    <a href="view.html?patient_id=2"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        class="action-button w-full max-w-[200px] mx-auto sm:mx-0 text-white px-3 sm:px-4 py-2 rounded-lg flex items-center justify-center gap-2 transition-all duration-300 text-sm hover:bg-[var(--button-bg-hover)]"
+                                        style="background-color: var(--button-bg);">
+                                        <i class="fas fa-eye"></i>
+                                        <span>View/Edit</span>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav id="mobileNav" class="sm:hidden fixed bottom-0 left-0 right-0 border-t shadow-lg z-30" style="background-color: var(--bg-card); border-color: var(--border-secondary); padding-bottom: env(safe-area-inset-bottom);">
+        <div class="flex justify-between items-center px-4 py-2">
+            <button id="navHome" class="flex flex-col items-center text-xs" style="color: var(--text-primary);">
+                <i class="fas fa-home text-base"></i>
+                <span>Home</span>
+            </button>
+            <button id="navSearch" class="flex flex-col items-center text-xs" style="color: var(--text-primary);">
+                <i class="fas fa-search text-base"></i>
+                <span>Search</span>
+            </button>
+            <a id="navAdd" href="index.html" target="_blank" rel="noopener noreferrer" class="flex flex-col items-center text-xs" style="color: var(--text-primary); display: none;">
+                <i class="fas fa-plus-circle text-base"></i>
+                <span>New</span>
+            </a>
+            <button id="navStats" class="flex flex-col items-center text-xs" style="color: var(--text-primary);">
+                <i class="fas fa-chart-bar text-base"></i>
+                <span>Stats</span>
+            </button>
+            <button id="navLogout" class="flex flex-col items-center text-xs" style="color: var(--text-primary); display: none;">
+                <i class="fas fa-sign-out-alt text-base"></i>
+                <span>Logout</span>
+            </button>
+        </div>
+    </nav>
+
+    <script>
+        // Initialize Flatpickr
+        flatpickr("#startDate", {
+            dateFormat: "d/m/Y",
+            maxDate: "today"
+        });
+        flatpickr("#endDate", {
+            dateFormat: "d/m/Y"
+        });
+
+        // DOM elements
+        const searchInput = document.getElementById('searchInput');
+        const filterStatus = document.getElementById('filterStatus');
+        const startDateInput = document.getElementById('startDate');
+        const endDateInput = document.getElementById('endDate');
+        const dateRangeToggle = document.getElementById('dateRangeToggle');
+        const dateRangeMenu = document.getElementById('dateRangeMenu');
+        const applyFilters = document.getElementById('applyFilters');
+        const clearFilters = document.getElementById('clearFilters');
+        const filterFeedback = document.getElementById('filterFeedback');
+        const tableBody = document.getElementById('patientTableBody');
+        const recordCount = document.getElementById('recordCount');
+        const logoutButton = document.getElementById('logoutButton');
+        const newPatientButton = document.getElementById('newPatientButton');
+        const loginSection = document.getElementById('loginSection');
+        const mainContent = document.getElementById('mainContent');
+        const loginForm = document.getElementById('loginForm');
+        const loginError = document.getElementById('loginError');
+        // Mobile nav elements
+        const mobileNav = document.getElementById('mobileNav');
+        const navHome = document.getElementById('navHome');
+        const navSearch = document.getElementById('navSearch');
+        const navAdd = document.getElementById('navAdd');
+        const navStats = document.getElementById('navStats');
+        const navLogout = document.getElementById('navLogout');
+
+        // Simple auth gating (client-side only)
+        function updateAuthUI() {
+            const isLoggedIn = localStorage.getItem('nurseLoggedIn') === 'true';
+            loginSection.style.display = isLoggedIn ? 'none' : '';
+            mainContent.style.display = isLoggedIn ? '' : 'none';
+            logoutButton.style.display = isLoggedIn ? '' : 'none';
+            newPatientButton.style.display = isLoggedIn ? '' : 'none';
+            // Mobile nav visibility based on auth state
+            navAdd.style.display = isLoggedIn ? '' : 'none';
+            navLogout.style.display = isLoggedIn ? '' : 'none';
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const nurseId = document.getElementById('nurseId').value.trim();
+            const password = document.getElementById('password').value.trim();
+            if (!nurseId || !password) {
+                loginError.classList.remove('hidden');
+                return;
+            }
+            loginError.classList.add('hidden');
+            // NOTE: This is demo-only. Replace with real authentication.
+            localStorage.setItem('nurseLoggedIn', 'true');
+            localStorage.setItem('nurseId', nurseId);
+            updateAuthUI();
+        }
+
+        function handleLogout() {
+            localStorage.removeItem('nurseLoggedIn');
+            localStorage.removeItem('nurseId');
+            updateAuthUI();
+        }
+
+        loginForm.addEventListener('submit', handleLogin);
+        logoutButton.addEventListener('click', handleLogout);
+        navLogout.addEventListener('click', handleLogout);
+        // Mobile nav simple scroll helpers
+        navHome.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+        navSearch.addEventListener('click', () => document.querySelector('.search-container')?.scrollIntoView({ behavior: 'smooth' }));
+        navStats.addEventListener('click', () => document.querySelector('.stat-card')?.scrollIntoView({ behavior: 'smooth' }));
+        updateAuthUI();
+
+        // Parse DD/MM/YYYY date string to Date object
+        function parseDateFromDDMMYYYY(dateStr) {
+            if (!dateStr || dateStr === '') return null;
+            const [day, month, year] = dateStr.split('/').map(Number);
+            if (!day || !month || !year || isNaN(day) || isNaN(month) || isNaN(year)) {
+                return null;
+            }
+            return new Date(year, month - 1, day);
+        }
+
+        // Format date to DD/MM/YYYY for display and input
+        function formatDateForDisplay(date) {
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}/${month}/${year}`;
+        }
+
+        // Set date range based on dropdown selection
+        function setDateRange(range) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const endDate = new Date(today);
+            const startDate = new Date(today);
+
+            switch (range) {
+                case 'last-month':
+                    startDate.setMonth(today.getMonth() - 1);
+                    startDate.setDate(1);
+                    break;
+                case '3-months':
+                    startDate.setMonth(today.getMonth() - 3);
+                    startDate.setDate(1);
+                    break;
+                case '5-months':
+                    startDate.setMonth(today.getMonth() - 5);
+                    startDate.setDate(1);
+                    break;
+                case '8-months':
+                    startDate.setMonth(today.getMonth() - 8);
+                    startDate.setDate(1);
+                    break;
+                case '12-months':
+                    startDate.setMonth(today.getMonth() - 12);
+                    startDate.setDate(1);
+                    break;
+                case '2-years':
+                    startDate.setFullYear(today.getFullYear() - 2);
+                    startDate.setDate(1);
+                    startDate.setMonth(0);
+                    break;
+            }
+
+            startDateInput.value = formatDateForDisplay(startDate);
+            endDateInput.value = formatDateForDisplay(endDate);
+            dateRangeMenu.classList.add('hidden');
+        }
+
+        // Date range dropdown toggle
+        dateRangeToggle.addEventListener('click', (e) => {
+            e.preventDefault();
+            dateRangeMenu.classList.toggle('hidden');
+        });
+
+        // Handle date range menu clicks
+        dateRangeMenu.querySelectorAll('button').forEach(button => {
+            button.addEventListener('click', () => {
+                setDateRange(button.dataset.range);
+            });
+        });
+
+        // Close date range dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!dateRangeToggle.contains(e.target) && !dateRangeMenu.contains(e.target)) {
+                dateRangeMenu.classList.add('hidden');
+            }
+        });
+
+        // Search and filter functionality
+        function performSearch() {
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            const statusFilter = filterStatus.value;
+            const startDate = parseDateFromDDMMYYYY(startDateInput.value);
+            const endDate = parseDateFromDDMMYYYY(endDateInput.value);
+            const rows = tableBody.getElementsByTagName('tr');
+            let visibleCount = 0;
+
+            // Validate date range
+            if (startDate && endDate && startDate > endDate) {
+                filterFeedback.textContent = 'Error: Start date cannot be after end date';
+                filterFeedback.classList.add('active', 'text-red-600');
+                return;
+            }
+
+            // Prepare feedback message
+            let messages = [];
+            if (searchTerm) {
+                messages.push(`search: "${searchTerm}"`);
+            }
+            if (statusFilter !== 'all') {
+                const statusText = filterStatus.options[filterStatus.selectedIndex].text;
+                messages.push(`status: ${statusText}`);
+            }
+            if (startDate && endDate) {
+                messages.push(`date range: ${startDateInput.value} to ${endDateInput.value}`);
+            }
+            if (messages.length > 0) {
+                filterFeedback.textContent = `Filters applied: ${messages.join(', ')}`;
+                filterFeedback.classList.add('active');
+                filterFeedback.classList.remove('text-red-600');
+            } else {
+                filterFeedback.textContent = '';
+                filterFeedback.classList.remove('active', 'text-red-600');
+            }
+
+            for (let row of rows) {
+                if (row.children.length < 8) continue; // Skip empty state row
+
+                const uhid = (row.dataset.uhid || '').toLowerCase();
+                const name = (row.dataset.name || '').toLowerCase();
+                const surgeon = (row.dataset.surgeon || '').toLowerCase();
+                const complications = row.dataset.complications || '';
+                const reviewStatus = row.dataset.review || '';
+                const dos = row.dataset.dos || '9999-12-31';
+
+                let matchSearch = true;
+                let matchFilter = true;
+                let matchDate = true;
+
+                // Search match
+                if (searchTerm) {
+                    matchSearch = uhid.includes(searchTerm) ||
+                        name.includes(searchTerm) ||
+                        surgeon.includes(searchTerm);
+                }
+
+                // Status filter match
+                if (statusFilter !== 'all') {
+                    switch (statusFilter) {
+                        case 'complications':
+                            matchFilter = complications === 'Yes';
+                            break;
+                        case 'no-complications':
+                            matchFilter = complications === 'No';
+                            break;
+                        case 'pending-review':
+                            matchFilter = reviewStatus === 'Pending';
+                            break;
+                        case 'completed-review':
+                            matchFilter = reviewStatus === 'Completed';
+                            break;
+                    }
+                }
+
+                // Date filter match
+                if (startDate && endDate && dos !== '9999-12-31' && dos !== '0000-00-00') {
+                    const recordDate = new Date(dos);
+                    if (isNaN(recordDate.getTime())) {
+                        matchDate = false;
+                    } else {
+                        recordDate.setHours(0, 0, 0, 0);
+                        startDate.setHours(0, 0, 0, 0);
+                        endDate.setHours(0, 0, 0, 0);
+                        matchDate = recordDate >= startDate && recordDate <= endDate;
+                    }
+                } else if ((dos === '9999-12-31' || dos === '0000-00-00') && startDate && endDate) {
+                    matchDate = false;
+                }
+
+                row.style.display = (matchSearch && matchFilter && matchDate) ? '' : 'none';
+                if (matchSearch && matchFilter && matchDate) {
+                    visibleCount++;
+                }
+            }
+
+            recordCount.textContent = visibleCount;
+        }
+
+        // Event listeners
+        applyFilters.addEventListener('click', () => {
+            performSearch();
+        });
+
+        clearFilters.addEventListener('click', () => {
+            searchInput.value = '';
+            filterStatus.value = 'all';
+            startDateInput.value = '';
+            endDateInput.value = '';
+            filterFeedback.textContent = '';
+            filterFeedback.classList.remove('active', 'text-red-600');
+            dateRangeMenu.classList.add('hidden');
+            performSearch();
+        });
+    </script>
+</body>
+
+</html>

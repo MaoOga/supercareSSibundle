@@ -14,6 +14,7 @@
 
 <body>
     <div class="container">
+            <div id="messageBox" style="display:none;"></div>
         <div class="header">
             <img src="supercare-hospital_logo.png" alt="Supercare Logo">
             <div class="title-main">SSI BUNDLE FORM</div>
@@ -22,18 +23,18 @@
         <table class="tg">
             <thead>
                 <tr>
-                    <th class="tg-1wig">
+                    <th class="tg-1wig" style="vertical-align: middle;">
                         <label class="flex gap-2 items-center w-full">Name:
                             <textarea name="name" class="input-overlay input-full" rows="1" oninput="autoGrow(this)"
                                 style="min-height:28px; line-height:1.2;"></textarea>
                         </label>
                     </th>
-                    <th class="tg-1wig">
+                    <th class="tg-1wig" style="vertical-align: middle;">
                         <label class="flex gap-2 items-center w-full">Age:
                             <input type="number" class="input-overlay" name="age">
                         </label>
                     </th>
-                    <th class="tg-1wig">
+                    <th class="tg-1wig" style="vertical-align: middle;">
                         <label class="flex gap-2 items-center w-full">Sex:
                             <select name="Sex" class="surgeon-select"
                                 style="width: 80%; margin-left: 8px; font-size: 15px; border: none; height:30px; vertical-align: middle;"
@@ -48,19 +49,19 @@
             </thead>
             <tbody>
                 <tr>
-                    <td class="tg-1wig"><label class="flex gap-2 items-center w-full">UHID:
+                    <td class="tg-1wig" style="vertical-align: middle;"><label class="flex gap-2 items-center w-full">UHID:
                             <input type="text" class="input-overlay" name="uhid">
                         </label></td>
-                    <td class="tg-1wig"><label class="flex gap-2 items-center w-full">
+                    <td class="tg-1wig" style="vertical-align: middle;"><label class="flex gap-2 items-center w-full">
                             <span class="whitespace-nowrap label-bold">Phone No: </span>
                             <input type="tel" class="input-overlay" name="phone">
                         </label></td>
-                    <td class="tg-1wig"><label class="flex gap-2 items-center w-full">Bed no./Ward:
+                    <td class="tg-1wig" style="vertical-align: middle;"><label class="flex gap-2 items-center w-full">Bed no./Ward:
                             <input type="text" class="input-overlay" name="bed">
                         </label></td>
                 </tr>
                 <tr>
-                    <td class="tg-1wig" colspan="3">
+                    <td class="tg-1wig" style="vertical-align: middle;" colspan="3">
                         <label class="flex gap-2 items-center w-full">
                             <span class="whitespace-nowrap label-bold">Address: </span>
                             <textarea class="input-overlay input-full" name="address" rows="1" oninput="autoGrow(this)"
@@ -69,7 +70,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td class="tg-1wig" colspan="3">
+                    <td class="tg-1wig" style="vertical-align: middle;" colspan="3">
                         <label class="flex gap-2 items-center w-full">
                             <span class="whitespace-nowrap label-bold">Primary Diagnosis:</span>
                             <textarea class="input-overlay input-full" name="diagnosis" rows="1"
@@ -78,10 +79,10 @@
                     </td>
                 </tr>
                 <tr>
-                    <td class="tg-1wig" colspan="3">
+                    <td class="tg-1wig" style="vertical-align: middle;" colspan="3">
                         <label class="flex gap-2 items-center w-full">
                             <span class="whitespace-nowrap label-bold">Surgical Procedure:</span>
-                            <textarea class="input-overlay input-full" rows="1" oninput="autoGrow(this)"
+                            <textarea name="surgical_procedure" class="input-overlay input-full" rows="1" oninput="autoGrow(this)"
                                 style="min-height:28px; line-height:1.2;"></textarea>
                         </label>
                     </td>
@@ -92,19 +93,19 @@
         <table class="tg tg-doa-dos-dod-surgeon">
             <thead>
                 <tr>
-                    <th class="tg-1wig"><label class="flex gap-2 items-center">DOA:
+                    <th class="tg-1wig" style="vertical-align: middle;"><label class="flex gap-2 items-center">DOA:
                             <input type="text" name="patient_info[doa]" class="datepicker" placeholder="dd/mm/yyyy"
                                 style="width: 100px;" value="">
                         </label></th>
-                    <th class="tg-1wig"><label class="flex gap-2 items-center">DOS:
+                    <th class="tg-1wig" style="vertical-align: middle;"><label class="flex gap-2 items-center">DOS:
                             <input type="text" name="patient_info[dos]" class="datepicker" placeholder="dd/mm/yyyy"
                                 style="width: 100px;" value="">
                         </label></th>
-                    <th class="tg-1wig"><label class="flex gap-2 items-center">DOD:
+                    <th class="tg-1wig" style="vertical-align: middle;"><label class="flex gap-2 items-center">DOD:
                             <input type="text" name="patient_info[dod]" class="datepicker" placeholder="dd/mm/yyyy"
                                 style="width: 100px;" value="">
                         </label></th>
-                    <th class="tg-1wig"><label class="flex gap-2 items-center">Surgeon:
+                    <th class="tg-1wig" style="vertical-align: middle;"><label class="flex gap-2 items-center">Surgeon:
                             <select name="patient_info[surgeon]" class="surgeon-select"
                                 style="width: 80%; margin-left: 8px; font-size: 15px; border: none; height:30px; vertical-align: middle;"
                                 required>
@@ -157,7 +158,7 @@
             </thead>
             <tbody>
                 <tr>
-                    <td class="tg-1wig" colspan="4">
+                    <td class="tg-1wig" style="vertical-align: middle;" colspan="4">
                         <label class="flex gap-2 items-center w-full">
                             <span class="whitespace-nowrap label-bold">Duration Of Operation: </span>
                             <textarea name="operation_duration" class="input-overlay input-full"
@@ -185,7 +186,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td class="tg-1wig" colspan="4">
+                    <td class="tg-1wig" style="vertical-align: middle;" colspan="4">
                         <label class="flex gap-2 items-center w-full">
                             <span class="whitespace-nowrap label-bold">If not done (Reason): </span>
                             <textarea class="input-overlay input-full" name="pre-notdone" rows="1"
@@ -206,7 +207,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td class="tg-1wig" colspan="4">
+                    <td class="tg-1wig" style="vertical-align: middle;" colspan="4">
                         <label class="flex gap-2 items-center w-full">
                             <span class="whitespace-nowrap label-bold">If not done (Reason):</span>
                             <textarea class="input-overlay input-full" name="hair-notdone" rows="1"
@@ -246,28 +247,28 @@
                     </td>
                 </tr>
                 <tr>
-                    <td class="tg-1wig">
+                    <td class="tg-1wig" style="vertical-align: middle;">
                         <label class="flex gap-2 items-center w-full">
                             <span class="whitespace-nowrap label-bold">Metal: </span>
                             <textarea name="metal" class="input-overlay input-full" rows="1" oninput="autoGrow(this)"
                                 style="min-height:28px; line-height:1.2;"></textarea>
                         </label>
                     </td>
-                    <td class="tg-1wig">
+                    <td class="tg-1wig" style="vertical-align: middle;">
                         <label class="flex gap-2 items-center w-full">
                             <span class="whitespace-nowrap label-bold">Graft: </span>
                             <textarea name="graft" class="input-overlay input-full" rows="1" oninput="autoGrow(this)"
                                 style="min-height:28px; line-height:1.2;"></textarea>
                         </label>
                     </td>
-                    <td class="tg-1wig">
+                    <td class="tg-1wig" style="vertical-align: middle;">
                         <label class="flex gap-2 items-center w-full">
                             <span class="whitespace-nowrap label-bold">Patch: </span>
                             <textarea name="Patch" class="input-overlay input-full" rows="1" oninput="autoGrow(this)"
                                 style="min-height:28px; line-height:1.2;"></textarea>
                         </label>
                     </td>
-                    <td class="tg-1wig">
+                    <td class="tg-1wig" style="vertical-align: middle;">
                         <label class="flex gap-2 items-center w-full">
                             <span class="whitespace-nowrap label-bold">Shunt/Stent: </span>
                             <textarea name="Shunt" class="input-overlay input-full" rows="1" oninput="autoGrow(this)"
@@ -289,7 +290,7 @@
                     </td>
                 </tr>
                 <tr class="drain-row">
-                    <td class="tg-1wig" colspan="4">
+                    <td class="tg-1wig" style="vertical-align: middle;" colspan="4">
                         <label class="flex gap-2 items-center w-full">
                             <span class="whitespace-nowrap label-bold">1. </span>
                             <textarea name="drain_1" class="input-overlay input-full" rows="1" oninput="autoGrow(this)"
@@ -298,7 +299,7 @@
                     </td>
                 </tr>
                 <tr class="drain-row">
-                    <td class="tg-1wig" colspan="4">
+                    <td class="tg-1wig" style="vertical-align: middle;" colspan="4">
                         <label class="flex gap-2 items-center w-full">
                             <span class="whitespace-nowrap label-bold">2. </span>
                             <textarea name="drain_2" class="input-overlay input-full" rows="1" oninput="autoGrow(this)"
@@ -307,7 +308,7 @@
                     </td>
                 </tr>
                 <tr class="drain-row">
-                    <td class="tg-1wig" colspan="4">
+                    <td class="tg-1wig" style="vertical-align: middle;" colspan="4">
                         <label class="flex gap-2 items-center w-full">
                             <span class="whitespace-nowrap label-bold">3. </span>
                             <textarea name="drain_3" class="input-overlay input-full" rows="1" oninput="autoGrow(this)"
@@ -467,9 +468,9 @@
                 <thead>
                     <tr>
                         <th class="tg-67s2">Cultural Swap<br><br><br><br><br><br><br><br><br><br></th>
-                        <td class="tg-0lax"><textarea name="Cultural-Swap" class="input-overlay input-full" rows="1"
+                        <th class="tg-0lax"><textarea name="Cultural-Swap" class="input-overlay input-full" rows="1"
                                 oninput="autoGrow(this)"
-                                style="min-height:28px; line-height:1.2; width:800px;"></textarea></td>
+                                style="min-height:28px; line-height:1.2; width:800px;"></textarea></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -489,7 +490,7 @@
             <h3 class="Wound-Complications" style="text-align: center; text-decoration: underline; font-weight: bold;">
                 Wound Complications</h3>
             <table class="tg tg-wound-complications">
-                <thead>
+                <tbody>
                     <tr>
                         <td class="tg-fymr" rowspan="6">Wound Complications<br>SSI--> Tick Criteria--><br>Date:<input
                                 type="text" name="Wound-Complication Date" class="datepicker" placeholder="dd/mm/yyyy"
@@ -562,7 +563,7 @@
                                 class="input-overlay input-full" rows="1" oninput="autoGrow(this)"
                                 style="min-height:28px; line-height:1.2;"></textarea></td>
                     </tr>
-                </thead>
+                </tbody>
             </table>
         </div>
         <div class="section-break"></div>

@@ -10,6 +10,13 @@
                 dateFormat: 'dd/mm/yy',
                 showButtonPanel: true
             });
+            // Disable browser autofill suggestions on date inputs
+            $('.datepicker').attr({
+                autocomplete: 'off',
+                autocorrect: 'off',
+                autocapitalize: 'off',
+                spellcheck: 'false'
+            });
         });
 
         const canvas = document.getElementById('signatureCanvas');
@@ -65,6 +72,41 @@
             window.print();
         }
 
+        // Hide empty datepicker inputs on print, restore after
+        (function setupPrintVisibilityForEmptyDatepickers() {
+            function toggleEmptyDatepickers(hide) {
+                $('.datepicker').each(function() {
+                    const isEmpty = !$(this).val();
+                    if (isEmpty) {
+                        if (hide) {
+                            $(this).addClass('hide-on-print');
+                        } else {
+                            $(this).removeClass('hide-on-print');
+                        }
+                    }
+                });
+            }
+
+            // Before print
+            if (window.matchMedia) {
+                const mediaQueryList = window.matchMedia('print');
+                mediaQueryList.addListener(function(mql) {
+                    if (mql.matches) {
+                        toggleEmptyDatepickers(true);
+                    } else {
+                        toggleEmptyDatepickers(false);
+                    }
+                });
+            }
+
+            window.addEventListener('beforeprint', function() {
+                toggleEmptyDatepickers(true);
+            });
+            window.addEventListener('afterprint', function() {
+                toggleEmptyDatepickers(false);
+            });
+        })();
+
         function showMessage(message, type) {
             const messageBox = $('#messageBox');
             messageBox.text(message)
@@ -94,6 +136,11 @@
                 changeMonth: true,
                 changeYear: true,
                 showButtonPanel: true
+            }).attr({
+                autocomplete: 'off',
+                autocorrect: 'off',
+                autocapitalize: 'off',
+                spellcheck: 'false'
             });
             updateAntibioticRowNumbers();
         }
@@ -177,6 +224,11 @@
                 changeMonth: true,
                 changeYear: true,
                 showButtonPanel: true
+            }).attr({
+                autocomplete: 'off',
+                autocorrect: 'off',
+                autocapitalize: 'off',
+                spellcheck: 'false'
             });
             table.find('textarea').off('input').on('input', function() { autoGrow(this); });
             updatePostOperativeRowNumbers();

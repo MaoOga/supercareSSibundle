@@ -256,6 +256,25 @@ textarea {
     vertical-align: middle;
 }
 
+/* Datepicker: show a subtle box only when empty; remove when filled */
+input[type="text"].datepicker:placeholder-shown {
+    border: 1px solid #d1d5db !important;
+    border-radius: 4px;
+    padding: 2px 4px;
+}
+
+input[type="text"].datepicker:not(:placeholder-shown) {
+    border: none !important;
+}
+
+/* Remove any focus highlight/ring on date inputs */
+input[type="text"].datepicker:focus,
+input[type="text"].datepicker:focus-visible {
+    outline: none !important;
+    box-shadow: none !important;
+    -webkit-tap-highlight-color: transparent;
+}
+
 input[type="text"]:focus,
 input[type="radio"]:focus,
 input[type="checkbox"]:focus,
@@ -319,9 +338,14 @@ h2 {
 
 label.flex {
     display: flex;
-    align-items: center;
+    align-items: baseline;
     gap: 8px;
     width: 100%;
+}
+
+/* Ensure every control inside a label aligns to the text baseline */
+label.flex > * {
+    align-self: baseline;
 }
 
 @media screen and (max-width: 640px) {
@@ -414,9 +438,17 @@ label.flex {
         padding: 2px 20px 2px 4px;
         font-size: 11px;
         box-sizing: border-box;
-        border: 1px solid #d1d5db;
-        border-radius: 4px;
         vertical-align: middle;
+    }
+
+    /* Mobile: same empty-vs-filled behavior */
+    input[type="text"].datepicker:placeholder-shown {
+        border: 1px solid #d1d5db !important;
+        border-radius: 4px;
+    }
+
+    input[type="text"].datepicker:not(:placeholder-shown) {
+        border: none !important;
     }
 
     input[type="text"].datepicker::-webkit-calendar-picker-indicator {
@@ -507,7 +539,7 @@ label.flex {
     }
 
     label.flex {
-        align-items: center;
+        align-items: baseline;
         flex-wrap: nowrap;
     }
 
@@ -707,12 +739,17 @@ label.flex {
     }
 
     label.flex {
-        align-items: center;
+        align-items: baseline;
         flex-wrap: nowrap;
     }
 
     .label-bold {
         white-space: nowrap;
         vertical-align: middle;
+    }
+
+    /* Hide elements explicitly marked to be hidden during print */
+    .hide-on-print {
+        display: none !important;
     }
 }
