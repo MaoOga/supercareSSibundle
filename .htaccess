@@ -1,0 +1,46 @@
+# Ensure PHP files are processed
+AddType application/x-httpd-php .php
+
+# Set default character encoding
+AddDefaultCharset UTF-8
+
+# Enable error reporting for debugging (remove in production)
+php_flag display_errors on
+php_value error_reporting E_ALL
+
+# Set session configuration (temporarily commented out to fix admin login)
+# php_value session.cookie_lifetime 0
+# php_value session.use_cookies 1
+# php_value session.use_only_cookies 1
+# php_value session.use_strict_mode 1
+# php_value session.cookie_httponly 1
+# php_value session.use_trans_sid 0
+# php_value session.cache_limiter nocache
+
+# Prevent direct access to sensitive files
+<Files "config.php">
+    Order allow,deny
+    Deny from all
+</Files>
+
+# Allow session_config.php to be included by other files
+<Files "session_config.php">
+    Order allow,deny
+    Deny from all
+</Files>
+
+# Allow check_admin_session.php to be included
+<Files "check_admin_session.php">
+    Order allow,deny
+    Allow from all
+</Files>
+
+<Files "audit_logger.php">
+    Order allow,deny
+    Deny from all
+</Files>
+
+# Enable CORS for API calls
+Header always set Access-Control-Allow-Origin "*"
+Header always set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+Header always set Access-Control-Allow-Headers "Content-Type, Authorization"

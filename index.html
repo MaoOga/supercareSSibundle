@@ -1,649 +1,1004 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SSI Bundle Checklist - Nurse Panel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+    />
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Surgical Monitoring Form</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://code.jquery.com/ui/1.14.1/themes/base/jquery-ui.css">
-    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
-    <script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
-    <link rel="stylesheet" type="text/css" href="style.css">
-</head>
+    <style>
+      :root {
+        --bg-body: #f3f4f6;
+        --bg-header: #ffffff;
+        --bg-card: #ffffff;
+        --bg-table-header: #ecfdf5;
+        --text-primary: #111827;
+        --text-secondary: #6b7280;
+        --text-icon: rgb(26, 175, 81);
+        --border-primary: #86efac;
+        --border-secondary: #e5e7eb;
+        --button-bg: rgb(26, 175, 81);
+        --button-bg-hover: rgb(22, 163, 74);
+        --button-text: #ffffff;
+        --link-text: rgb(26, 175, 81);
+        --link-text-hover: rgb(22, 163, 74);
+        --table-row-hover: #f9fafb;
+        --dropdown-bg: #ffffff;
+        --dropdown-border: #e5e7eb;
+        --dropdown-hover-bg: #ecfdf5;
+        --dropdown-hover-text: rgb(26, 175, 81);
+        --label-color: rgb(46, 226, 130);
+        --search-icon: #9ca3af;
+        --clear-button-bg: #e5e7eb;
+        --clear-button-bg-hover: #d1d5db;
+        --clear-button-text: #374151;
+      }
 
-<body>
-    <div class="container">
-            <div id="messageBox" style="display:none;"></div>
-        <div class="header">
-            <img src="supercare-hospital_logo.png" alt="Supercare Logo">
-            <div class="title-main">SSI BUNDLE FORM</div>
-            <div class="title-sub">Supercare</div>
-        </div>
-        <table class="tg">
-            <thead>
-                <tr>
-                    <th class="tg-1wig" style="vertical-align: middle;">
-                        <label class="flex gap-2 items-center w-full">Name:
-                            <textarea name="name" class="input-overlay input-full" rows="1" oninput="autoGrow(this)"
-                                style="min-height:28px; line-height:1.2;"></textarea>
-                        </label>
-                    </th>
-                    <th class="tg-1wig" style="vertical-align: middle;">
-                        <label class="flex gap-2 items-center w-full">Age:
-                            <input type="number" class="input-overlay" name="age">
-                        </label>
-                    </th>
-                    <th class="tg-1wig" style="vertical-align: middle;">
-                        <label class="flex gap-2 items-center w-full">Sex:
-                            <select name="Sex" class="surgeon-select"
-                                style="width: 80%; margin-left: 8px; font-size: 15px; border: none; height:30px; vertical-align: middle;"
-                                required>
-                                <option value="">Select Gender</option>
-                                <option value="Male">Male</option>
-                                <option value="Female">Female</option>
-                            </select>
-                        </label>
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td class="tg-1wig" style="vertical-align: middle;"><label class="flex gap-2 items-center w-full">UHID:
-                            <input type="text" class="input-overlay" name="uhid">
-                        </label></td>
-                    <td class="tg-1wig" style="vertical-align: middle;"><label class="flex gap-2 items-center w-full">
-                            <span class="whitespace-nowrap label-bold">Phone No: </span>
-                            <input type="tel" class="input-overlay" name="phone">
-                        </label></td>
-                    <td class="tg-1wig" style="vertical-align: middle;"><label class="flex gap-2 items-center w-full">Bed no./Ward:
-                            <input type="text" class="input-overlay" name="bed">
-                        </label></td>
-                </tr>
-                <tr>
-                    <td class="tg-1wig" style="vertical-align: middle;" colspan="3">
-                        <label class="flex gap-2 items-center w-full">
-                            <span class="whitespace-nowrap label-bold">Address: </span>
-                            <textarea class="input-overlay input-full" name="address" rows="1" oninput="autoGrow(this)"
-                                style="min-height:28px; line-height:1.2;"></textarea>
-                        </label>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="tg-1wig" style="vertical-align: middle;" colspan="3">
-                        <label class="flex gap-2 items-center w-full">
-                            <span class="whitespace-nowrap label-bold">Primary Diagnosis:</span>
-                            <textarea class="input-overlay input-full" name="diagnosis" rows="1"
-                                oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea>
-                        </label>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="tg-1wig" style="vertical-align: middle;" colspan="3">
-                        <label class="flex gap-2 items-center w-full">
-                            <span class="whitespace-nowrap label-bold">Surgical Procedure:</span>
-                            <textarea name="surgical_procedure" class="input-overlay input-full" rows="1" oninput="autoGrow(this)"
-                                style="min-height:28px; line-height:1.2;"></textarea>
-                        </label>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-        <div class="section-break"></div>
-        <table class="tg tg-doa-dos-dod-surgeon">
-            <thead>
-                <tr>
-                    <th class="tg-1wig" style="vertical-align: middle;"><label class="flex gap-2 items-center">DOA:
-                            <input type="text" name="patient_info[doa]" class="datepicker" placeholder="dd/mm/yyyy"
-                                style="width: 100px;" value="">
-                        </label></th>
-                    <th class="tg-1wig" style="vertical-align: middle;"><label class="flex gap-2 items-center">DOS:
-                            <input type="text" name="patient_info[dos]" class="datepicker" placeholder="dd/mm/yyyy"
-                                style="width: 100px;" value="">
-                        </label></th>
-                    <th class="tg-1wig" style="vertical-align: middle;"><label class="flex gap-2 items-center">DOD:
-                            <input type="text" name="patient_info[dod]" class="datepicker" placeholder="dd/mm/yyyy"
-                                style="width: 100px;" value="">
-                        </label></th>
-                    <th class="tg-1wig" style="vertical-align: middle;"><label class="flex gap-2 items-center">Surgeon:
-                            <select name="patient_info[surgeon]" class="surgeon-select"
-                                style="width: 80%; margin-left: 8px; font-size: 15px; border: none; height:30px; vertical-align: middle;"
-                                required>
-                                <option value="">Select</option>
-                                <option value="Dr Rangksan Singh Thangkhiew">Dr Rangksan Singh Thangkhiew</option>
-                                <option value="Dr A N Mahesh Chengappa">Dr A N Mahesh Chengappa</option>
-                                <option value="Dr Janardhan Bordoloi">Dr Janardhan Bordoloi</option>
-                                <option value="Dr Sangeeta Kar">Dr Sangeeta Kar</option>
-                                <option value="Dr Samuel Pamei">Dr Samuel Pamei</option>
-                                <option value="Dr Sarungbam Malem Devi">Dr Sarungbam Malem Devi</option>
-                                <option value="Dr Ajay Kumar Thakur">Dr Ajay Kumar Thakur</option>
-                                <option value="Dr Bernard Trench Lyngdoh">Dr Bernard Trench Lyngdoh</option>
-                                <option value="Dr Reuel Pamei Nongrum">Dr Reuel Pamei Nongrum</option>
-                                <option value="Dr Donald R Bareh">Dr Donald R Bareh</option>
-                                <option value="Dr Rishan Singh Nongbet">Dr Rishan Singh Nongbet</option>
-                                <option value="Dr Gideon Lyngsyun Rynjah">Dr Gideon Lyngsyun Rynjah</option>
-                                <option value="Dr Vinodrai Gondalia">Dr Vinodrai Gondalia</option>
-                                <option value="Dr Bobby Linda Majaw">Dr Bobby Linda Majaw</option>
-                                <option value="Dr Doreen Kharwalang">Dr Doreen Kharwalang</option>
-                                <option value="Dr Pankaj Jain">Dr Pankaj Jain</option>
-                                <option value="Dr Chayanika Sarma">Dr Chayanika Sarma</option>
-                                <option value="Dr Mario Danny Hek">Dr Mario Danny Hek</option>
-                                <option value="Dr Anamika Mall">Dr Anamika Mall</option>
-                                <option value="Dr Synrang Batngen Warjri">Dr Synrang Batngen Warjri</option>
-                                <option value="Dr Sunita Thangkhiew">Dr Sunita Thangkhiew</option>
-                                <option value="Dr Emisaka Sumer">Dr Emisaka Sumer</option>
-                                <option value="Dr Velvette Rose Shabong">Dr Velvette Rose Shabong</option>
-                                <option value="Dr Manoj Kumar Sharma">Dr Manoj Kumar Sharma</option>
-                                <option value="Dr Andrew Rahmi Lyngdoh">Dr Andrew Rahmi Lyngdoh</option>
-                                <option value="Dr Danquale Vance Kynshikhar">Dr Danquale Vance Kynshikhar</option>
-                                <option value="Dr Mezhuneituo Raleng">Dr Mezhuneituo Raleng</option>
-                                <option value="Dr Eugeane Mary Kharmalki">Dr Eugeane Mary Kharmalki</option>
-                                <option value="Dr Konsam Gunamani Singh">Dr Konsam Gunamani Singh</option>
-                                <option value="Dr Pranjal Deka">Dr Pranjal Deka</option>
-                                <option value="Dr Daminot Phanbuh">Dr Daminot Phanbuh</option>
-                                <option value="Dr Amlan Jyoti Sarmah">Dr Amlan Jyoti Sarmah</option>
-                                <option value="Dr Tonmoy Das">Dr Tonmoy Das</option>
-                                <option value="Dr Ashutosh Vatsyayan">Dr Ashutosh Vatsyayan</option>
-                                <option value="Dr Kishore Kalita">Dr Kishore Kalita</option>
-                                <option value="Dr Sharon A L Rymbai">Dr Sharon A L Rymbai</option>
-                                <option value="Dr Indakiewlin Kharbuli">Dr Indakiewlin Kharbuli</option>
-                                <option value="Dr Damaelari Phylla Sohkhlet">Dr Damaelari Phylla Sohkhlet</option>
-                                <option value="Dr Credence Carryne Syiem">Dr Credence Carryne Syiem</option>
-                                <option value="Dr Jeetendra Gurung">Dr Jeetendra Gurung</option>
-                                <option value="Dr Syed Adam Mousom">Dr Syed Adam Mousom</option>
-                            </select>
-                            <span class="surgeon-print" style="display: none; margin-left: 8px;"></span>
-                        </label></th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td class="tg-1wig" style="vertical-align: middle;" colspan="4">
-                        <label class="flex gap-2 items-center w-full">
-                            <span class="whitespace-nowrap label-bold">Duration Of Operation: </span>
-                            <textarea name="operation_duration" class="input-overlay input-full"
-                                oninput="autoGrow(this)" style="min-height:28px; line-height:1.3;"></textarea>
-                        </label>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-        <div class="section-break"></div>
-        <table class="tg">
-            <thead>
-                <tr>
-                    <th class="tg-ty4g" colspan="4">Surgical Skin Preparation Monitoring</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td class="tg-67s2">Pre op Bath/Shower</td>
-                    <td class="tg-0lax">
-                        <input type="radio" name="surgical_skin_preparation[pre_op_bath]" value="Yes"> Yes
-                    </td>
-                    <td class="tg-0lax" colspan="2">
-                        <input type="radio" name="surgical_skin_preparation[pre_op_bath]" value="No"> No
-                    </td>
-                </tr>
-                <tr>
-                    <td class="tg-1wig" style="vertical-align: middle;" colspan="4">
-                        <label class="flex gap-2 items-center w-full">
-                            <span class="whitespace-nowrap label-bold">If not done (Reason): </span>
-                            <textarea class="input-overlay input-full" name="pre-notdone" rows="1"
-                                oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea>
-                        </label>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="tg-67s2">Hair Removal</td>
-                    <td class="tg-0lax">
-                        <input type="radio" name="surgical_skin_preparation[hair-removal]" value="Razor"> Razor
-                    </td>
-                    <td class="tg-0lax">
-                        <input type="radio" name="surgical_skin_preparation[hair-removal]" value="Trimmer"> Trimmer
-                    </td>
-                    <td class="tg-0lax">
-                        <input type="radio" name="surgical_skin_preparation[hair-removal]" value="Not Done"> Not Done
-                    </td>
-                </tr>
-                <tr>
-                    <td class="tg-1wig" style="vertical-align: middle;" colspan="4">
-                        <label class="flex gap-2 items-center w-full">
-                            <span class="whitespace-nowrap label-bold">If not done (Reason):</span>
-                            <textarea class="input-overlay input-full" name="hair-notdone" rows="1"
-                                oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea>
-                        </label>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="tg-67s2">Where was hair removal done?</td>
-                    <td class="tg-0lax">
-                        <input type="radio" name="surgical_skin_preparation[removal-done]" value="Ward"> Ward
-                    </td>
-                    <td class="tg-0lax">
-                        <input type="radio" name="surgical_skin_preparation[removal-done]" value="ICU/HDU"> ICU/HDU
-                    </td>
-                    <td class="tg-0lax">
-                        <input type="radio" name="surgical_skin_preparation[removal-done]" value="OT/LR"> OT/LR
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-        <div class="page-break"></div>
-        <table class="tg">
-            <thead>
-                <tr>
-                    <th class="tg-ty4g" colspan="4">Implanted Material</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td class="tg-67s2">Implanted Used:</td>
-                    <td class="tg-0lax">
-                        <input type="radio" name="implanted_used" value="Yes" class="form-radio text-blue-600"> Yes
-                    </td>
-                    <td class="tg-0lax" colspan="2">
-                        <input type="radio" name="implanted_used" value="No" class="form-radio text-blue-600"> No
-                    </td>
-                </tr>
-                <tr>
-                    <td class="tg-1wig" style="vertical-align: middle;">
-                        <label class="flex gap-2 items-center w-full">
-                            <span class="whitespace-nowrap label-bold">Metal: </span>
-                            <textarea name="metal" class="input-overlay input-full" rows="1" oninput="autoGrow(this)"
-                                style="min-height:28px; line-height:1.2;"></textarea>
-                        </label>
-                    </td>
-                    <td class="tg-1wig" style="vertical-align: middle;">
-                        <label class="flex gap-2 items-center w-full">
-                            <span class="whitespace-nowrap label-bold">Graft: </span>
-                            <textarea name="graft" class="input-overlay input-full" rows="1" oninput="autoGrow(this)"
-                                style="min-height:28px; line-height:1.2;"></textarea>
-                        </label>
-                    </td>
-                    <td class="tg-1wig" style="vertical-align: middle;">
-                        <label class="flex gap-2 items-center w-full">
-                            <span class="whitespace-nowrap label-bold">Patch: </span>
-                            <textarea name="Patch" class="input-overlay input-full" rows="1" oninput="autoGrow(this)"
-                                style="min-height:28px; line-height:1.2;"></textarea>
-                        </label>
-                    </td>
-                    <td class="tg-1wig" style="vertical-align: middle;">
-                        <label class="flex gap-2 items-center w-full">
-                            <span class="whitespace-nowrap label-bold">Shunt/Stent: </span>
-                            <textarea name="Shunt" class="input-overlay input-full" rows="1" oninput="autoGrow(this)"
-                                style="min-height:28px; line-height:1.2;"></textarea>
-                        </label>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="tg-67s2">
-                        <label class="flex gap-2 items-center w-full">
-                            <span class="whitespace-nowrap label-bold">Drain Used: </span>
-                        </label>
-                    </td>
-                    <td class="tg-0lax">
-                        <input type="radio" name="drain-used" value="Yes" class="form-radio text-blue-600"> Yes
-                    </td>
-                    <td class="tg-0lax" colspan="2">
-                        <input type="radio" name="drain-used" value="No" class="form-radio text-blue-600"> No
-                    </td>
-                </tr>
-                <tr class="drain-row">
-                    <td class="tg-1wig" style="vertical-align: middle;" colspan="4">
-                        <label class="flex gap-2 items-center w-full">
-                            <span class="whitespace-nowrap label-bold">1. </span>
-                            <textarea name="drain_1" class="input-overlay input-full" rows="1" oninput="autoGrow(this)"
-                                style="min-height:28px; line-height:1.2;"></textarea>
-                        </label>
-                    </td>
-                </tr>
-                <tr class="drain-row">
-                    <td class="tg-1wig" style="vertical-align: middle;" colspan="4">
-                        <label class="flex gap-2 items-center w-full">
-                            <span class="whitespace-nowrap label-bold">2. </span>
-                            <textarea name="drain_2" class="input-overlay input-full" rows="1" oninput="autoGrow(this)"
-                                style="min-height:28px; line-height:1.2;"></textarea>
-                        </label>
-                    </td>
-                </tr>
-                <tr class="drain-row">
-                    <td class="tg-1wig" style="vertical-align: middle;" colspan="4">
-                        <label class="flex gap-2 items-center w-full">
-                            <span class="whitespace-nowrap label-bold">3. </span>
-                            <textarea name="drain_3" class="input-overlay input-full" rows="1" oninput="autoGrow(this)"
-                                style="min-height:28px; line-height:1.2;"></textarea>
-                        </label>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-        <div class="mt-4 text-right">
-            <button onclick="addDrainRow()" class="action-button">+</button>
-            <button onclick="removeDrainRow()" class="action-button">−</button>
-        </div>
-        <div class="section-break"></div>
-        <div class="antibiotic-table-wrapper">
-            <table class="tg" id="antibiotic-table">
-                <thead>
-                    <tr>
-                        <th class="tg-ty4g" colspan="5">Antibiotic Usage</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td class="tg-k2l0">Serial No. </td>
-                        <td class="tg-k2l0">Name Of The Drug</td>
-                        <td class="tg-k2l0">Dosage/Route/Frequency</td>
-                        <td class="tg-k2l0">Started On</td>
-                        <td class="tg-k2l0">Stopped On</td>
-                    </tr>
-                    <tr class="antibiotic-row">
-                        <td class="tg-k2l0">1</td>
-                        <td class="tg-1wig"><textarea name="drug-name_1" class="input-overlay input-full" rows="1"
-                                oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea></td>
-                        <td class="tg-1wig"><textarea name="dosage_1" class="input-overlay input-full" rows="1"
-                                oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea></td>
-                        <td class="tg-1wig"><input type="text" name="antibiotic_usage[startedon]_1" class="datepicker"
-                                placeholder="dd/mm/yyyy" style="width: 100px;" value=""></td>
-                        <td class="tg-1wig"><input type="text" name="antibiotic_usage[stoppeon]_1" class="datepicker"
-                                placeholder="dd/mm/yyyy" style="width: 100px;" value=""></td>
-                    </tr>
-                    <tr class="antibiotic-row">
-                        <td class="tg-k2l0">2</td>
-                        <td class="tg-1wig"><textarea name="drug-name_2" class="input-overlay input-full" rows="1"
-                                oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea></td>
-                        <td class="tg-1wig"><textarea name="dosage_2" class="input-overlay input-full" rows="1"
-                                oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea></td>
-                        <td class="tg-1wig"><input type="text" name="antibiotic_usage[startedon]_2" class="datepicker"
-                                placeholder="dd/mm/yyyy" style="width: 100px;" value=""></td>
-                        <td class="tg-1wig"><input type="text" name="antibiotic_usage[stoppeon]_2" class="datepicker"
-                                placeholder="dd/mm/yyyy" style="width: 100px;" value=""></td>
-                    </tr>
-                    <tr class="antibiotic-row">
-                        <td class="tg-k2l0">3</td>
-                        <td class="tg-1wig"><textarea name="drug-name_3" class="input-overlay input-full" rows="1"
-                                oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea></td>
-                        <td class="tg-1wig"><textarea name="dosage_3" class="input-overlay input-full" rows="1"
-                                oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea></td>
-                        <td class="tg-1wig"><input type="text" name="antibiotic_usage[startedon]_3" class="datepicker"
-                                placeholder="dd/mm/yyyy" style="width: 100px;" value=""></td>
-                        <td class="tg-1wig"><input type="text" name="antibiotic_usage[stoppeon]_3" class="datepicker"
-                                placeholder="dd/mm/yyyy" style="width: 100px;" value=""></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <div class="mt-4 text-right">
-            <button onclick="addAntibioticRow()" class="action-button">+</button>
-            <button onclick="removeAntibioticRow()" class="action-button">−</button>
-        </div>
-        <div class="page-break"></div>
-        <h3 class="post-operative" style="text-align: center; text-decoration: underline; font-weight: bold;">
-            Post-Operative Wound Monitoring</h3>
-        <div class="post-operative-table-wrapper">
-            <table class="tg" id="post-operative-table">
-                <thead>
-                    <tr>
-                        <th class="tg-ty4g">Day<br></th>
-                        <th class="tg-ty4g">Date<br></th>
-                        <th class="tg-ty4g">Dosage</th>
-                        <th class="tg-ty4g">Type of <br>Discharge/Fluid</th>
-                        <th class="tg-ty4g">Tenderness/<br>Pain</th>
-                        <th class="tg-ty4g">Swelling</th>
-                        <th class="tg-ty4g">Fever</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr class="post-operative-row">
-                        <td class="tg-k2l0">1</td>
-                        <td class="tg-0lax"><input type="text" name="post-operative[date]_1" class="datepicker"
-                                placeholder="dd/mm/yyyy" style="width: 100px;" value=""></td>
-                        <td class="tg-0lax"><textarea name="post-dosage_1" class="input-overlay input-full" rows="1"
-                                oninput="autoGrow(this)"
-                                style="min-height:28px; line-height:1.2; text-align:center;"></textarea></td>
-                        <td class="tg-0lax"><textarea name="type-ofdischarge_1" class="input-overlay input-full"
-                                rows="1" oninput="autoGrow(this)"
-                                style="min-height:28px; line-height:1.2; text-align:center;"></textarea></td>
-                        <td class="tg-0lax"><textarea name="tenderness-pain_1" class="input-overlay input-full" rows="1"
-                                oninput="autoGrow(this)"
-                                style="min-height:28px; line-height:1.2; text-align:center;"></textarea></td>
-                        <td class="tg-0lax"><textarea name="swelling_1" class="input-overlay input-full" rows="1"
-                                oninput="autoGrow(this)"
-                                style="min-height:28px; line-height:1.2; text-align:center;"></textarea></td>
-                        <td class="tg-0lax"><textarea name="Fever_1" class="input-overlay input-full" rows="1"
-                                oninput="autoGrow(this)"
-                                style="min-height:28px; line-height:1.2; text-align:center;"></textarea></td>
-                    </tr>
-                    <tr class="post-operative-row">
-                        <td class="tg-k2l0">2</td>
-                        <td class="tg-0lax"><input type="text" name="post-operative[date]_2" class="datepicker"
-                                placeholder="dd/mm/yyyy" style="width: 100px;" value=""></td>
-                        <td class="tg-0lax"><textarea name="post-dosage_2" class="input-overlay input-full" rows="1"
-                                oninput="autoGrow(this)"
-                                style="min-height:28px; line-height:1.2; text-align:center;"></textarea></td>
-                        <td class="tg-0lax"><textarea name="type-ofdischarge_2" class="input-overlay input-full"
-                                rows="1" oninput="autoGrow(this)"
-                                style="min-height:28px; line-height:1.2; text-align:center;"></textarea></td>
-                        <td class="tg-0lax"><textarea name="tenderness-pain_2" class="input-overlay input-full" rows="1"
-                                oninput="autoGrow(this)"
-                                style="min-height:28px; line-height:1.2; text-align:center;"></textarea></td>
-                        <td class="tg-0lax"><textarea name="swelling_2" class="input-overlay input-full" rows="1"
-                                oninput="autoGrow(this)"
-                                style="min-height:28px; line-height:1.2; text-align:center;"></textarea></td>
-                        <td class="tg-0lax"><textarea name="Fever_2" class="input-overlay input-full" rows="1"
-                                oninput="autoGrow(this)"
-                                style="min-height:28px; line-height:1.2; text-align:center;"></textarea></td>
-                    </tr>
-                    <tr class="post-operative-row">
-                        <td class="tg-k2l0">3</td>
-                        <td class="tg-0lax"><input type="text" name="post-operative[date]_3" class="datepicker"
-                                placeholder="dd/mm/yyyy" style="width: 100px;" value=""></td>
-                        <td class="tg-0lax"><textarea name="post-dosage_3" class="input-overlay input-full" rows="1"
-                                oninput="autoGrow(this)"
-                                style="min-height:28px; line-height:1.2; text-align:center;"></textarea></td>
-                        <td class="tg-0lax"><textarea name="type-ofdischarge_3" class="input-overlay input-full"
-                                rows="1" oninput="autoGrow(this)"
-                                style="min-height:28px; line-height:1.2; text-align:center;"></textarea></td>
-                        <td class="tg-0lax"><textarea name="tenderness-pain_3" class="input-overlay input-full" rows="1"
-                                oninput="autoGrow(this)"
-                                style="min-height:28px; line-height:1.2; text-align:center;"></textarea></td>
-                        <td class="tg-0lax"><textarea name="swelling_3" class="input-overlay input-full" rows="1"
-                                oninput="autoGrow(this)"
-                                style="min-height:28px; line-height:1.2; text-align:center;"></textarea></td>
-                        <td class="tg-0lax"><textarea name="Fever_3" class="input-overlay input-full" rows="1"
-                                oninput="autoGrow(this)"
-                                style="min-height:28px; line-height:1.2; text-align:center;"></textarea></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <div class="mt-4 text-right">
-            <button onclick="addPostOperativeRow()" class="action-button">+</button>
-            <button onclick="removePostOperativeRow()" class="action-button">−</button>
-        </div>
-        <div class="section-break"></div>
-        <div class="cultural-swap-table-wrapper">
-            <table class="tg cultural-swap">
-                <thead>
-                    <tr>
-                        <th class="tg-67s2">Cultural Swap<br><br><br><br><br><br><br><br><br><br></th>
-                        <th class="tg-0lax"><textarea name="Cultural-Swap" class="input-overlay input-full" rows="1"
-                                oninput="autoGrow(this)"
-                                style="min-height:28px; line-height:1.2; width:800px;"></textarea></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td class="tg-67s2">
-                            Dressing/Finding<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-                        </td>
-                        <td class="tg-0lax"><textarea name="Dressing-Finding" class="input-overlay input-full" rows="1"
-                                oninput="autoGrow(this)"
-                                style="min-height:28px; line-height:1.2; width:800px;"></textarea></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <div class="page-break"></div>
-        <div class="wound-complications-table-wrapper">
-            <h3 class="Wound-Complications" style="text-align: center; text-decoration: underline; font-weight: bold;">
-                Wound Complications</h3>
-            <table class="tg tg-wound-complications">
-                <tbody>
-                    <tr>
-                        <td class="tg-fymr" rowspan="6">Wound Complications<br>SSI--> Tick Criteria--><br>Date:<input
-                                type="text" name="Wound-Complication Date" class="datepicker" placeholder="dd/mm/yyyy"
-                                style="width: 100px;"
-                                value=""><br><br>OR<br><br>Non-Infectious&nbsp;Complications<br><br>Wound Dehiscence
-                            <input type="radio" name="wounddehiscene" value="No"
-                                class="form-radio text-blue-600"><br><br>Allergic Reaction To Dressing <input
-                                type="radio" name="AllergicR" value="No"
-                                class="form-radio text-blue-600"><br><br>Bleeding/ Haemorrhage<input type="radio"
-                                name="BleedingH" value="No" class="form-radio text-blue-600"><br><br>Other <input
-                                type="radio" name="Other" value="No"
-                                class="form-radio text-blue-600"><br><br>Specify:<br><textarea name="WoundD-Specify"
-                                class="input-overlay input-full" rows="1" oninput="autoGrow(this)"
-                                style="min-height:28px; line-height:1.2;"></textarea><br><br><br><br><br><br><br>Notes:<br><textarea
-                                name="WoundD-Notes" class="input-overlay input-full" rows="1"
-                                style="min-height:28px; line-height:1.2;"></textarea><br><br><br><br><br><br><br><br><br><br>
-                        </td>
-                        <td class="tg-7btt"><input type="radio" name="SuperficialSSI" value="No"
-                                class="form-radio text-blue-600"> Superficial SSI<br>(Skin/Sub-Cutaneoous)</td>
-                        <td class="tg-7btt"><input type="radio" name="DeepSI" value="No"
-                                class="form-radio text-blue-600"> Deep SI<br>(Fascia/Muscle)</td>
-                        <td class="tg-7btt"><input type="radio" name="OrganSI" value="No"
-                                class="form-radio text-blue-600"> Organ/Space SSI</td>
-                    </tr>
-                    <tr>
-                        <td class="tg-c3ow"><br>Presence of purulent discharge from the surgical site <input
-                                type="radio" name="wtd1-1" value="No" class="form-radio text-blue-600"></td>
-                        <td class="tg-c3ow" rowspan="2"><br><br><br>Purulent discharge from the surgical site <input
-                                type="radio" name="wtd1-2" value="No" class="form-radio text-blue-600"></td>
-                        <td class="tg-c3ow">Purulent discharge from a drain placed in the organ, space, or cavity <input
-                                type="radio" name="wtd1-3" value="No" class="form-radio text-blue-600"></td>
-                    </tr>
-                    <tr>
-                        <td class="tg-c3ow">Identification of an organism from the surgical site <input type="radio"
-                                name="wtd2-1" value="No" class="form-radio text-blue-600"></td>
-                        <td class="tg-c3ow">Identification of an isolated organism from the involved organ, cavity, or
-                            related abscess <input type="radio" name="wtd2-2" value="No"
-                                class="form-radio text-blue-600"></td>
-                    </tr>
-                    <tr>
-                        <td class="tg-c3ow"><br><br>Clinical diagnosis of a SSI <br>by the surgeon <input type="radio"
-                                name="wtd3-1" value="No" class="form-radio text-blue-600"></td>
-                        <td class="tg-c3ow">Deliberate reopening of a deep incision by the surgeon for suspected
-                            infection, or wound spontaneously dehisces, and a positive wound culture and ≥1 infectious
-                            symptoms (e.g, localized pain, or tenderness) <input type="radio" name="wtd3-2" value="No"
-                                class="form-radio text-blue-600"></td>
-                        <td class="tg-c3ow"><br><br>Evidence of abscess or infection involving the organ, cavity, <br>or
-                            anatomic space, as observed on CT <input type="radio" name="wtd3-3" value="No"
-                                class="form-radio text-blue-600"></td>
-                    </tr>
-                    <tr>
-                        <td class="tg-c3ow">Deliberate opening of the<br>wound by the surgeon, and <br>≥1 infectious
-                            symptom<br>(e.g, swelling, erythema,<br>or<br>localized pain or warmth) <input type="radio"
-                                name="wtd4-1" value="No" class="form-radio text-blue-600"></td>
-                        <td class="tg-c3ow"><br>Evidence of abscess formation or <br>infection involving deep tissues as
-                            observed on CT <input type="radio" name="wtd4-2" value="No"
-                                class="form-radio text-blue-600"></td>
-                        <td class="tg-c3ow">A wound is not considered<br>infected if only a stitch abscess,<br>localized
-                            cellulitis, or infected<br>superficial stab puncture<br>is present <input type="radio"
-                                name="wtd4-3" value="No" class="form-radio text-blue-600"></td>
-                    </tr>
-                    <tr>
-                        <td class="tg-fymr">Surgeon's Opinion:<br><textarea name="SurgeonOpinion1"
-                                class="input-overlay input-full" rows="1" oninput="autoGrow(this)"
-                                style="min-height:28px; line-height:1.2;"></textarea><br><br><br><br></td>
-                        <td class="tg-fymr">Surgeon's Opinion:<br><textarea name="SurgeonOpinion2"
-                                class="input-overlay input-full" rows="1" oninput="autoGrow(this)"
-                                style="min-height:28px; line-height:1.2;"></textarea></td>
-                        <td class="tg-fymr">Surgeon's Opinion:<br><textarea name="SurgeonOpinion3"
-                                class="input-overlay input-full" rows="1" oninput="autoGrow(this)"
-                                style="min-height:28px; line-height:1.2;"></textarea></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <div class="section-break"></div>
-        <table class="tg tg-review-sutures">
-            <thead>
-                <tr>
-                    <th class="tg-1wig">Review On</th>
-                    <th class="tg-0lax"><input type="text" name="ReviewOn" class="datepicker" placeholder="dd/mm/yyyy"
-                            style="width: 100px;" value=""></th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td class="tg-1wig">Sutures/Clips Removed On</td>
-                    <td class="tg-0lax"><input type="text" name="SuturesROn" class="datepicker" placeholder="dd/mm/yyyy"
-                            style="width: 100px;" value=""></td>
-                </tr>
-            </tbody>
-        </table>
-        <div class="page-break"></div>
-        <table class="tg tg-review-phone">
-            <thead>
-                <tr>
-                    <th class="tg-ty4g" colspan="3">Review or Phone Call</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td class="tg-k2l0" colspan="3">Date:<input type="text" name="RevieworPhoneDate" class="datepicker"
-                            placeholder="dd/mm/yyyy" style="width: 100px;" value=""></td>
-                </tr>
-                <tr>
-                    <td class="tg-1wig">Patient Identification:</td>
-                    <td class="tg-0lax"><input type="radio" name="reviewp" value="Yes" class="form-radio text-blue-600">
-                        Yes</td>
-                    <td class="tg-0lax"><input type="radio" name="reviewp" value="No" class="form-radio text-blue-600">
-                        No</td>
-                </tr>
-                <tr>
-                    <td class="tg-1wig">Pain:</td>
-                    <td class="tg-0lax"><input type="radio" name="reviewppain" value="Yes"
-                            class="form-radio text-blue-600"> Yes</td>
-                    <td class="tg-0lax"><input type="radio" name="reviewppain" value="No"
-                            class="form-radio text-blue-600"> No</td>
-                </tr>
-                <tr>
-                    <td class="tg-1wig">Pus:</td>
-                    <td class="tg-0lax"><input type="radio" name="reviewpus" value="Yes"
-                            class="form-radio text-blue-600"> Yes</td>
-                    <td class="tg-0lax"><input type="radio" name="reviewpus" value="No"
-                            class="form-radio text-blue-600"> No</td>
-                </tr>
-                <tr>
-                    <td class="tg-1wig">Bleeding:</td>
-                    <td class="tg-0lax"><input type="radio" name="reviewbleed" value="Yes"
-                            class="form-radio text-blue-600"> Yes</td>
-                    <td class="tg-0lax"><input type="radio" name="reviewbleed" value="No"
-                            class="form-radio text-blue-600"> No</td>
-                </tr>
-                <tr>
-                    <td class="tg-1wig">Others</td>
-                    <td class="tg-0lax"><input type="radio" name="reviewother" value="Yes"
-                            class="form-radio text-blue-600"> Yes</td>
-                    <td class="tg-0lax"><input type="radio" name="reviewother" value="No"
-                            class="form-radio text-blue-600"> No</td>
-                </tr>
-            </tbody>
-        </table>
-        <div class="section-break"></div>
-        <div style="display: flex; justify-content: space-between; align-items: center; gap: 2rem;">
-            <label class="flex gap-2 items-center"><span class="label-bold">Date Completed:</span>
-                <input type="text" name="date_completed" class="datepicker" placeholder="dd/mm/yyyy"
-                    style="width: 100px;" value="">
-            </label>
-            <label class="flex gap-2 items-center"><span class="label-bold">Signature:</span>
-                <canvas id="signatureCanvas" class="signature-canvas"></canvas>
-            </label>
-        </div>
-    </div>
-    <script src="script.js" defer></script>
-</body>
+      .dark {
+        --bg-body: #1f2937;
+        --bg-header: #374151;
+        --bg-card: #374151;
+        --bg-table-header: #064e3b;
+        --text-primary: #f9fafb;
+        --text-secondary: #d1d5db;
+        --text-icon: #6ee7b7;
+        --border-primary: #064e3b;
+        --border-secondary: #4b5563;
+        --button-bg: #4ade80;
+        --button-bg-hover: #22c55e;
+        --button-text: #1f2937;
+        --link-text: #4ade80;
+        --link-text-hover: #22c55e;
+        --table-row-hover: #4b5563;
+        --dropdown-bg: #374151;
+        --dropdown-border: #4b5563;
+        --dropdown-hover-bg: #064e3b;
+        --dropdown-hover-text: #22c55e;
+        --label-color: #6ee7b7;
+        --search-icon: #d1d5db;
+        --clear-button-bg: #4b5563;
+        --clear-button-bg-hover: #6b7280;
+        --clear-button-text: #f9fafb;
+      }
 
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: var(--bg-body);
+        color: var(--text-primary);
+        overflow-x: hidden;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      .table-container {
+        max-height: 65vh;
+        overflow-y: auto;
+      }
+
+      .table-row {
+        transition: all 0.2s ease;
+      }
+
+      .table-row:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        background-color: var(--table-row-hover);
+      }
+
+      .sort-icon {
+        transition: transform 0.2s ease;
+      }
+
+      .sort-icon.asc {
+        transform: rotate(180deg);
+      }
+
+      .fade-in {
+        animation: fadeIn 0.5s ease-in;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .stat-card {
+        background: linear-gradient(
+          135deg,
+          rgb(110, 210, 130) 0%,
+          rgb(56, 161, 105) 100%
+        );
+        color: #ffffff;
+        padding: 1rem;
+        border-radius: 0.75rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+          0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .dark .stat-card {
+        background: linear-gradient(
+          135deg,
+          rgb(74, 222, 128) 0%,
+          rgb(34, 197, 94) 100%
+        );
+      }
+
+      .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+      }
+
+      .complication-badge {
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+
+        50% {
+          opacity: 0.7;
+        }
+      }
+
+      .filter-feedback {
+        display: none;
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+      }
+
+      .filter-feedback.active {
+        display: block;
+      }
+
+      .date-range-dropdown {
+        position: relative;
+      }
+
+      .date-range-menu {
+        transition: opacity 0.2s ease, transform 0.2s ease;
+        transform-origin: top left;
+        background-color: var(--dropdown-bg);
+        border-color: var(--dropdown-border);
+      }
+
+      .date-range-menu.hidden {
+        opacity: 0;
+        transform: scale(0.95);
+        pointer-events: none;
+      }
+
+      @media (max-width: 640px) {
+        .nurse-table {
+          display: block;
+          overflow-x: hidden;
+          white-space: normal;
+          width: 100%;
+        }
+
+        .nurse-table thead {
+          display: none;
+        }
+
+        .nurse-table tbody,
+        .nurse-table tr {
+          display: block;
+          white-space: normal;
+        }
+
+        .nurse-table tr {
+          margin-bottom: 1rem;
+          border: 1px solid var(--border-secondary);
+          border-radius: 0.75rem;
+          padding: 1rem;
+          background: var(--bg-card);
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .nurse-table td {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 0.25rem 0;
+          border: none;
+          min-width: 0;
+          word-break: break-word;
+          overflow-wrap: anywhere;
+        }
+
+        .nurse-table td:before {
+          content: attr(data-label);
+          font-weight: 600;
+          color: var(--label-color);
+          width: 40%;
+          flex-shrink: 0;
+        }
+
+        .action-button {
+          width: 100%;
+          max-width: 200px;
+          justify-content: center;
+          margin-top: 0.5rem;
+          margin-left: auto;
+          margin-right: auto;
+          border-radius: 0.25rem;
+          padding: 0.5rem 1rem;
+          font-size: 0.875rem;
+        }
+
+        .new-patient-button,
+        .theme-toggle {
+          width: 100%;
+          border-radius: 0.25rem;
+          padding: 0.75rem;
+        }
+
+        .stat-grid {
+          grid-template-columns: 1fr;
+          gap: 1rem;
+        }
+
+        .search-container {
+          flex-direction: column;
+          gap: 1rem;
+        }
+
+        .search-container input,
+        .search-container select,
+        .search-container button {
+          width: 100%;
+        }
+
+        .table-container {
+          max-width: 100vw;
+          overflow-x: hidden;
+        }
+
+        .date-range-dropdown {
+          width: 100%;
+        }
+
+        .date-range-menu {
+          width: 100%;
+        }
+
+        .filter-feedback {
+          text-align: center;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .new-patient-button {
+          width: 100%;
+          border-radius: 0.25rem;
+          padding: 0.1rem 0.25rem;
+        }
+
+        .theme-toggle {
+          width: auto;
+          padding: 0.5rem;
+        }
+      }
+
+      @media (min-width: 1024px) {
+        .stat-grid {
+          grid-template-columns: repeat(4, 1fr);
+        }
+      }
+
+      /* Mobile visual refinements */
+      @media (max-width: 640px) {
+        header .max-w-7xl {
+          padding-top: 0.75rem !important;
+          padding-bottom: 0.75rem !important;
+        }
+        header img[alt="Hospital Logo"] {
+          height: 56px !important;
+          width: 56px !important;
+        }
+
+        header h1 {
+          font-size: 1.125rem !important;
+          line-height: 1.5 !important;
+        }
+        header p {
+          font-size: 0.875rem !important;
+          word-break: break-word;
+          overflow-wrap: anywhere;
+        }
+      }
+
+      /* Mobile bottom nav improvements */
+      .mobile-bottom-nav {
+        -webkit-tap-highlight-color: transparent;
+        backdrop-filter: blur(4px);
+        z-index: 1000;
+      }
+      .mobile-bottom-nav .nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 10px 6px;
+        color: var(--text-primary);
+        text-decoration: none;
+        user-select: none;
+        -webkit-user-select: none;
+        transition: all 0.2s ease;
+        width: 100%;
+        text-align: center;
+      }
+      .mobile-bottom-nav .nav-item:hover {
+        color: var(--button-bg);
+        transform: translateY(-1px);
+      }
+      .mobile-bottom-nav .nav-item i {
+        font-size: 18px;
+        line-height: 1;
+      }
+      .mobile-bottom-nav .nav-item span {
+        font-size: 11px;
+        line-height: 1;
+        margin-top: 2px;
+        font-weight: 500;
+      }
+
+      /* Ensure mobile nav is always visible */
+      @media (max-width: 640px) {
+        .mobile-bottom-nav {
+          display: flex !important;
+          position: fixed !important;
+          bottom: 0 !important;
+          left: 0 !important;
+          right: 0 !important;
+          background-color: var(--bg-card) !important;
+          border-top: 1px solid var(--border-secondary) !important;
+          box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1) !important;
+        }
+        .mobile-bottom-nav .grid {
+          width: 100%;
+          height: 100%;
+        }
+        .mobile-bottom-nav .nav-item {
+          justify-self: center;
+          align-self: center;
+        }
+      }
+
+      .mobile-bottom-nav .nav-item.is-active {
+        color: var(--button-bg);
+      }
+      .mobile-bottom-nav .nav-item:active {
+        transform: translateY(1px);
+      }
+    </style>
+  </head>
+
+  <body>
+    <header
+      class="shadow-lg sticky top-0 z-20 border-b"
+      style="
+        background-color: var(--bg-header);
+        border-color: var(--border-primary);
+      "
+    >
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div class="flex justify-between items-center">
+          <div class="flex items-center gap-3">
+            <img
+              src="supercare-hospital_logo.png"
+              alt="Hospital Logo"
+              style="height: 70px; width: 70px"
+            />
+            <div>
+              <h1
+                class="text-xl sm:text-2xl font-bold"
+                style="color: var(--text-primary)"
+              >
+                Supercare Hospital SSI Nurse Panel
+              </h1>
+              <p
+                class="text-sm hidden sm:block"
+                style="color: var(--text-secondary)"
+              >
+                Surgical Site Infection Monitoring System
+              </p>
+            </div>
+          </div>
+          <div class="hidden sm:flex items-center gap-3 sm:gap-4">
+            <a
+              href="search.html"
+              class="px-3 sm:px-4 py-2 rounded-lg flex items-center justify-center gap-2 text-sm sm:text-base hover:bg-[var(--button-bg-hover)]"
+              style="
+                background-color: var(--button-bg);
+                color: var(--button-text);
+              "
+            >
+              <i class="fas fa-search"></i>
+              <span>Search</span>
+            </a>
+            <a
+              href="stats.html"
+              class="px-3 sm:px-4 py-2 rounded-lg flex items-center justify-center gap-2 text-sm sm:text-base hover:bg-[var(--button-bg-hover)]"
+              style="
+                background-color: var(--button-bg);
+                color: var(--button-text);
+              "
+            >
+              <i class="fas fa-chart-bar"></i>
+              <span>Stats</span>
+            </a>
+            <a
+              id="newPatientButton"
+              href="form.html"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="new-patient-button text-white px-3 sm:px-4 py-2 rounded-lg flex items-center justify-center gap-2 transition-all duration-300 text-sm sm:text-base hover:bg-[var(--button-bg-hover)]"
+              style="background-color: var(--button-bg)"
+            >
+              <i class="fas fa-plus"></i>
+              <span>New Patient</span>
+            </a>
+            <button
+              id="logoutBtn"
+              class="px-3 sm:px-4 py-2 rounded-lg flex items-center justify-center gap-2 text-sm sm:text-base border hover:bg-gray-50 transition-all duration-300"
+              style="
+                border-color: var(--border-secondary);
+                color: var(--text-primary);
+              "
+            >
+              <i class="fas fa-sign-out-alt"></i>
+              <span>Logout</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main
+      id="mainContent"
+      class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-32 sm:pb-6"
+    >
+      <div class="grid stat-grid gap-4 sm:gap-6 mb-6 sm:mb-8">
+        <div class="stat-card text-white p-4 sm:p-6 rounded-xl shadow-lg">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-white/90 text-sm font-medium">Total Patients</p>
+              <p class="text-2xl sm:text-3xl font-bold" id="totalPatients">0</p>
+            </div>
+            <i class="fas fa-users text-2xl sm:text-3xl text-white/80"></i>
+          </div>
+        </div>
+        <div class="stat-card text-white p-4 sm:p-6 rounded-xl shadow-lg">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-white/90 text-sm font-medium">Complications</p>
+              <p class="text-2xl sm:text-3xl font-bold" id="complicationsCount">
+                0
+              </p>
+            </div>
+            <i
+              class="fas fa-exclamation-triangle text-2xl sm:text-3xl text-white/80"
+            ></i>
+          </div>
+        </div>
+        <div class="stat-card text-white p-4 sm:p-6 rounded-xl shadow-lg">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-white/90 text-sm font-medium">
+                Recent Surgeries (30d)
+              </p>
+              <p
+                class="text-2xl sm:text-3xl font-bold"
+                id="recentSurgeriesCount"
+              >
+                0
+              </p>
+            </div>
+            <i
+              class="fas fa-calendar-day text-2xl sm:text-3xl text-white/80"
+            ></i>
+          </div>
+        </div>
+        <div class="stat-card text-white p-4 sm:p-6 rounded-xl shadow-lg">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-white/90 text-sm font-medium">Pending Reviews</p>
+              <p
+                class="text-2xl sm:text-3xl font-bold"
+                id="pendingReviewsCount"
+              >
+                0
+              </p>
+            </div>
+            <i class="fas fa-clock text-2xl sm:text-3xl text-white/80"></i>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="rounded-xl shadow-lg p-4 sm:p-6 mb-6 border"
+        style="
+          background-color: var(--bg-card);
+          border-color: var(--border-primary);
+        "
+      >
+        <div class="search-container flex flex-wrap items-end gap-3">
+          <div class="relative w-full min-w-0 md:flex-1 md:min-w-[240px]">
+            <input
+              type="text"
+              id="searchInput"
+              placeholder="Search by UHID, Name, or Surgeon..."
+              class="w-full p-3 pl-10 border rounded-lg shadow-sm focus:outline-none focus:ring-2 text-sm sm:text-base"
+              style="
+                border-color: var(--border-secondary);
+                background-color: var(--bg-card);
+                color: var(--text-primary);
+                --tw-ring-color: var(--button-bg);
+              "
+            />
+            <i
+              class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2"
+              style="color: var(--search-icon)"
+            ></i>
+          </div>
+          <div class="w-full md:w-56">
+            <select
+              id="filterStatus"
+              class="w-full p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 text-sm sm:text-base"
+              style="
+                border-color: var(--border-secondary);
+                background-color: var(--bg-card);
+                color: var(--text-primary);
+                --tw-ring-color: var(--button-bg);
+              "
+            >
+              <option value="all">All Status</option>
+              <option value="complications">With Complications</option>
+              <option value="no-complications">No Complications</option>
+              <option value="pending-review">Pending Review</option>
+              <option value="completed-review">Completed Review</option>
+            </select>
+          </div>
+
+          <div class="w-full md:w-auto md:ml-auto flex gap-2">
+            <button
+              id="applyFilters"
+              class="px-4 py-3 rounded-lg flex items-center justify-center gap-2 text-sm sm:text-base hover:bg-[var(--button-bg-hover)]"
+              style="
+                background-color: var(--button-bg);
+                color: var(--button-text);
+              "
+            >
+              <i class="fas fa-filter"></i>
+              <span>Apply Filters</span>
+            </button>
+            <button
+              id="clearFilters"
+              class="px-4 py-3 rounded-lg flex items-center justify-center gap-2 text-sm sm:text-base hover:bg-[var(--clear-button-bg-hover)]"
+              style="
+                background-color: var(--clear-button-bg);
+                color: var(--clear-button-text);
+              "
+            >
+              <i class="fas fa-times"></i>
+              <span>Clear</span>
+            </button>
+          </div>
+        </div>
+        <div id="filterFeedback" class="filter-feedback"></div>
+      </div>
+
+      <div
+        class="rounded-xl shadow-lg border fade-in"
+        style="
+          background-color: var(--bg-card);
+          border-color: var(--border-primary);
+        "
+      >
+        <div
+          class="p-4 sm:p-6 border-b"
+          style="border-color: var(--border-secondary)"
+        >
+          <div
+            class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
+          >
+            <h2
+              class="text-lg sm:text-xl font-semibold"
+              style="color: var(--text-primary)"
+            >
+              Recent Patient Records(<span id="recordCount">0</span>
+              total)
+            </h2>
+          </div>
+        </div>
+        <div class="table-container">
+          <table class="nurse-table w-full text-sm sm:text-base">
+            <thead
+              class="sticky top-0 z-10"
+              style="background-color: var(--bg-table-header)"
+            >
+              <tr style="color: var(--text-primary)">
+                <th class="p-3 sm:p-4 text-left font-semibold">UHID</th>
+                <th class="p-3 sm:p-4 text-left font-semibold">Name</th>
+                <th class="p-3 sm:p-4 text-left font-semibold">Age/Sex</th>
+                <th class="p-3 sm:p-4 text-left font-semibold">Ward</th>
+                <th class="p-3 sm:p-4 text-left font-semibold">Surgeon</th>
+                <th class="p-3 sm:p-4 text-left font-semibold">Surgery Date</th>
+                <th class="p-3 sm:p-4 text-left font-semibold">Status</th>
+                <th class="p-3 sm:p-4 text-left font-semibold"></th>
+              </tr>
+            </thead>
+            <tbody id="patientTableBody">
+              <!-- Loading message - will be replaced by JavaScript -->
+              <tr>
+                <td
+                  colspan="8"
+                  style="
+                    text-align: center;
+                    padding: 2rem;
+                    color: var(--text-secondary);
+                  "
+                >
+                  <i
+                    class="fas fa-spinner fa-spin"
+                    style="margin-right: 8px; font-size: 24px"
+                  ></i>
+                  Loading patient data...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav
+      id="mobileNav"
+      class="mobile-bottom-nav sm:hidden fixed bottom-0 left-0 right-0 border-t shadow-lg z-30"
+      style="
+        background-color: var(--bg-card);
+        border-color: var(--border-secondary);
+        padding-bottom: max(env(safe-area-inset-bottom), 8px);
+      "
+    >
+      <div class="grid grid-cols-5 items-stretch justify-items-center">
+        <button id="navHome" class="nav-item">
+          <i class="fas fa-home"></i>
+          <span>Home</span>
+        </button>
+        <a id="navSearch" href="search.html" class="nav-item">
+          <i class="fas fa-search"></i>
+          <span>Search</span>
+        </a>
+        <a
+          id="navAdd"
+          href="form.html"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="nav-item"
+        >
+          <i class="fas fa-plus-circle"></i>
+          <span>New</span>
+        </a>
+        <a id="navStats" href="stats.html" class="nav-item">
+          <i class="fas fa-chart-bar"></i>
+          <span>Stats</span>
+        </a>
+        <button id="navLogout" class="nav-item">
+          <i class="fas fa-sign-out-alt"></i>
+          <span>Logout</span>
+        </button>
+      </div>
+    </nav>
+
+    <script>
+      // DOM elements
+      const searchInput = document.getElementById("searchInput");
+      const filterStatus = document.getElementById("filterStatus");
+      // Date inputs and range controls are handled on search.html only
+      const applyFilters = document.getElementById("applyFilters");
+      const clearFilters = document.getElementById("clearFilters");
+      const filterFeedback = document.getElementById("filterFeedback");
+      const tableBody = document.getElementById("patientTableBody");
+      const recordCount = document.getElementById("recordCount");
+      const mainContent = document.getElementById("mainContent");
+      // Statistics elements
+      const totalPatients = document.getElementById("totalPatients");
+      const complicationsCount = document.getElementById("complicationsCount");
+      const recentSurgeriesCount = document.getElementById(
+        "recentSurgeriesCount"
+      );
+      const pendingReviewsCount = document.getElementById(
+        "pendingReviewsCount"
+      );
+      // Mobile nav elements
+      const mobileNav = document.getElementById("mobileNav");
+      const navHome = document.getElementById("navHome");
+      const navSearch = document.getElementById("navSearch");
+      const navAdd = document.getElementById("navAdd");
+      const navStats = document.getElementById("navStats");
+      // No auth gating: page is always visible
+      // Mobile nav: Home scroll-to-top; Search/Stats navigate; Logout returns to top (placeholder)
+      navHome.addEventListener("click", () =>
+        window.scrollTo({ top: 0, behavior: "smooth" })
+      );
+      document.getElementById("navLogout").addEventListener("click", () => {
+        // Clear any stored session data
+        sessionStorage.removeItem("nurseInfo");
+        localStorage.removeItem("nurseInfo");
+
+        // Redirect to login page
+        window.location.href = "login.html";
+      });
+
+      // Date range selection removed from this page
+
+      // Search and filter functionality
+      function performSearch() {
+        const searchTerm = searchInput.value.toLowerCase().trim();
+        const statusFilter = filterStatus.value;
+        const rows = tableBody.getElementsByTagName("tr");
+        let visibleCount = 0;
+
+        // Prepare feedback message
+        let messages = [];
+        if (searchTerm) {
+          messages.push(`search: "${searchTerm}"`);
+        }
+        if (statusFilter !== "all") {
+          const statusText =
+            filterStatus.options[filterStatus.selectedIndex].text;
+          messages.push(`status: ${statusText}`);
+        }
+        if (messages.length > 0) {
+          filterFeedback.textContent = `Filters applied: ${messages.join(
+            ", "
+          )}`;
+          filterFeedback.classList.add("active");
+          filterFeedback.classList.remove("text-red-600");
+        } else {
+          filterFeedback.textContent = "";
+          filterFeedback.classList.remove("active", "text-red-600");
+        }
+
+        for (let row of rows) {
+          if (row.children.length < 8) continue; // Skip empty state row
+
+          const uhid = (row.dataset.uhid || "").toLowerCase();
+          const name = (row.dataset.name || "").toLowerCase();
+          const surgeon = (row.dataset.surgeon || "").toLowerCase();
+          const complications = row.dataset.complications || "";
+          const reviewStatus = row.dataset.review || "";
+          let matchSearch = true;
+          let matchFilter = true;
+
+          // Search match
+          if (searchTerm) {
+            matchSearch =
+              uhid.includes(searchTerm) ||
+              name.includes(searchTerm) ||
+              surgeon.includes(searchTerm);
+          }
+
+          // Status filter match
+          if (statusFilter !== "all") {
+            switch (statusFilter) {
+              case "complications":
+                matchFilter = complications === "Yes";
+                break;
+              case "no-complications":
+                matchFilter = complications === "No";
+                break;
+              case "pending-review":
+                matchFilter = reviewStatus === "Pending";
+                break;
+              case "completed-review":
+                matchFilter = reviewStatus === "Completed";
+                break;
+            }
+          }
+
+          row.style.display = matchSearch && matchFilter ? "" : "none";
+          if (matchSearch && matchFilter) {
+            visibleCount++;
+          }
+        }
+
+        recordCount.textContent = visibleCount;
+      }
+
+      // Event listeners
+      applyFilters.addEventListener("click", () => {
+        performSearch();
+      });
+
+      clearFilters.addEventListener("click", () => {
+        searchInput.value = "";
+        filterStatus.value = "all";
+        filterFeedback.textContent = "";
+        filterFeedback.classList.remove("active", "text-red-600");
+        performSearch();
+      });
+
+      // Load patient data from database
+      function loadPatientData() {
+        fetch("get_patients.php")
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success) {
+              populatePatientTable(data.patients);
+              recordCount.textContent = data.total_count;
+              // Update statistics
+              if (data.statistics) {
+                totalPatients.textContent = data.statistics.total_patients;
+                complicationsCount.textContent = data.statistics.complications;
+                recentSurgeriesCount.textContent =
+                  data.statistics.recent_surgeries;
+                pendingReviewsCount.textContent =
+                  data.statistics.pending_reviews;
+              }
+            } else {
+              console.error("Error loading patient data:", data.message);
+              // Show error message in table
+              tableBody.innerHTML = `
+                <tr>
+                  <td colspan="8" style="text-align: center; padding: 2rem; color: #721c24; background-color: #f8d7da;">
+                    <i class="fas fa-exclamation-triangle" style="margin-right: 8px;"></i>
+                    Error loading patient data: ${data.message}
+                  </td>
+                </tr>
+              `;
+              recordCount.textContent = "0";
+            }
+          })
+          .catch((error) => {
+            console.error("Network error:", error);
+            // Show network error message in table
+            tableBody.innerHTML = `
+              <tr>
+                <td colspan="8" style="text-align: center; padding: 2rem; color: #721c24; background-color: #f8d7da;">
+                  <i class="fas fa-exclamation-triangle" style="margin-right: 8px;"></i>
+                  Network error occurred. Please try again.
+                </td>
+              </tr>
+            `;
+            recordCount.textContent = "0";
+          });
+      }
+
+      // Populate the patient table with data
+      function populatePatientTable(patients) {
+        if (patients.length === 0) {
+          tableBody.innerHTML = `
+            <tr>
+              <td colspan="8" style="text-align: center; padding: 2rem; color: var(--text-secondary);">
+                <i class="fas fa-inbox" style="margin-right: 8px; font-size: 24px;"></i>
+                No patient records found
+              </td>
+            </tr>
+          `;
+          return;
+        }
+
+        tableBody.innerHTML = "";
+
+        patients.forEach((patient) => {
+          const ageSex = `${patient.age || "N/A"}/${patient.sex || "N/A"}`;
+          const complications = patient.has_complications ? "Yes" : "No";
+          const reviewStatus = patient.review_status;
+
+          const row = document.createElement("tr");
+          row.className = "table-row border-b";
+          row.style.cssText =
+            "background-color: var(--bg-card); border-color: var(--border-secondary);";
+          row.dataset.uhid = patient.uhid;
+          row.dataset.name = patient.name;
+          row.dataset.surgeon = patient.surgeon;
+          row.dataset.dos = patient.dos;
+          row.dataset.complications = complications;
+          row.dataset.review = reviewStatus;
+
+          // Determine status badges
+          let statusBadges = "";
+          if (patient.has_complications) {
+            statusBadges += `
+              <span class="complication-badge bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs font-semibold">
+                <i class="fas fa-exclamation-triangle mr-1"></i>Complications
+              </span>
+            `;
+          }
+
+          if (reviewStatus === "Completed") {
+            statusBadges += `
+              <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-semibold">Completed</span>
+            `;
+          } else if (reviewStatus === "In Progress") {
+            statusBadges += `
+              <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-semibold">In Progress</span>
+            `;
+          } else {
+            statusBadges += `
+              <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-semibold">Pending</span>
+            `;
+          }
+
+          row.innerHTML = `
+            <td class="p-3 sm:p-4" data-label="UHID">
+              <span class="font-medium">${patient.uhid || "N/A"}</span>
+            </td>
+            <td class="p-3 sm:p-4" data-label="Name">
+              <span class="font-medium">${patient.name || "N/A"}</span>
+            </td>
+            <td class="p-3 sm:p-4" data-label="Age/Sex">${ageSex}</td>
+            <td class="p-3 sm:p-4" data-label="Ward">${
+              patient.ward || "N/A"
+            }</td>
+            <td class="p-3 sm:p-4" data-label="Surgeon">${
+              patient.surgeon || "N/A"
+            }</td>
+            <td class="p-3 sm:p-4" data-label="Surgery Date">${
+              patient.dos || "N/A"
+            }</td>
+            <td class="p-3 sm:p-4" data-label="Status">
+              <div class="flex flex-col gap-1 sm:gap-2">
+                ${statusBadges}
+              </div>
+            </td>
+            <td class="p-3 sm:p-4">
+              <div class="flex justify-center">
+                <a href="form.html?patient_id=${
+                  patient.patient_id
+                }" target="_blank" rel="noopener noreferrer" 
+                   class="action-button w-full max-w-[200px] mx-auto sm:mx-0 text-white px-3 sm:px-4 py-2 rounded-lg flex items-center justify-center gap-2 transition-all duration-300 text-sm hover:bg-[var(--button-bg-hover)]"
+                   style="background-color: var(--button-bg)">
+                  <i class="fas fa-eye"></i>
+                  <span>View/Edit</span>
+                </a>
+              </div>
+            </td>
+          `;
+
+          tableBody.appendChild(row);
+        });
+      }
+
+      // Logout functionality
+      document
+        .getElementById("logoutBtn")
+        .addEventListener("click", function () {
+          // Clear any stored session data
+          sessionStorage.removeItem("nurseInfo");
+          localStorage.removeItem("nurseInfo");
+
+          // Redirect to login page
+          window.location.href = "login.html";
+        });
+
+      // Load patient data when page loads
+      document.addEventListener("DOMContentLoaded", function () {
+        loadPatientData();
+      });
+    </script>
+  </body>
 </html>
