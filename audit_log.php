@@ -519,7 +519,7 @@ if (!$adminUser) {
         >
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-sm font-medium text-white/90">Active Nurses</p>
+              <p class="text-sm font-medium text-white/90">Active Nurses (Last 30 Days)</p>
               <p id="activeUsers" class="text-2xl font-bold text-white">—</p>
             </div>
             <div class="p-3 bg-white/20 rounded-full">
@@ -899,7 +899,7 @@ if (!$adminUser) {
         document.getElementById("totalActivities").textContent =
           summary.total_activities.toLocaleString();
         document.getElementById("activeUsers").textContent =
-          data.top_users.length;
+          data.active_nurses.length;
 
         // Calculate today's activities
         const today = new Date().toISOString().split("T")[0];

@@ -54,10 +54,13 @@ try {
     $auditLogger = new AuditLogger($pdo);
     $auditLogger->logNurseLogin('system', $nurse['id'], $nurse['nurse_id'], $nurse['name'], $nurse, 'Nurse login successful');
 
-    // Store nurse info in session
+    // Store nurse info in session with proper session management
     $_SESSION['nurse_id'] = $nurse['id'];
     $_SESSION['nurse_info'] = $nurse;
+    $_SESSION['user_type'] = 'nurse';
     $_SESSION['logged_in'] = true;
+    $_SESSION['last_activity'] = time();
+    $_SESSION['login_time'] = time();
 
     echo json_encode([
         'success' => true,

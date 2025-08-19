@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Radio Button Test Form</title>
+  </head>
+  <body>
+    <h2>Test Form for Radio Buttons</h2>
+
+    <form action="test_radio_buttons.php" method="POST">
+      <h3>Drain Used</h3>
+      <p>
+        <input type="radio" name="drain-used" value="Yes" /> Yes
+        <input type="radio" name="drain-used" value="No" /> No
+      </p>
+
+      <h3>Implanted Used</h3>
+      <p>
+        <input type="radio" name="implanted_used" value="Yes" /> Yes
+        <input type="radio" name="implanted_used" value="No" /> No
+      </p>
+
+      <h3>Pre-op Bath</h3>
+      <p>
+        <input
+          type="radio"
+          name="surgical_skin_preparation[pre_op_bath]"
+          value="Yes"
+        />
+        Yes
+        <input
+          type="radio"
+          name="surgical_skin_preparation[pre_op_bath]"
+          value="No"
+        />
+        No
+      </p>
+
+      <h3>Hair Removal</h3>
+      <p>
+        <input
+          type="radio"
+          name="surgical_skin_preparation[hair-removal]"
+          value="Razor"
+        />
+        Razor
+        <input
+          type="radio"
+          name="surgical_skin_preparation[hair-removal]"
+          value="Trimmer"
+        />
+        Trimmer
+        <input
+          type="radio"
+          name="surgical_skin_preparation[hair-removal]"
+          value="Not Done"
+        />
+        Not Done
+      </p>
+
+      <h3>Review Phone</h3>
+      <p>
+        Patient Identification:
+        <input type="radio" name="reviewp" value="Yes" /> Yes
+        <input type="radio" name="reviewp" value="No" /> No
+      </p>
+      <p>
+        Pain: <input type="radio" name="reviewppain" value="Yes" /> Yes
+        <input type="radio" name="reviewppain" value="No" /> No
+      </p>
+      <p>
+        Pus: <input type="radio" name="reviewpus" value="Yes" /> Yes
+        <input type="radio" name="reviewpus" value="No" /> No
+      </p>
+      <p>
+        Bleeding: <input type="radio" name="reviewbleed" value="Yes" /> Yes
+        <input type="radio" name="reviewbleed" value="No" /> No
+      </p>
+      <p>
+        Others: <input type="radio" name="reviewother" value="Yes" /> Yes
+        <input type="radio" name="reviewother" value="No" /> No
+      </p>
+
+      <input type="submit" value="Test Radio Buttons" />
+    </form>
+  </body>
+</html>

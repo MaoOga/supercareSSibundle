@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dynamic Rows Test Form</title>
+</head>
+<body>
+    <h2>Test Form for Dynamic Rows</h2>
+    
+    <form action="test_dynamic_rows.php" method="POST">
+        <h3>Drains</h3>
+        <table border="1">
+            <tr>
+                <th>Number</th>
+                <th>Description</th>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td><textarea name="drain_1">Test drain 1</textarea></td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td><textarea name="drain_2">Test drain 2</textarea></td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td><textarea name="drain_3">Test drain 3</textarea></td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td><textarea name="drain_4">Test drain 4 (extra)</textarea></td>
+            </tr>
+            <tr>
+                <td>5</td>
+                <td><textarea name="drain_5">Test drain 5 (extra)</textarea></td>
+            </tr>
+        </table>
+        
+        <h3>Antibiotics</h3>
+        <table border="1">
+            <tr>
+                <th>Serial No.</th>
+                <th>Drug Name</th>
+                <th>Dosage</th>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td><textarea name="drug-name_1">Test drug 1</textarea></td>
+                <td><textarea name="dosage_1">Test dosage 1</textarea></td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td><textarea name="drug-name_2">Test drug 2</textarea></td>
+                <td><textarea name="dosage_2">Test dosage 2</textarea></td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td><textarea name="drug-name_3">Test drug 3</textarea></td>
+                <td><textarea name="dosage_3">Test dosage 3</textarea></td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td><textarea name="drug-name_4">Test drug 4 (extra)</textarea></td>
+                <td><textarea name="dosage_4">Test dosage 4 (extra)</textarea></td>
+            </tr>
+        </table>
+        
+        <h3>Post-Operative Monitoring</h3>
+        <table border="1">
+            <tr>
+                <th>Day</th>
+                <th>Date</th>
+                <th>Dosage</th>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td><input type="text" name="post-operative[date]_1" value="01/01/2024"></td>
+                <td><textarea name="post-dosage_1">Test dosage 1</textarea></td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td><input type="text" name="post-operative[date]_2" value="02/01/2024"></td>
+                <td><textarea name="post-dosage_2">Test dosage 2</textarea></td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td><input type="text" name="post-operative[date]_3" value="03/01/2024"></td>
+                <td><textarea name="post-dosage_3">Test dosage 3</textarea></td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td><input type="text" name="post-operative[date]_4" value="04/01/2024"></td>
+                <td><textarea name="post-dosage_4">Test dosage 4 (extra)</textarea></td>
+            </tr>
+        </table>
+        
+        <input type="submit" value="Test Dynamic Rows">
+    </form>
+</body>
+</html>

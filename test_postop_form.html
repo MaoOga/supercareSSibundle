@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Post-Operative Monitoring Test Form</title>
+</head>
+<body>
+    <h2>Test Form for Post-Operative Monitoring</h2>
+    
+    <form action="test_postop_submission.php" method="POST">
+        <h3>Post-Operative Wound Monitoring</h3>
+        <table border="1">
+            <tr>
+                <th>Day</th>
+                <th>Date</th>
+                <th>Dosage</th>
+                <th>Discharge</th>
+                <th>Tenderness</th>
+                <th>Swelling</th>
+                <th>Fever</th>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td><input type="text" name="post-operative[date]_1" value="01/01/2024"></td>
+                <td><textarea name="post-dosage_1">Test Dosage 1</textarea></td>
+                <td><textarea name="type-ofdischarge_1">Test Discharge 1</textarea></td>
+                <td><textarea name="tenderness-pain_1">Test Tenderness 1</textarea></td>
+                <td><textarea name="swelling_1">Test Swelling 1</textarea></td>
+                <td><textarea name="Fever_1">Test Fever 1</textarea></td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td><input type="text" name="post-operative[date]_2" value="02/01/2024"></td>
+                <td><textarea name="post-dosage_2">Test Dosage 2</textarea></td>
+                <td><textarea name="type-ofdischarge_2">Test Discharge 2</textarea></td>
+                <td><textarea name="tenderness-pain_2">Test Tenderness 2</textarea></td>
+                <td><textarea name="swelling_2">Test Swelling 2</textarea></td>
+                <td><textarea name="Fever_2">Test Fever 2</textarea></td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td><input type="text" name="post-operative[date]_3" value="03/01/2024"></td>
+                <td><textarea name="post-dosage_3">Test Dosage 3</textarea></td>
+                <td><textarea name="type-ofdischarge_3">Test Discharge 3</textarea></td>
+                <td><textarea name="tenderness-pain_3">Test Tenderness 3</textarea></td>
+                <td><textarea name="swelling_3">Test Swelling 3</textarea></td>
+                <td><textarea name="Fever_3">Test Fever 3</textarea></td>
+            </tr>
+        </table>
+        
+        <h3>Alternative Method (Direct Field Names)</h3>
+        <table border="1">
+            <tr>
+                <th>Day</th>
+                <th>Date</th>
+                <th>Dosage</th>
+                <th>Discharge</th>
+                <th>Tenderness</th>
+                <th>Swelling</th>
+                <th>Fever</th>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td><input type="text" name="date_alt_1" value="10/01/2024"></td>
+                <td><textarea name="dosage_alt_1">Alt Dosage 1</textarea></td>
+                <td><textarea name="discharge_alt_1">Alt Discharge 1</textarea></td>
+                <td><textarea name="tenderness_alt_1">Alt Tenderness 1</textarea></td>
+                <td><textarea name="swelling_alt_1">Alt Swelling 1</textarea></td>
+                <td><textarea name="fever_alt_1">Alt Fever 1</textarea></td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td><input type="text" name="date_alt_2" value="11/01/2024"></td>
+                <td><textarea name="dosage_alt_2">Alt Dosage 2</textarea></td>
+                <td><textarea name="discharge_alt_2">Alt Discharge 2</textarea></td>
+                <td><textarea name="tenderness_alt_2">Alt Tenderness 2</textarea></td>
+                <td><textarea name="swelling_alt_2">Alt Swelling 2</textarea></td>
+                <td><textarea name="fever_alt_2">Alt Fever 2</textarea></td>
+            </tr>
+        </table>
+        
+        <input type="submit" value="Test Post-Operative Monitoring Submission">
+    </form>
+</body>
+</html>

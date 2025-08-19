@@ -55,24 +55,26 @@ if (!$adminUser) {
       overflow-x: hidden;
     }
     
-    .table-container {
-      max-height: 65vh;
-      overflow-y: auto;
+    .patient-card {
+      transition: all 0.3s ease;
+      border-radius: 12px;
+      overflow: hidden;
     }
     
-    .table-row {
-      transition: all 0.2s ease;
-    }
-    
-    .table-row:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      background-color: var(--table-row-hover);
+    .patient-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
     }
     
     .complication-badge {
       background-color: #fef2f2;
       color: #dc2626;
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
     }
     
     .action-button {
@@ -192,9 +194,11 @@ if (!$adminUser) {
           </label>
           <select id="status" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent" style="border-color: var(--border-secondary);">
             <option value="all">All Status</option>
-            <option value="pending">Pending</option>
+            <option value="pending">Pending Review</option>
+            <option value="in-progress">In Progress</option>
             <option value="completed">Completed</option>
-            <option value="cancelled">Cancelled</option>
+            <option value="complications">With Complications</option>
+            <option value="no-complications">No Complications</option>
           </select>
         </div>
         
@@ -240,8 +244,8 @@ if (!$adminUser) {
         <p class="text-sm" style="color: var(--text-secondary);">Try adjusting your search criteria</p>
       </div>
 
-      <!-- Results Table -->
-      <div id="resultsTable" class="hidden">
+      <!-- Results Cards -->
+      <div id="resultsCards" class="hidden">
         <div class="p-6 border-b" style="border-color: var(--border-secondary);">
           <div class="flex justify-between items-center">
             <h2 class="text-lg font-semibold">Search Results</h2>
@@ -249,24 +253,8 @@ if (!$adminUser) {
           </div>
         </div>
         
-        <div class="table-container">
-          <table class="w-full">
-            <thead class="sticky top-0" style="background-color: var(--bg-table-header);">
-              <tr class="border-b" style="border-color: var(--border-secondary);">
-                <th class="p-3 sm:p-4 text-left font-semibold text-sm">UHID</th>
-                <th class="p-3 sm:p-4 text-left font-semibold text-sm">Name</th>
-                <th class="p-3 sm:p-4 text-left font-semibold text-sm">Age/Sex</th>
-                <th class="p-3 sm:p-4 text-left font-semibold text-sm">Ward</th>
-                <th class="p-3 sm:p-4 text-left font-semibold text-sm">Surgeon</th>
-                <th class="p-3 sm:p-4 text-left font-semibold text-sm">Surgery Date</th>
-                <th class="p-3 sm:p-4 text-left font-semibold text-sm">Status</th>
-                <th class="p-3 sm:p-4 text-center font-semibold text-sm">Actions</th>
-              </tr>
-            </thead>
-            <tbody id="tableBody">
-              <!-- Results will be populated here -->
-            </tbody>
-          </table>
+        <div id="cardsContainer" class="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Patient cards will be populated here -->
         </div>
       </div>
     </div>
@@ -305,8 +293,8 @@ if (!$adminUser) {
     const results = document.getElementById('results');
     const loadingState = document.getElementById('loadingState');
     const noResultsState = document.getElementById('noResultsState');
-    const resultsTable = document.getElementById('resultsTable');
-    const tableBody = document.getElementById('tableBody');
+    const resultsCards = document.getElementById('resultsCards');
+    const cardsContainer = document.getElementById('cardsContainer');
     const resultCount = document.getElementById('resultCount');
 
     // Search functionality
@@ -322,7 +310,7 @@ if (!$adminUser) {
       // Show loading state
       loadingState.classList.remove('hidden');
       noResultsState.classList.add('hidden');
-      resultsTable.classList.add('hidden');
+      resultsCards.classList.add('hidden');
 
       try {
         // Build query parameters
@@ -364,47 +352,99 @@ if (!$adminUser) {
     function displayResults(patients) {
       resultCount.textContent = `${patients.length} record(s) found`;
       
-      const tableHTML = patients.map(patient => `
-        <tr class="table-row border-b" style="border-color: var(--border-secondary);">
-          <td class="p-3 sm:p-4 font-medium">${patient.uhid || '—'}</td>
-          <td class="p-3 sm:p-4">${patient.name || '—'}</td>
-          <td class="p-3 sm:p-4">${patient.age || '—'}/${patient.sex || '—'}</td>
-          <td class="p-3 sm:p-4">${patient.ward || '—'}</td>
-          <td class="p-3 sm:p-4">${patient.surgeon || '—'}</td>
-          <td class="p-3 sm:p-4">${patient.surgery_date || '—'}</td>
-          <td class="p-3 sm:p-4">
-            <span class="inline-block px-2 py-1 rounded-full text-xs font-medium ${getStatusClass(patient.status)}">
-              ${patient.status || 'Unknown'}
-            </span>
-          </td>
-          <td class="p-3 sm:p-4 text-center">
-            <button onclick="viewDetails('${patient.uhid}')" class="action-button px-3 py-1 rounded text-xs font-medium text-white mr-2" style="background-color: var(--button-bg);">
-              <i class="fas fa-eye mr-1"></i>View
-            </button>
-          </td>
-        </tr>
+      const cardsHTML = patients.map(patient => `
+        <div class="patient-card bg-white border rounded-xl shadow-lg overflow-hidden" style="border-color: var(--border-secondary);">
+          <div class="p-6">
+            <!-- Header with UHID and Status -->
+            <div class="flex justify-between items-start mb-4">
+              <div>
+                <h3 class="text-lg font-semibold text-gray-900">${patient.uhid || '—'}</h3>
+                <p class="text-sm text-gray-600">${patient.name || '—'}</p>
+              </div>
+              <div class="flex flex-col gap-2">
+                ${getStatusBadges(patient)}
+              </div>
+            </div>
+            
+            <!-- Patient Details -->
+            <div class="grid grid-cols-2 gap-4 mb-4">
+              <div>
+                <p class="text-xs font-medium text-gray-500 uppercase tracking-wide">Age/Sex</p>
+                <p class="text-sm text-gray-900">${patient.age || '—'}/${patient.sex || '—'}</p>
+              </div>
+              <div>
+                <p class="text-xs font-medium text-gray-500 uppercase tracking-wide">Ward</p>
+                <p class="text-sm text-gray-900">${patient.ward || '—'}</p>
+              </div>
+              <div>
+                <p class="text-xs font-medium text-gray-500 uppercase tracking-wide">Surgeon</p>
+                <p class="text-sm text-gray-900">${patient.surgeon || '—'}</p>
+              </div>
+              <div>
+                <p class="text-xs font-medium text-gray-500 uppercase tracking-wide">Surgery Date</p>
+                <p class="text-sm text-gray-900">${patient.dos || '—'}</p>
+              </div>
+            </div>
+            
+            <!-- Diagnosis and Procedure -->
+            <div class="mb-4">
+              <div class="mb-2">
+                <p class="text-xs font-medium text-gray-500 uppercase tracking-wide">Diagnosis</p>
+                <p class="text-sm text-gray-900">${patient.diagnosis || '—'}</p>
+              </div>
+              <div>
+                <p class="text-xs font-medium text-gray-500 uppercase tracking-wide">Procedure</p>
+                <p class="text-sm text-gray-900">${patient.procedure || '—'}</p>
+              </div>
+            </div>
+            
+            <!-- Action Button -->
+            <div class="flex justify-end">
+              <button onclick="viewDetails('${patient.patient_id}')" class="action-button px-4 py-2 rounded-lg text-sm font-medium text-white" style="background-color: var(--button-bg);">
+                <i class="fas fa-eye mr-2"></i>View Details
+              </button>
+            </div>
+          </div>
+        </div>
       `).join('');
 
-      tableBody.innerHTML = tableHTML;
-      resultsTable.classList.remove('hidden');
+      cardsContainer.innerHTML = cardsHTML;
+      resultsCards.classList.remove('hidden');
     }
 
-    function getStatusClass(status) {
-      switch (status?.toLowerCase()) {
-        case 'completed':
-          return 'bg-green-100 text-green-800';
-        case 'pending':
-          return 'bg-yellow-100 text-yellow-800';
-        case 'cancelled':
-          return 'bg-red-100 text-red-800';
-        default:
-          return 'bg-gray-100 text-gray-800';
+    function getStatusBadges(patient) {
+      let badges = '';
+      
+      // Review status badge
+      const reviewStatus = patient.review_status || 'Pending';
+      let reviewClass = 'bg-yellow-100 text-yellow-800';
+      if (reviewStatus === 'Completed') {
+        reviewClass = 'bg-green-100 text-green-800';
+      } else if (reviewStatus === 'In Progress') {
+        reviewClass = 'bg-blue-100 text-blue-800';
       }
+      
+      badges += `
+        <span class="inline-block px-2 py-1 rounded-full text-xs font-medium ${reviewClass}">
+          ${reviewStatus}
+        </span>
+      `;
+      
+      // Complications badge
+      if (patient.has_complications) {
+        badges += `
+          <span class="complication-badge inline-block px-2 py-1 rounded-full text-xs font-medium">
+            <i class="fas fa-exclamation-triangle mr-1"></i>Complications
+          </span>
+        `;
+      }
+      
+      return badges;
     }
 
-    function viewDetails(uhid) {
-      // Redirect to patient details page or show modal
-      window.open(`get_patient_data.php?uhid=${uhid}`, '_blank');
+    function viewDetails(patientId) {
+      // Open the form in read-only mode for admin viewing
+      window.open(`form.html?patient_id=${patientId}&readonly=true`, '_blank');
     }
 
     function clearSearch() {
@@ -416,7 +456,7 @@ if (!$adminUser) {
       // Hide results
       loadingState.classList.add('hidden');
       noResultsState.classList.add('hidden');
-      resultsTable.classList.add('hidden');
+      resultsCards.classList.add('hidden');
     }
 
     // Event listeners
@@ -563,14 +603,7 @@ if (!$adminUser) {
     addActivityListeners();
     resetActivityTimer();
 
-    // Initialize with current date range (last 30 days)
-    const today = new Date();
-    const thirtyDaysAgo = new Date(today.getTime() - (30 * 24 * 60 * 60 * 1000));
-    
-    startDate.value = thirtyDaysAgo.toISOString().split('T')[0];
-    endDate.value = today.toISOString().split('T')[0];
-
-    // Auto-search on page load
+    // Auto-search on page load (without prefilled dates)
     setTimeout(performSearch, 100);
   </script>
 </body>

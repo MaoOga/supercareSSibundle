@@ -525,8 +525,16 @@
           </tbody>
         </table>
         <div class="mt-4 text-right">
-          <button onclick="addDrainRow()" class="action-button">+</button>
-          <button onclick="removeDrainRow()" class="action-button">−</button>
+          <button type="button" onclick="addDrainRow()" class="action-button">
+            +
+          </button>
+          <button
+            type="button"
+            onclick="removeDrainRow()"
+            class="action-button"
+          >
+            −
+          </button>
         </div>
         <div class="section-break"></div>
         <div class="antibiotic-table-wrapper">
@@ -671,8 +679,18 @@
           </table>
         </div>
         <div class="mt-4 text-right">
-          <button onclick="addAntibioticRow()" class="action-button">+</button>
-          <button onclick="removeAntibioticRow()" class="action-button">
+          <button
+            type="button"
+            onclick="addAntibioticRow()"
+            class="action-button"
+          >
+            +
+          </button>
+          <button
+            type="button"
+            onclick="removeAntibioticRow()"
+            class="action-button"
+          >
             −
           </button>
         </div>
@@ -939,10 +957,18 @@
           </table>
         </div>
         <div class="mt-4 text-right">
-          <button onclick="addPostOperativeRow()" class="action-button">
+          <button
+            type="button"
+            onclick="addPostOperativeRow()"
+            class="action-button"
+          >
             +
           </button>
-          <button onclick="removePostOperativeRow()" class="action-button">
+          <button
+            type="button"
+            onclick="removePostOperativeRow()"
+            class="action-button"
+          >
             −
           </button>
         </div>
@@ -1001,7 +1027,7 @@
                 <td class="tg-fymr" rowspan="6">
                   Wound Complications<br />SSI--> Tick Criteria--><br />Date:<input
                     type="text"
-                    name="Wound-Complication Date"
+                    name="Wound-Complication_Date"
                     class="datepicker"
                     placeholder="dd/mm/yyyy"
                     style="width: 100px"
@@ -1490,36 +1516,39 @@
     <script>
       // Load surgeons from database
       function loadSurgeons() {
-        const surgeonDropdown = document.getElementById('surgeonDropdown');
+        const surgeonDropdown = document.getElementById("surgeonDropdown");
         if (!surgeonDropdown) return;
-        
-        fetch('get_surgeons.php')
-          .then(response => response.json())
-          .then(data => {
+
+        fetch("get_surgeons.php")
+          .then((response) => response.json())
+          .then((data) => {
             if (data.success) {
               // Clear existing options except the first one
-              surgeonDropdown.innerHTML = '<option value="">Select Surgeon</option>';
-              
+              surgeonDropdown.innerHTML =
+                '<option value="">Select Surgeon</option>';
+
               // Add surgeons from database
-              data.surgeons.forEach(surgeon => {
-                const option = document.createElement('option');
+              data.surgeons.forEach((surgeon) => {
+                const option = document.createElement("option");
                 option.value = surgeon.name;
                 option.textContent = surgeon.name;
                 surgeonDropdown.appendChild(option);
               });
             } else {
-              surgeonDropdown.innerHTML = '<option value="">Error loading surgeons</option>';
-              console.error('Error loading surgeons:', data.message);
+              surgeonDropdown.innerHTML =
+                '<option value="">Error loading surgeons</option>';
+              console.error("Error loading surgeons:", data.message);
             }
           })
-          .catch(error => {
-            surgeonDropdown.innerHTML = '<option value="">Error loading surgeons</option>';
-            console.error('Error loading surgeons:', error);
+          .catch((error) => {
+            surgeonDropdown.innerHTML =
+              '<option value="">Error loading surgeons</option>';
+            console.error("Error loading surgeons:", error);
           });
       }
 
       // Load surgeons when page loads
-      document.addEventListener('DOMContentLoaded', function() {
+      document.addEventListener("DOMContentLoaded", function () {
         loadSurgeons();
       });
       // Auto-grow function for textareas
@@ -1558,21 +1587,34 @@
       // Load patient data for editing
       function loadPatientData(patientId) {
         console.log("Loading patient data for ID:", patientId);
-        fetch(`get_patient_data.php?patient_id=${patientId}`)
+
+        // Test the URL being called
+        const url = `get_patient_data_api.php?patient_id=${patientId}`;
+        console.log("Calling URL:", url);
+
+        fetch(url)
           .then((response) => {
             console.log("Response status:", response.status);
-            return response.json();
+            console.log("Response headers:", response.headers);
+            return response.text(); // Get raw text first
           })
-          .then((data) => {
-            console.log("Received data:", data);
-            if (data.success) {
-              fillFormWithPatientData(data.data);
-            } else {
-              console.error("Error loading patient data:", data.message);
+          .then((text) => {
+            console.log("Raw response text:", text);
+            try {
+              const data = JSON.parse(text);
+              console.log("Parsed JSON data:", data);
+              if (data.success) {
+                fillFormWithPatientData(data.data);
+              } else {
+                console.error("Error loading patient data:", data.message);
+              }
+            } catch (e) {
+              console.error("Failed to parse JSON:", e);
+              console.error("Response was:", text);
             }
           })
           .catch((error) => {
-            console.error("Error:", error);
+            console.error("Fetch error:", error);
           });
       }
 
@@ -1604,6 +1646,10 @@
         setFormValue("address", patient.address);
         setFormValue("diagnosis", patient.primary_diagnosis);
         setFormValue("surgical_procedure", patient.surgical_procedure);
+        setFormValue(
+          "date_completed",
+          formatDateForInput(patient.date_completed)
+        );
 
         // Set surgical details
         if (surgical_details) {
@@ -1619,7 +1665,10 @@
             "patient_info[dod]",
             formatDateForInput(surgical_details.dod)
           );
-          setFormValue("patient_info[surgeon]", surgical_details.surgeon);
+
+          // Set surgeon with retry logic to handle async dropdown loading
+          setSurgeonValue(surgical_details.surgeon);
+
           setFormValue(
             "operation_duration",
             surgical_details.operation_duration
@@ -1628,7 +1677,7 @@
 
         // Set surgical skin preparation
         if (surgical_skin_preparation) {
-          setFormValue(
+          setRadioValue(
             "surgical_skin_preparation[pre_op_bath]",
             surgical_skin_preparation.pre_op_bath
           );
@@ -1636,7 +1685,7 @@
             "pre-notdone",
             surgical_skin_preparation.pre_op_bath_reason
           );
-          setFormValue(
+          setRadioValue(
             "surgical_skin_preparation[hair-removal]",
             surgical_skin_preparation.hair_removal
           );
@@ -1644,7 +1693,7 @@
             "hair-notdone",
             surgical_skin_preparation.hair_removal_reason
           );
-          setFormValue(
+          setRadioValue(
             "surgical_skin_preparation[removal-done]",
             surgical_skin_preparation.hair_removal_location
           );
@@ -1652,26 +1701,54 @@
 
         // Set implanted materials
         if (implanted_materials) {
-          setFormValue("implanted_used", implanted_materials.implanted_used);
+          setRadioValue("implanted_used", implanted_materials.implanted_used);
           setFormValue("metal", implanted_materials.metal);
           setFormValue("graft", implanted_materials.graft);
           setFormValue("Patch", implanted_materials.patch);
           setFormValue("Shunt", implanted_materials.shunt_stent);
         }
 
-        // Set drains
+        // Set drains - dynamically create rows for all drains
         if (drains && drains.length > 0) {
-          setFormValue("drain-used", "Yes");
+          setRadioValue("drain-used", "Yes");
+
+          // First, add extra rows if needed (beyond the 3 existing rows)
+          const maxDrainNumber = Math.max(...drains.map((d) => d.drain_number));
+          const existingRows = 3;
+          const extraRowsNeeded = Math.max(0, maxDrainNumber - existingRows);
+
+          // Add extra rows
+          for (let i = 0; i < extraRowsNeeded; i++) {
+            addDrainRow();
+          }
+
+          // Now populate all rows with data
           drains.forEach((drain, index) => {
             setFormValue(
               `drain_${drain.drain_number}`,
               drain.drain_description
             );
           });
+        } else {
+          // If no drains, set to "No"
+          setRadioValue("drain-used", "No");
         }
 
-        // Set antibiotic usage
+        // Set antibiotic usage - dynamically create rows for all antibiotics
         if (antibiotic_usage && antibiotic_usage.length > 0) {
+          // First, add extra rows if needed (beyond the 3 existing rows)
+          const maxSerialNo = Math.max(
+            ...antibiotic_usage.map((a) => a.serial_no)
+          );
+          const existingRows = 3;
+          const extraRowsNeeded = Math.max(0, maxSerialNo - existingRows);
+
+          // Add extra rows
+          for (let i = 0; i < extraRowsNeeded; i++) {
+            addAntibioticRow();
+          }
+
+          // Now populate all rows with data
           antibiotic_usage.forEach((antibiotic, index) => {
             const i = antibiotic.serial_no;
             setFormValue(`drug-name_${i}`, antibiotic.drug_name);
@@ -1687,8 +1764,21 @@
           });
         }
 
-        // Set post operative monitoring
+        // Set post operative monitoring - dynamically create rows for all monitoring entries
         if (post_operative_monitoring && post_operative_monitoring.length > 0) {
+          // First, add extra rows if needed (beyond the 3 existing rows)
+          const maxDay = Math.max(
+            ...post_operative_monitoring.map((m) => m.day)
+          );
+          const existingRows = 3;
+          const extraRowsNeeded = Math.max(0, maxDay - existingRows);
+
+          // Add extra rows
+          for (let i = 0; i < extraRowsNeeded; i++) {
+            addPostOperativeRow();
+          }
+
+          // Now populate all rows with data
           post_operative_monitoring.forEach((monitoring, index) => {
             const i = monitoring.day;
             setFormValue(
@@ -1712,7 +1802,7 @@
         // Set wound complications
         if (wound_complications) {
           setFormValue(
-            "Wound-Complication Date",
+            "Wound-Complication_Date",
             formatDateForInput(wound_complications.complication_date)
           );
           setCheckboxValue(
@@ -1726,12 +1816,72 @@
           );
           setCheckboxValue("Other", wound_complications.other_complication);
           setFormValue("WoundD-Specify", wound_complications.other_specify);
+          setFormValue("WoundD-Notes", wound_complications.notes);
+
+          // Set SSI checkboxes
           setCheckboxValue(
             "SuperficialSSI",
             wound_complications.superficial_ssi
           );
           setCheckboxValue("DeepSI", wound_complications.deep_si);
           setCheckboxValue("OrganSI", wound_complications.organ_space_ssi);
+
+          // Set detailed SSI criteria checkboxes
+          setCheckboxValue(
+            "wtd1-1",
+            wound_complications.purulent_discharge_superficial
+          );
+          setCheckboxValue(
+            "wtd1-2",
+            wound_complications.purulent_discharge_deep
+          );
+          setCheckboxValue(
+            "wtd1-3",
+            wound_complications.purulent_discharge_organ
+          );
+          setCheckboxValue(
+            "wtd2-1",
+            wound_complications.organism_identified_superficial
+          );
+          setCheckboxValue(
+            "wtd2-2",
+            wound_complications.organism_identified_organ
+          );
+          setCheckboxValue(
+            "wtd3-1",
+            wound_complications.clinical_diagnosis_ssi
+          );
+          setCheckboxValue(
+            "wtd3-2",
+            wound_complications.deep_incision_reopening
+          );
+          setCheckboxValue(
+            "wtd3-3",
+            wound_complications.abscess_evidence_organ
+          );
+          setCheckboxValue(
+            "wtd4-1",
+            wound_complications.deliberate_opening_symptoms
+          );
+          setCheckboxValue("wtd4-2", wound_complications.abscess_evidence_deep);
+          setCheckboxValue(
+            "wtd4-3",
+            wound_complications.not_infected_conditions
+          );
+
+          // Set surgeon opinions
+          setFormValue(
+            "SurgeonOpinion1",
+            wound_complications.surgeon_opinion_superficial
+          );
+          setFormValue(
+            "SurgeonOpinion2",
+            wound_complications.surgeon_opinion_deep
+          );
+          setFormValue(
+            "SurgeonOpinion3",
+            wound_complications.surgeon_opinion_organ
+          );
         }
 
         // Set review sutures
@@ -1752,8 +1902,11 @@
             "RevieworPhoneDate",
             formatDateForInput(review_phone.review_date)
           );
-          setFormValue("reviewp", review_phone.patient_identification);
-          setFormValue("reviewppain", review_phone.pain);
+          setRadioValue("reviewp", review_phone.patient_identification);
+          setRadioValue("reviewppain", review_phone.pain);
+          setRadioValue("reviewpus", review_phone.pus);
+          setRadioValue("reviewbleed", review_phone.bleeding);
+          setRadioValue("reviewother", review_phone.other);
         }
 
         // Initialize textareas after filling data
@@ -1786,7 +1939,246 @@
         );
         if (checkbox) {
           checkbox.checked = value === "Yes" || value === 1 || value === true;
+          console.log(
+            `Set checkbox ${name} = ${value} (checked: ${checkbox.checked})`
+          );
+        } else {
+          console.log(`Checkbox not found for name: ${name}`);
         }
+      }
+
+      // Helper function to set radio button values
+      function setRadioValue(name, value) {
+        if (value === null || value === undefined) return;
+
+        const radio = document.querySelector(
+          `input[name="${name}"][value="${value}"]`
+        );
+        if (radio) {
+          radio.checked = true;
+          console.log(`Set radio ${name} = ${value} (checked)`);
+        } else {
+          console.log(
+            `Radio button not found for name: ${name}, value: ${value}`
+          );
+        }
+      }
+
+      // Helper function to set surgeon value with retry logic
+      function setSurgeonValue(surgeonName) {
+        if (!surgeonName) return;
+
+        const surgeonDropdown = document.getElementById("surgeonDropdown");
+        if (!surgeonDropdown) {
+          console.log("Surgeon dropdown not found, retrying in 100ms...");
+          setTimeout(() => setSurgeonValue(surgeonName), 100);
+          return;
+        }
+
+        // Check if the dropdown has options loaded
+        if (surgeonDropdown.options.length <= 1) {
+          console.log("Surgeon dropdown not loaded yet, retrying in 200ms...");
+          setTimeout(() => setSurgeonValue(surgeonName), 200);
+          return;
+        }
+
+        // Try to find and select the surgeon
+        let found = false;
+        for (let i = 0; i < surgeonDropdown.options.length; i++) {
+          if (surgeonDropdown.options[i].value === surgeonName) {
+            surgeonDropdown.selectedIndex = i;
+            found = true;
+            console.log(`Set surgeon = ${surgeonName} (found)`);
+            break;
+          }
+        }
+
+        if (!found) {
+          console.log(
+            `Surgeon "${surgeonName}" not found in dropdown, retrying in 500ms...`
+          );
+          setTimeout(() => setSurgeonValue(surgeonName), 500);
+        }
+      }
+
+      // Function to make the form read-only
+      function makeFormReadOnly() {
+        console.log("Making form read-only...");
+
+        // Disable all input fields
+        const inputs = document.querySelectorAll(
+          'input[type="text"], input[type="number"], input[type="email"], input[type="tel"], input[type="date"]'
+        );
+        inputs.forEach((input) => {
+          input.disabled = true;
+          input.style.backgroundColor = "#f3f4f6";
+          input.style.cursor = "not-allowed";
+        });
+
+        // Disable all textareas
+        const textareas = document.querySelectorAll("textarea");
+        textareas.forEach((textarea) => {
+          textarea.disabled = true;
+          textarea.style.backgroundColor = "#f3f4f6";
+          textarea.style.cursor = "not-allowed";
+        });
+
+        // Disable all select dropdowns
+        const selects = document.querySelectorAll("select");
+        selects.forEach((select) => {
+          select.disabled = true;
+          select.style.backgroundColor = "#f3f4f6";
+          select.style.cursor = "not-allowed";
+        });
+
+        // Disable all checkboxes but keep selected ones visible
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        checkboxes.forEach((checkbox) => {
+          checkbox.disabled = true;
+          checkbox.style.cursor = "not-allowed";
+          // If checkbox is checked, make it more visible with black styling
+          if (checkbox.checked) {
+            checkbox.style.accentColor = "#000000";
+            checkbox.style.transform = "scale(1.2)";
+            checkbox.style.filter = "brightness(0) saturate(100%)";
+          }
+        });
+
+        // Disable all radio buttons but keep selected ones visible
+        const radios = document.querySelectorAll('input[type="radio"]');
+        radios.forEach((radio) => {
+          radio.disabled = true;
+          radio.style.cursor = "not-allowed";
+          // If radio is checked, make it more visible with black styling
+          if (radio.checked) {
+            radio.style.accentColor = "#000000";
+            radio.style.transform = "scale(1.2)";
+            radio.style.filter = "brightness(0) saturate(100%)";
+          }
+        });
+
+        // Hide all submit buttons and action buttons
+        const submitButtons = document.querySelectorAll(
+          'button[type="submit"], input[type="submit"]'
+        );
+        submitButtons.forEach((button) => {
+          button.style.display = "none";
+        });
+
+        // Hide add/remove row buttons
+        const actionButtons = document.querySelectorAll(
+          'button[onclick*="add"], button[onclick*="remove"]'
+        );
+        actionButtons.forEach((button) => {
+          button.style.display = "none";
+        });
+
+        // Add a read-only indicator
+        const header = document.querySelector("h1");
+        if (header) {
+          header.innerHTML +=
+            ' <span class="readonly-indicator" style="color: #dc2626;">(Read-Only View)</span>';
+        }
+
+        // Change page title
+        document.title = "Patient Details - Read Only";
+
+        // Add CSS for better visibility of selected radio buttons and checkboxes
+        const style = document.createElement("style");
+        style.textContent = `
+          /* Enhanced styling for selected radio buttons and checkboxes in read-only mode */
+          input[type="radio"]:checked {
+            accent-color: #000000 !important;
+            transform: scale(1.3) !important;
+            filter: brightness(0) saturate(100%) !important;
+          }
+          
+          input[type="checkbox"]:checked {
+            accent-color: #000000 !important;
+            transform: scale(1.3) !important;
+            filter: brightness(0) saturate(100%) !important;
+          }
+          
+          /* Make labels for selected elements more prominent */
+          input[type="radio"]:checked + label,
+          input[type="checkbox"]:checked + label {
+            font-weight: bold !important;
+            color: #000000 !important;
+          }
+          
+          /* Consistent font sizes for mobile and PC */
+          * {
+            font-size: 14px !important;
+          }
+          
+          /* Headers and titles */
+          h1, h2, h3, h4, h5, h6 {
+            font-size: 16px !important;
+            font-weight: bold !important;
+          }
+          
+          /* Form labels */
+          label {
+            font-size: 14px !important;
+          }
+          
+          /* Input fields and textareas */
+          input, textarea, select {
+            font-size: 14px !important;
+          }
+          
+          /* Table content */
+          table, th, td {
+            font-size: 14px !important;
+          }
+          
+          /* Buttons */
+          button {
+            font-size: 14px !important;
+          }
+          
+          /* Read-only indicator */
+          .readonly-indicator {
+            font-size: 12px !important;
+          }
+        `;
+        document.head.appendChild(style);
+
+        console.log("Form is now read-only");
+      }
+
+      // Helper function to delete row from database
+      function deleteRowFromDatabase(
+        patientId,
+        tableType,
+        rowNumber,
+        onSuccess
+      ) {
+        const formData = new FormData();
+        formData.append("patient_id", patientId);
+        formData.append("table_type", tableType);
+        formData.append("row_number", rowNumber);
+
+        fetch("delete_row.php", {
+          method: "POST",
+          body: formData,
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success) {
+              console.log(
+                `Successfully deleted row ${rowNumber} from ${tableType} table`
+              );
+              if (onSuccess) onSuccess();
+            } else {
+              console.error("Failed to delete row:", data.message);
+              alert("Failed to delete row: " + data.message);
+            }
+          })
+          .catch((error) => {
+            console.error("Error deleting row:", error);
+            alert("Error deleting row. Please try again.");
+          });
       }
 
       // Helper function to format date for input fields
@@ -1843,13 +2235,32 @@
         // Initialize textareas
         initializeTextareas();
 
-        // Check if we're editing an existing patient
+        // Initialize datepickers for existing date fields
+        if (typeof $.fn.datepicker !== "undefined") {
+          $(".datepicker").datepicker({
+            dateFormat: "dd/mm/yy",
+            changeMonth: true,
+            changeYear: true,
+          });
+        }
+
+        // Check URL parameters
         const urlParams = new URLSearchParams(window.location.search);
         const patientId = urlParams.get("patient_id");
+        const isReadOnly = urlParams.get("readonly") === "true";
 
         if (patientId) {
           // Load patient data for editing
           loadPatientData(patientId);
+
+          // If in read-only mode, disable all form inputs
+          if (isReadOnly) {
+            makeFormReadOnly();
+          }
+        } else if (isReadOnly) {
+          // If read-only mode but no patient ID, show error
+          alert("No patient ID provided for read-only view.");
+          window.close();
         }
 
         // Add UHID validation
@@ -1912,7 +2323,7 @@
             const isUpdate = patientId && patientId.trim() !== "";
 
             // Send data to server
-            fetch("submit_form.php", {
+            fetch("submit_form_working.php", {
               method: "POST",
               body: formData,
             })
@@ -1969,6 +2380,389 @@
               });
           });
         }
+
+        // Dynamic row addition functions
+        function addDrainRow() {
+          const tbody = document.querySelector("#drain-table tbody");
+          const rows = tbody.querySelectorAll(".drain-row");
+          const newRowNumber = rows.length + 1;
+
+          const newRow = document.createElement("tr");
+          newRow.className = "drain-row";
+          newRow.innerHTML = `
+            <td class="tg-k2l0">${newRowNumber}</td>
+            <td class="tg-1wig">
+              <textarea
+                name="drain_${newRowNumber}"
+                class="input-overlay input-full"
+                rows="1"
+                oninput="autoGrow(this)"
+                style="min-height: 28px; line-height: 1.2"
+              ></textarea>
+            </td>
+          `;
+
+          tbody.appendChild(newRow);
+          initializeTextareas();
+        }
+
+        function removeDrainRow() {
+          const tbody = document.querySelector("#drain-table tbody");
+          const rows = tbody.querySelectorAll(".drain-row");
+
+          if (rows.length > 1) {
+            const rowToRemove = rows[rows.length - 1];
+            const rowNumber = rows.length; // The row number being removed
+
+            // Get patient ID from the form
+            const patientId = document.querySelector(
+              'input[name="patient_id"]'
+            )?.value;
+
+            if (patientId) {
+              // Delete from database first
+              deleteRowFromDatabase(patientId, "drains", rowNumber, () => {
+                // After successful deletion, remove from DOM
+                tbody.removeChild(rowToRemove);
+                // Renumber the remaining rows
+                const remainingRows = tbody.querySelectorAll(".drain-row");
+                remainingRows.forEach((row, index) => {
+                  const numberCell = row.querySelector("td:first-child");
+                  numberCell.textContent = index + 1;
+                });
+              });
+            } else {
+              // If no patient ID (new form), just remove from DOM
+              tbody.removeChild(rowToRemove);
+              // Renumber the remaining rows
+              const remainingRows = tbody.querySelectorAll(".drain-row");
+              remainingRows.forEach((row, index) => {
+                const numberCell = row.querySelector("td:first-child");
+                numberCell.textContent = index + 1;
+              });
+            }
+          }
+        }
+
+        function addAntibioticRow() {
+          const tbody = document.querySelector("#antibiotic-table tbody");
+          const rows = tbody.querySelectorAll(".antibiotic-row");
+          const newRowNumber = rows.length + 1;
+
+          const newRow = document.createElement("tr");
+          newRow.className = "antibiotic-row";
+          newRow.innerHTML = `
+            <td class="tg-k2l0">${newRowNumber}</td>
+            <td class="tg-1wig">
+              <textarea
+                name="drug-name_${newRowNumber}"
+                class="input-overlay input-full"
+                rows="1"
+                oninput="autoGrow(this)"
+                style="min-height: 28px; line-height: 1.2"
+              ></textarea>
+            </td>
+            <td class="tg-1wig">
+              <textarea
+                name="dosage_${newRowNumber}"
+                class="input-overlay input-full"
+                rows="1"
+                oninput="autoGrow(this)"
+                style="min-height: 28px; line-height: 1.2"
+              ></textarea>
+            </td>
+            <td class="tg-1wig">
+              <input
+                type="text"
+                name="antibiotic_usage[startedon]_${newRowNumber}"
+                class="datepicker"
+                placeholder="dd/mm/yyyy"
+                style="width: 100px"
+                value=""
+              />
+            </td>
+            <td class="tg-1wig">
+              <input
+                type="text"
+                name="antibiotic_usage[stoppeon]_${newRowNumber}"
+                class="datepicker"
+                placeholder="dd/mm/yyyy"
+                style="width: 100px"
+                value=""
+              />
+            </td>
+          `;
+
+          tbody.appendChild(newRow);
+          initializeTextareas();
+          // Reinitialize datepickers for new inputs
+          if (typeof $.fn.datepicker !== "undefined") {
+            $(newRow).find(".datepicker").datepicker({
+              dateFormat: "dd/mm/yy",
+              changeMonth: true,
+              changeYear: true,
+            });
+          }
+        }
+
+        function removeAntibioticRow() {
+          const tbody = document.querySelector("#antibiotic-table tbody");
+          const rows = tbody.querySelectorAll(".antibiotic-row");
+
+          if (rows.length > 1) {
+            const rowToRemove = rows[rows.length - 1];
+            const rowNumber = rows.length; // The row number being removed
+
+            // Get patient ID from the form
+            const patientId = document.querySelector(
+              'input[name="patient_id"]'
+            )?.value;
+
+            if (patientId) {
+              // Delete from database first
+              deleteRowFromDatabase(patientId, "antibiotics", rowNumber, () => {
+                // After successful deletion, remove from DOM
+                tbody.removeChild(rowToRemove);
+                // Renumber the remaining rows
+                const remainingRows = tbody.querySelectorAll(".antibiotic-row");
+                remainingRows.forEach((row, index) => {
+                  const numberCell = row.querySelector("td:first-child");
+                  numberCell.textContent = index + 1;
+                });
+              });
+            } else {
+              // If no patient ID (new form), just remove from DOM
+              tbody.removeChild(rowToRemove);
+              // Renumber the remaining rows
+              const remainingRows = tbody.querySelectorAll(".antibiotic-row");
+              remainingRows.forEach((row, index) => {
+                const numberCell = row.querySelector("td:first-child");
+                numberCell.textContent = index + 1;
+              });
+            }
+          }
+        }
+
+        function addPostOperativeRow() {
+          const tbody = document.querySelector("#post-operative-table tbody");
+          const rows = tbody.querySelectorAll(".post-operative-row");
+          const newRowNumber = rows.length + 1;
+
+          const newRow = document.createElement("tr");
+          newRow.className = "post-operative-row";
+          newRow.innerHTML = `
+            <td class="tg-k2l0">${newRowNumber}</td>
+            <td class="tg-0lax">
+              <input
+                type="text"
+                name="post-operative[date]_${newRowNumber}"
+                class="datepicker"
+                placeholder="dd/mm/yyyy"
+                style="width: 100px"
+                value=""
+              />
+            </td>
+            <td class="tg-0lax">
+              <textarea
+                name="post-dosage_${newRowNumber}"
+                class="input-overlay input-full"
+                rows="1"
+                oninput="autoGrow(this)"
+                style="min-height: 28px; line-height: 1.2; text-align: center;"
+              ></textarea>
+            </td>
+            <td class="tg-0lax">
+              <textarea
+                name="type-ofdischarge_${newRowNumber}"
+                class="input-overlay input-full"
+                rows="1"
+                oninput="autoGrow(this)"
+                style="min-height: 28px; line-height: 1.2; text-align: center;"
+              ></textarea>
+            </td>
+            <td class="tg-0lax">
+              <textarea
+                name="tenderness-pain_${newRowNumber}"
+                class="input-overlay input-full"
+                rows="1"
+                oninput="autoGrow(this)"
+                style="min-height: 28px; line-height: 1.2; text-align: center;"
+              ></textarea>
+            </td>
+            <td class="tg-0lax">
+              <textarea
+                name="swelling_${newRowNumber}"
+                class="input-overlay input-full"
+                rows="1"
+                oninput="autoGrow(this)"
+                style="min-height: 28px; line-height: 1.2; text-align: center;"
+              ></textarea>
+            </td>
+            <td class="tg-0lax">
+              <textarea
+                name="fever_${newRowNumber}"
+                class="input-overlay input-full"
+                rows="1"
+                oninput="autoGrow(this)"
+                style="min-height: 28px; line-height: 1.2; text-align: center;"
+              ></textarea>
+            </td>
+          `;
+
+          tbody.appendChild(newRow);
+          initializeTextareas();
+          // Reinitialize datepickers for new inputs
+          if (typeof $.fn.datepicker !== "undefined") {
+            $(newRow).find(".datepicker").datepicker({
+              dateFormat: "dd/mm/yy",
+              changeMonth: true,
+              changeYear: true,
+            });
+          }
+        }
+
+        function removePostOperativeRow() {
+          const tbody = document.querySelector("#post-operative-table tbody");
+          const rows = tbody.querySelectorAll(".post-operative-row");
+
+          if (rows.length > 1) {
+            const rowToRemove = rows[rows.length - 1];
+            const rowNumber = rows.length; // The row number being removed
+
+            // Get patient ID from the form
+            const patientId = document.querySelector(
+              'input[name="patient_id"]'
+            )?.value;
+
+            if (patientId) {
+              // Delete from database first
+              deleteRowFromDatabase(
+                patientId,
+                "post_operative",
+                rowNumber,
+                () => {
+                  // After successful deletion, remove from DOM
+                  tbody.removeChild(rowToRemove);
+                  // Renumber the remaining rows
+                  const remainingRows = tbody.querySelectorAll(
+                    ".post-operative-row"
+                  );
+                  remainingRows.forEach((row, index) => {
+                    const numberCell = row.querySelector("td:first-child");
+                    numberCell.textContent = index + 1;
+                  });
+                }
+              );
+            } else {
+              // If no patient ID (new form), just remove from DOM
+              tbody.removeChild(rowToRemove);
+              // Renumber the remaining rows
+              const remainingRows = tbody.querySelectorAll(
+                ".post-operative-row"
+              );
+              remainingRows.forEach((row, index) => {
+                const numberCell = row.querySelector("td:first-child");
+                numberCell.textContent = index + 1;
+              });
+            }
+          }
+        }
+
+        // Session management for form page
+        let sessionCheckInterval;
+        let sessionTimeout;
+        const SESSION_TIMEOUT_MINUTES = 30;
+        const SESSION_CHECK_INTERVAL = 60000; // Check every minute
+
+        // Function to check session status
+        async function checkSessionStatus() {
+          try {
+            const response = await fetch("check_nurse_session.php");
+            const data = await response.json();
+
+            if (!data.success || !data.logged_in) {
+              // Session expired, redirect to login
+              clearSessionTimers();
+              alert("Your session has expired. Please log in again.");
+              window.location.href = "login.html?msg=session_expired";
+              return false;
+            }
+
+            // Update session activity
+            updateSessionActivity();
+            return true;
+          } catch (error) {
+            console.error("Session check failed:", error);
+            return false;
+          }
+        }
+
+        // Function to update session activity
+        async function updateSessionActivity() {
+          try {
+            await fetch("update_session_activity.php");
+          } catch (error) {
+            console.error("Failed to update session activity:", error);
+          }
+        }
+
+        // Function to start session timers
+        function startSessionTimers() {
+          // Check session every minute
+          sessionCheckInterval = setInterval(
+            checkSessionStatus,
+            SESSION_CHECK_INTERVAL
+          );
+
+          // Set timeout for 30 minutes
+          sessionTimeout = setTimeout(() => {
+            clearSessionTimers();
+            alert(
+              "Your session has expired due to inactivity. Please log in again."
+            );
+            window.location.href = "login.html?msg=session_expired";
+          }, SESSION_TIMEOUT_MINUTES * 60 * 1000);
+        }
+
+        // Function to clear session timers
+        function clearSessionTimers() {
+          if (sessionCheckInterval) {
+            clearInterval(sessionCheckInterval);
+          }
+          if (sessionTimeout) {
+            clearTimeout(sessionTimeout);
+          }
+        }
+
+        // Function to reset session timeout on user activity
+        function resetSessionTimeout() {
+          clearSessionTimers();
+          startSessionTimers();
+        }
+
+        // Initialize session management when page loads
+        document.addEventListener("DOMContentLoaded", function () {
+          // Check session status first
+          checkSessionStatus().then((sessionValid) => {
+            if (sessionValid) {
+              // Start session timers
+              startSessionTimers();
+
+              // Add activity listeners to reset timeout
+              const activityEvents = [
+                "mousedown",
+                "mousemove",
+                "keypress",
+                "scroll",
+                "touchstart",
+                "click",
+              ];
+              activityEvents.forEach((event) => {
+                document.addEventListener(event, resetSessionTimeout, true);
+              });
+            }
+          });
+        });
       });
     </script>
   </body>

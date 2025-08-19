@@ -983,13 +983,88 @@
         });
       }
 
+      // Session management variables
+      let sessionCheckInterval;
+      let sessionTimeout;
+      const SESSION_TIMEOUT_MINUTES = 30;
+      const SESSION_CHECK_INTERVAL = 60000; // Check every minute
+
+      // Function to check session status
+      async function checkSessionStatus() {
+        try {
+          const response = await fetch('check_nurse_session.php');
+          const data = await response.json();
+          
+          if (!data.success || !data.logged_in) {
+            // Session expired, redirect to login
+            clearSessionTimers();
+            alert('Your session has expired. Please log in again.');
+            window.location.href = 'login.html?msg=session_expired';
+            return false;
+          }
+          
+          // Update session activity
+          updateSessionActivity();
+          return true;
+        } catch (error) {
+          console.error('Session check failed:', error);
+          return false;
+        }
+      }
+
+      // Function to update session activity
+      async function updateSessionActivity() {
+        try {
+          await fetch('update_session_activity.php');
+        } catch (error) {
+          console.error('Failed to update session activity:', error);
+        }
+      }
+
+      // Function to start session timers
+      function startSessionTimers() {
+        // Check session every minute
+        sessionCheckInterval = setInterval(checkSessionStatus, SESSION_CHECK_INTERVAL);
+        
+        // Set timeout for 30 minutes
+        sessionTimeout = setTimeout(() => {
+          clearSessionTimers();
+          alert('Your session has expired due to inactivity. Please log in again.');
+          window.location.href = 'login.html?msg=session_expired';
+        }, SESSION_TIMEOUT_MINUTES * 60 * 1000);
+      }
+
+      // Function to clear session timers
+      function clearSessionTimers() {
+        if (sessionCheckInterval) {
+          clearInterval(sessionCheckInterval);
+        }
+        if (sessionTimeout) {
+          clearTimeout(sessionTimeout);
+        }
+      }
+
+      // Function to reset session timeout on user activity
+      function resetSessionTimeout() {
+        clearSessionTimers();
+        startSessionTimers();
+      }
+
       // Logout functionality
       document
         .getElementById("logoutBtn")
-        .addEventListener("click", function () {
+        .addEventListener("click", async function () {
+          try {
+            // Call logout endpoint
+            await fetch('nurse_logout.php');
+          } catch (error) {
+            console.error('Logout error:', error);
+          }
+          
           // Clear any stored session data
           sessionStorage.removeItem("nurseInfo");
           localStorage.removeItem("nurseInfo");
+          clearSessionTimers();
 
           // Redirect to login page
           window.location.href = "login.html";
@@ -997,7 +1072,22 @@
 
       // Load patient data when page loads
       document.addEventListener("DOMContentLoaded", function () {
-        loadPatientData();
+        // Check session status first
+        checkSessionStatus().then(sessionValid => {
+          if (sessionValid) {
+            // Start session timers
+            startSessionTimers();
+            
+            // Load patient data
+            loadPatientData();
+            
+            // Add activity listeners to reset timeout
+            const activityEvents = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
+            activityEvents.forEach(event => {
+              document.addEventListener(event, resetSessionTimeout, true);
+            });
+          }
+        });
       });
     </script>
   </body>

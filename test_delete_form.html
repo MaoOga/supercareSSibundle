@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Delete Row Test Form</title>
+  </head>
+  <body>
+    <h2>Test Form for Delete Row Functionality</h2>
+
+    <form action="test_delete_functionality.php" method="POST">
+      <h3>Delete Parameters</h3>
+      <p>Patient ID: <input type="text" name="patient_id" value="1" /></p>
+      <p>
+        Table Type:
+        <select name="table_type">
+          <option value="drains">Drains</option>
+          <option value="antibiotics">Antibiotics</option>
+          <option value="post_operative">Post-Operative Monitoring</option>
+        </select>
+      </p>
+      <p>
+        Row Number: <input type="number" name="row_number" value="1" min="1" />
+      </p>
+
+      <input type="submit" value="Test Delete Parameters" />
+    </form>
+
+    <h3>Simulate Delete Row</h3>
+    <p>Click the buttons below to test delete functionality:</p>
+    <button onclick="testDeleteRow()">Test Simple Delete</button>
+    <button onclick="testDeleteRowFull()">Test Full Delete</button>
+    <button onclick="testDeleteRowNoSession()">Test No Session Delete</button>
+
+    <div id="result"></div>
+
+    <script>
+      function testDeleteRow() {
+        const formData = new FormData();
+        formData.append("patient_id", "1");
+        formData.append("table_type", "drains");
+        formData.append("row_number", "2");
+
+        // First test with simplified version
+        fetch("test_delete_simple.php", {
+          method: "POST",
+          body: formData,
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            document.getElementById("result").innerHTML =
+              "<h4>Simple Test Result:</h4><pre>" +
+              JSON.stringify(data, null, 2) +
+              "</pre>";
+          })
+          .catch((error) => {
+            document.getElementById("result").innerHTML =
+              "<h4>Simple Test Error:</h4><pre>" + error.message + "</pre>";
+          });
+      }
+
+      function testDeleteRowFull() {
+        const formData = new FormData();
+        formData.append("patient_id", "1");
+        formData.append("table_type", "drains");
+        formData.append("row_number", "2");
+
+        // Test with full version
+        fetch("delete_row.php", {
+          method: "POST",
+          body: formData,
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            document.getElementById("result").innerHTML =
+              "<h4>Full Test Result:</h4><pre>" +
+              JSON.stringify(data, null, 2) +
+              "</pre>";
+          })
+          .catch((error) => {
+            document.getElementById("result").innerHTML =
+              "<h4>Full Test Error:</h4><pre>" + error.message + "</pre>";
+          });
+      }
+
+      function testDeleteRowNoSession() {
+        const formData = new FormData();
+        formData.append("patient_id", "1");
+        formData.append("table_type", "drains");
+        formData.append("row_number", "2");
+
+        // Test with no session version
+        fetch("delete_row_no_session.php", {
+          method: "POST",
+          body: formData,
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            document.getElementById("result").innerHTML =
+              "<h4>No Session Test Result:</h4><pre>" +
+              JSON.stringify(data, null, 2) +
+              "</pre>";
+          })
+          .catch((error) => {
+            document.getElementById("result").innerHTML =
+              "<h4>No Session Test Error:</h4><pre>" + error.message + "</pre>";
+          });
+      }
+    </script>
+  </body>
+</html>

@@ -1,8 +1,10 @@
 <?php
-// Working version without session requirements
+// Working version with session and audit logging
 header('Content-Type: application/json');
 
 require_once 'config.php';
+require_once 'session_config.php';
+require_once 'audit_logger.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
@@ -11,14 +13,27 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 try {
+    // Check if nurse is logged in
+    if (!isNurseLoggedIn()) {
+        http_response_code(401);
+        echo json_encode(['success' => false, 'message' => 'Session expired. Please log in again.']);
+        exit;
+    }
+
     $pdo->beginTransaction();
     
     $formData = $_POST;
     $patientId = $formData['patient_id'] ?? null;
     $isUpdate = !empty($patientId);
     
+    // Get nurse information from session for audit logging
+    $nurseInfo = getNurseInfo();
+    $nurseIdCode = $nurseInfo['nurse_id'] ?? 'UNKNOWN';
+    $nurseName = $nurseInfo['name'] ?? 'Unknown Nurse';
+    
     // Debug logging
     error_log("Working form submission - Patient ID: $patientId, Is Update: " . ($isUpdate ? 'Yes' : 'No'));
+    error_log("Nurse ID: $nurseIdCode, Nurse Name: $nurseName");
     error_log("Form data keys: " . implode(', ', array_keys($formData)));
     
     // Check for post-operative related keys specifically
@@ -64,6 +79,19 @@ try {
             date('Y-m-d'),
             $patientId
         ]);
+        
+        // Log the update
+        $auditLogger = new AuditLogger($pdo);
+        $auditLogger->log(
+            $nurseIdCode, // Use nurse ID as admin_user
+            'UPDATE',
+            'PATIENT',
+            $patientId,
+            $formData['name'],
+            "Updated patient record: {$formData['name']} (UHID: {$formData['uhid']})",
+            null,
+            $formData
+        );
     } else {
         $patientStmt = $pdo->prepare("INSERT INTO patients (name, age, sex, uhid, phone, bed_ward, address, primary_diagnosis, surgical_procedure, date_completed) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         $patientStmt->execute([
@@ -79,6 +107,19 @@ try {
             date('Y-m-d')
         ]);
         $patientId = $pdo->lastInsertId();
+        
+        // Log the creation
+        $auditLogger = new AuditLogger($pdo);
+        $auditLogger->log(
+            $nurseIdCode, // Use nurse ID as admin_user
+            'CREATE',
+            'PATIENT',
+            $patientId,
+            $formData['name'],
+            "Created new patient record: {$formData['name']} (UHID: {$formData['uhid']})",
+            null,
+            $formData
+        );
     }
 
     // Handle surgical_details table
@@ -282,7 +323,13 @@ try {
         $deleteStmt->execute([$patientId]);
     }
 
-    $complicationDate = !empty($formData['Wound-Complication Date']) ? date('Y-m-d', strtotime(str_replace('/', '-', $formData['Wound-Complication Date']))) : null;
+    // Debug logging for wound complication date
+    error_log("WOUND COMPLICATION DATE DEBUG - Raw value: '" . ($formData['Wound-Complication_Date'] ?? 'NOT SET') . "'");
+    error_log("WOUND COMPLICATION DATE DEBUG - Empty check: " . (empty($formData['Wound-Complication_Date']) ? 'YES' : 'NO'));
+    
+    $complicationDate = !empty($formData['Wound-Complication_Date']) ? date('Y-m-d', strtotime(str_replace('/', '-', $formData['Wound-Complication_Date']))) : null;
+    
+    error_log("WOUND COMPLICATION DATE DEBUG - Final parsed date: '" . ($complicationDate ?? 'NULL') . "'");
     
     $woundStmt = $pdo->prepare("INSERT INTO wound_complications (
         patient_id, complication_date, wound_dehiscence, allergic_reaction, bleeding_haemorrhage, 

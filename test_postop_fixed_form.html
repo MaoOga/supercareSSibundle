@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fixed Post-Operative Monitoring Test</title>
+</head>
+<body>
+    <h2>Fixed Test for Post-Operative Monitoring</h2>
+    
+    <form action="test_postop_fixed.php" method="POST">
+        <!-- Required fields for patient -->
+        <input type="hidden" name="name" value="Test Patient">
+        <input type="hidden" name="age" value="30">
+        <input type="hidden" name="Sex" value="Male">
+        <input type="hidden" name="uhid" value="TEST999">
+        <input type="hidden" name="phone" value="1234567890">
+        <input type="hidden" name="bed" value="A1">
+        <input type="hidden" name="address" value="Test Address">
+        <input type="hidden" name="diagnosis" value="Test Diagnosis">
+        <input type="hidden" name="surgical_procedure" value="Test Procedure">
+        
+        <!-- Post-Operative Wound Monitoring -->
+        <h3>Post-Operative Wound Monitoring</h3>
+        <table border="1">
+            <tr>
+                <th>Day</th>
+                <th>Date</th>
+                <th>Dosage</th>
+                <th>Discharge</th>
+                <th>Tenderness</th>
+                <th>Swelling</th>
+                <th>Fever</th>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td><input type="text" name="post-operative[date]_1" value="01/01/2024"></td>
+                <td><textarea name="post-dosage_1">Test Dosage 1</textarea></td>
+                <td><textarea name="type-ofdischarge_1">Test Discharge 1</textarea></td>
+                <td><textarea name="tenderness-pain_1">Test Tenderness 1</textarea></td>
+                <td><textarea name="swelling_1">Test Swelling 1</textarea></td>
+                <td><textarea name="Fever_1">Test Fever 1</textarea></td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td><input type="text" name="post-operative[date]_2" value="02/01/2024"></td>
+                <td><textarea name="post-dosage_2">Test Dosage 2</textarea></td>
+                <td><textarea name="type-ofdischarge_2">Test Discharge 2</textarea></td>
+                <td><textarea name="tenderness-pain_2">Test Tenderness 2</textarea></td>
+                <td><textarea name="swelling_2">Test Swelling 2</textarea></td>
+                <td><textarea name="Fever_2">Test Fever 2</textarea></td>
+            </tr>
+        </table>
+        
+        <input type="submit" value="Test Fixed Post-Operative Monitoring">
+    </form>
+    
+    <div id="result" style="margin-top: 20px; padding: 10px; border: 1px solid #ccc; display: none;"></div>
+    
+    <script>
+    document.querySelector('form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        const resultDiv = document.getElementById('result');
+        
+        fetch('test_postop_fixed.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '<h3>Response:</h3><pre>' + JSON.stringify(data, null, 2) + '</pre>';
+        })
+        .catch(error => {
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '<h3>Error:</h3><pre>' + error.message + '</pre>';
+        });
+    });
+    </script>
+</body>
+</html>

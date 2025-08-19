@@ -491,6 +491,22 @@ class AuditLogger {
             $detailsAfter
         );
     }
+    
+    /**
+     * Log row deletion from patient forms
+     */
+    public function logRowDelete($nurseId, $patientId, $tableType, $rowNumber, $detailsAfter) {
+        return $this->log(
+            $nurseId,
+            'DELETE_ROW',
+            'PATIENT_FORM',
+            $patientId,
+            "Patient ID: {$patientId}",
+            "Deleted row {$rowNumber} from {$tableType} table",
+            null,
+            $detailsAfter
+        );
+    }
 }
 
 // Create global audit logger instance

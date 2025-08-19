@@ -74,34 +74,42 @@ try {
         $params[] = $searchTerm;
     }
     
-    // Add status filter
+    // Add status filter - Updated to match nurse panel logic
     if ($status !== 'all') {
         switch ($status) {
+            case 'pending':
+                // Pending Review - No review data entered
+                $whereConditions[] = "(rs.review_on IS NULL AND rs.sutures_removed_on IS NULL)";
+                break;
+            case 'in-progress':
+                // In Progress - Some review data entered but not complete
+                $whereConditions[] = "((rs.review_on IS NOT NULL AND rs.sutures_removed_on IS NULL) OR (rs.review_on IS NULL AND rs.sutures_removed_on IS NOT NULL))";
+                break;
+            case 'completed':
+                // Completed - Both review and sutures removed dates are set
+                $whereConditions[] = "(rs.review_on IS NOT NULL AND rs.sutures_removed_on IS NOT NULL)";
+                break;
             case 'complications':
+                // With Complications - Any complication is present
                 $whereConditions[] = "(wc.wound_dehiscence = 1 OR wc.allergic_reaction = 1 OR wc.bleeding_haemorrhage = 1 OR wc.other_complication = 1 OR wc.superficial_ssi = 1 OR wc.deep_si = 1 OR wc.organ_space_ssi = 1)";
                 break;
             case 'no-complications':
+                // No Complications - All complication fields are null or 0
                 $whereConditions[] = "(wc.wound_dehiscence = 0 OR wc.wound_dehiscence IS NULL) AND (wc.allergic_reaction = 0 OR wc.allergic_reaction IS NULL) AND (wc.bleeding_haemorrhage = 0 OR wc.bleeding_haemorrhage IS NULL) AND (wc.other_complication = 0 OR wc.other_complication IS NULL) AND (wc.superficial_ssi = 0 OR wc.superficial_ssi IS NULL) AND (wc.deep_si = 0 OR wc.deep_si IS NULL) AND (wc.organ_space_ssi = 0 OR wc.organ_space_ssi IS NULL)";
-                break;
-            case 'pending-review':
-                $whereConditions[] = "(rs.review_on IS NULL OR rs.sutures_removed_on IS NULL)";
-                break;
-            case 'completed-review':
-                $whereConditions[] = "(rs.review_on IS NOT NULL AND rs.sutures_removed_on IS NOT NULL)";
                 break;
         }
     }
     
-    // Add date range filter
+    // Add date range filter - Use surgery date (dos) instead of date_completed
     if (!empty($startDate) && !empty($endDate)) {
-        $whereConditions[] = "p.date_completed BETWEEN ? AND ?";
+        $whereConditions[] = "sd.dos BETWEEN ? AND ?";
         $params[] = $startDate;
         $params[] = $endDate;
     } elseif (!empty($startDate)) {
-        $whereConditions[] = "p.date_completed >= ?";
+        $whereConditions[] = "sd.dos >= ?";
         $params[] = $startDate;
     } elseif (!empty($endDate)) {
-        $whereConditions[] = "p.date_completed <= ?";
+        $whereConditions[] = "sd.dos <= ?";
         $params[] = $endDate;
     }
     
@@ -110,7 +118,7 @@ try {
     if (!empty($whereConditions)) {
         $sql .= " WHERE " . implode(" AND ", $whereConditions);
     }
-    $sql .= " ORDER BY p.date_completed DESC, p.patient_id DESC";
+    $sql .= " ORDER BY sd.dos DESC, p.patient_id DESC";
     
     $stmt = $pdo->prepare($sql);
     $stmt->execute($params);
@@ -136,7 +144,7 @@ try {
             $hasComplications = true;
         }
         
-        // Determine review status
+        // Determine review status - Match nurse panel logic
         $reviewStatus = 'Pending';
         if ($patient['review_on'] && $patient['sutures_removed_on']) {
             $reviewStatus = 'Completed';

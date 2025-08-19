@@ -121,6 +121,29 @@ try {
     $stmt->execute([$days]);
     $topUsers = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
+    // Get active nurses (users who performed nurse-related activities)
+    $sql = "SELECT DISTINCT 
+                CASE 
+                    WHEN admin_user = 'SYSTEM' AND entity_type = 'NURSE' THEN entity_name
+                    ELSE admin_user 
+                END as nurse_identifier,
+                COUNT(*) as count 
+            FROM admin_audit_logs 
+            WHERE timestamp >= DATE_SUB(CURDATE(), INTERVAL ? DAY)
+            AND (entity_type = 'NURSE' OR admin_user LIKE 'NURSE%')
+            GROUP BY nurse_identifier 
+            ORDER BY count DESC";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$days]);
+    $activeNurses = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    // Filter out any non-nurse entries (like admin users)
+    $activeNurses = array_filter($activeNurses, function($nurse) {
+        return strpos($nurse['nurse_identifier'], 'NURSE') === 0 || 
+               $nurse['nurse_identifier'] === 'NURSE_NOT_FOUND' ||
+               (strpos($nurse['nurse_identifier'], ' ') !== false && !in_array($nurse['nurse_identifier'], ['admin', 'SYSTEM']));
+    });
+    
     // Get recent activity (last 10 entries)
     $sql = "SELECT admin_user, action_type, entity_type, entity_name, timestamp, status
             FROM admin_audit_logs 
@@ -160,6 +183,7 @@ try {
             'status_distribution' => $statusData,
             'daily_activity' => $dailyActivityData,
             'top_users' => $topUsers,
+            'active_nurses' => $activeNurses,
             'recent_activity' => $processedRecentActivity
         ]
     ]);

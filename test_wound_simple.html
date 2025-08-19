@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Simple Wound Test</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      .form-group {
+        margin-bottom: 15px;
+      }
+      label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+      }
+      input[type="text"],
+      textarea {
+        width: 300px;
+        padding: 8px;
+        border: 1px solid #ccc;
+      }
+      input[type="checkbox"] {
+        margin-right: 10px;
+      }
+      button {
+        padding: 10px 20px;
+        background: #007bff;
+        color: white;
+        border: none;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #0056b3;
+      }
+      #result {
+        margin-top: 20px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Simple Wound Complications Test</h1>
+
+    <form id="simpleForm">
+      <div class="form-group">
+        <label>Name:</label>
+        <input type="text" name="name" value="Test Patient" />
+      </div>
+
+      <div class="form-group">
+        <label>Age:</label>
+        <input type="text" name="age" value="30" />
+      </div>
+
+      <div class="form-group">
+        <label>Sex:</label>
+        <input type="text" name="Sex" value="Male" />
+      </div>
+
+      <div class="form-group">
+        <label>UHID:</label>
+        <input type="text" name="uhid" value="SIMPLEWOUND" />
+      </div>
+
+      <div class="form-group">
+        <label>Phone:</label>
+        <input type="text" name="phone" value="1234567890" />
+      </div>
+
+      <div class="form-group">
+        <label>Bed/Ward:</label>
+        <input type="text" name="bed" value="A1" />
+      </div>
+
+      <div class="form-group">
+        <label>Address:</label>
+        <input type="text" name="address" value="Test Address" />
+      </div>
+
+      <div class="form-group">
+        <label>Diagnosis:</label>
+        <input type="text" name="diagnosis" value="Test Diagnosis" />
+      </div>
+
+      <div class="form-group">
+        <label>Surgical Procedure:</label>
+        <input type="text" name="surgical_procedure" value="Test Procedure" />
+      </div>
+
+      <h2>Wound Complications</h2>
+
+      <div class="form-group">
+        <label>Complication Date:</label>
+        <input
+          type="text"
+          name="Wound-Complication_Date"
+          value="20/01/2024"
+          placeholder="dd/mm/yyyy"
+        />
+      </div>
+
+      <div class="form-group">
+        <label
+          ><input type="checkbox" name="wounddehiscene" value="Yes" /> Wound
+          Dehiscence</label
+        >
+      </div>
+
+      <div class="form-group">
+        <label
+          ><input type="checkbox" name="AllergicR" value="Yes" /> Allergic
+          Reaction</label
+        >
+      </div>
+
+      <div class="form-group">
+        <label
+          ><input type="checkbox" name="BleedingH" value="Yes" /> Bleeding/
+          Haemorrhage</label
+        >
+      </div>
+
+      <div class="form-group">
+        <label><input type="checkbox" name="Other" value="Yes" /> Other</label>
+      </div>
+
+      <div class="form-group">
+        <label>Specify Other:</label>
+        <textarea name="WoundD-Specify" rows="2">
+Test other complication</textarea
+        >
+      </div>
+
+      <div class="form-group">
+        <label>Notes:</label>
+        <textarea name="WoundD-Notes" rows="3">
+Test wound complication notes</textarea
+        >
+      </div>
+
+      <div class="form-group">
+        <label
+          ><input type="checkbox" name="SuperficialSSI" value="Yes" />
+          Superficial SSI</label
+        >
+      </div>
+
+      <div class="form-group">
+        <label
+          ><input type="checkbox" name="DeepSI" value="Yes" /> Deep SI</label
+        >
+      </div>
+
+      <div class="form-group">
+        <label
+          ><input type="checkbox" name="OrganSI" value="Yes" /> Organ/Space
+          SSI</label
+        >
+      </div>
+
+      <div class="form-group">
+        <label
+          ><input type="checkbox" name="wtd1-1" value="Yes" /> Purulent
+          discharge superficial</label
+        >
+      </div>
+
+      <div class="form-group">
+        <label
+          ><input type="checkbox" name="wtd1-2" value="Yes" /> Purulent
+          discharge deep</label
+        >
+      </div>
+
+      <div class="form-group">
+        <label
+          ><input type="checkbox" name="wtd1-3" value="Yes" /> Purulent
+          discharge organ</label
+        >
+      </div>
+
+      <div class="form-group">
+        <label>Surgeon Opinion (Superficial):</label>
+        <textarea name="SurgeonOpinion1" rows="2">
+Test surgeon opinion</textarea
+        >
+      </div>
+
+      <div class="form-group">
+        <label>Surgeon Opinion (Deep):</label>
+        <textarea name="SurgeonOpinion2" rows="2">
+Test surgeon opinion deep</textarea
+        >
+      </div>
+
+      <div class="form-group">
+        <label>Surgeon Opinion (Organ):</label>
+        <textarea name="SurgeonOpinion3" rows="2">
+Test surgeon opinion organ</textarea
+        >
+      </div>
+
+      <button type="submit">Test Simple Wound Submission</button>
+    </form>
+
+    <div id="result"></div>
+
+    <script>
+      document
+        .getElementById("simpleForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+          const formData = new FormData(this);
+          const resultDiv = document.getElementById("result");
+
+          // Log form data for debugging
+          console.log("Form data being submitted:");
+          for (let [key, value] of formData.entries()) {
+            console.log(key + ": " + value);
+          }
+
+          fetch("submit_form_working.php", {
+            method: "POST",
+            body: formData,
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              resultDiv.style.display = "block";
+              resultDiv.innerHTML =
+                "<h3>Response:</h3><pre>" +
+                JSON.stringify(data, null, 2) +
+                "</pre>";
+            })
+            .catch((error) => {
+              resultDiv.style.display = "block";
+              resultDiv.innerHTML =
+                "<h3>Error:</h3><pre>" + error.message + "</pre>";
+            });
+        });
+    </script>
+  </body>
+</html>

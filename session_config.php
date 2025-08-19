@@ -5,7 +5,7 @@
 // Check if we're in an admin context to avoid conflicts
 $is_admin_context = false;
 if (isset($_SERVER['REQUEST_URI'])) {
-    $admin_patterns = ['admin_login_new.php', 'admin.php', 'admin_logout_new.php'];
+    $admin_patterns = ['admin_login_new.php', 'admin.php', 'admin_logout_new.php', 'admin_patient_records.php', 'audit_log.php'];
     foreach ($admin_patterns as $pattern) {
         if (strpos($_SERVER['REQUEST_URI'], $pattern) !== false) {
             $is_admin_context = true;
@@ -39,7 +39,9 @@ if (!$is_admin_context) {
     error_log("Session config: Admin context detected, skipping session configuration");
 }
 
-define('SESSION_TIMEOUT', 600);
+// 30 minutes timeout for nurse sessions
+define('NURSE_SESSION_TIMEOUT', 1800); // 30 minutes in seconds
+define('SESSION_TIMEOUT', 600); // 10 minutes for other sessions
 
 // Function to check and update session activity
 function checkSessionActivity() {
@@ -58,8 +60,14 @@ function checkSessionActivity() {
         return true;
     }
     
+    // Determine timeout based on user type
+    $timeout = SESSION_TIMEOUT;
+    if (isset($_SESSION['user_type']) && $_SESSION['user_type'] === 'nurse') {
+        $timeout = NURSE_SESSION_TIMEOUT;
+    }
+    
     // Check if session has expired due to inactivity
-    if (($currentTime - $_SESSION['last_activity']) > SESSION_TIMEOUT) {
+    if (($currentTime - $_SESSION['last_activity']) > $timeout) {
         // Session expired, destroy it
         session_destroy();
         return false;
@@ -133,5 +141,28 @@ function updateSessionActivity() {
         return ['success' => true, 'message' => 'Activity updated'];
     }
     return ['success' => false, 'message' => 'No active session'];
+}
+
+// Function to check if nurse is logged in
+function isNurseLoggedIn() {
+    global $is_admin_context;
+    
+    if ($is_admin_context) {
+        return false;
+    }
+    
+    return isset($_SESSION['user_type']) && 
+           $_SESSION['user_type'] === 'nurse' && 
+           isset($_SESSION['nurse_id']) && 
+           isset($_SESSION['logged_in']) && 
+           $_SESSION['logged_in'] === true;
+}
+
+// Function to get nurse info from session
+function getNurseInfo() {
+    if (isNurseLoggedIn()) {
+        return $_SESSION['nurse_info'] ?? null;
+    }
+    return null;
 }
 ?>

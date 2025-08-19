@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Fixed Antibiotic Usage Test Form</title>
+  </head>
+  <body>
+    <h2>Fixed Test Form for Antibiotic Usage</h2>
+
+    <form action="test_antibiotic_submission.php" method="POST">
+      <h3>Antibiotic Usage (Fixed Field Names)</h3>
+      <table border="1">
+        <tr>
+          <th>Serial No.</th>
+          <th>Drug Name</th>
+          <th>Dosage</th>
+          <th>Started On</th>
+          <th>Stopped On</th>
+        </tr>
+        <tr>
+          <td>1</td>
+          <td><textarea name="drug-name_1">Test Drug 1</textarea></td>
+          <td><textarea name="dosage_1">Test Dosage 1</textarea></td>
+          <td>
+            <input
+              type="text"
+              name="antibiotic_usage[startedon_1]"
+              value="01/01/2024"
+            />
+          </td>
+          <td>
+            <input
+              type="text"
+              name="antibiotic_usage[stoppeon_1]"
+              value="05/01/2024"
+            />
+          </td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td><textarea name="drug-name_2">Test Drug 2</textarea></td>
+          <td><textarea name="dosage_2">Test Dosage 2</textarea></td>
+          <td>
+            <input
+              type="text"
+              name="antibiotic_usage[startedon_2]"
+              value="02/01/2024"
+            />
+          </td>
+          <td>
+            <input
+              type="text"
+              name="antibiotic_usage[stoppeon_2]"
+              value="06/01/2024"
+            />
+          </td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td><textarea name="drug-name_3">Test Drug 3</textarea></td>
+          <td><textarea name="dosage_3">Test Dosage 3</textarea></td>
+          <td>
+            <input
+              type="text"
+              name="antibiotic_usage[startedon_3]"
+              value="03/01/2024"
+            />
+          </td>
+          <td>
+            <input
+              type="text"
+              name="antibiotic_usage[stoppeon_3]"
+              value="07/01/2024"
+            />
+          </td>
+        </tr>
+      </table>
+
+      <h3>Alternative Method (Direct Field Names)</h3>
+      <table border="1">
+        <tr>
+          <th>Serial No.</th>
+          <th>Drug Name</th>
+          <th>Dosage</th>
+          <th>Started On</th>
+          <th>Stopped On</th>
+        </tr>
+        <tr>
+          <td>1</td>
+          <td><textarea name="drug-name_alt_1">Alt Drug 1</textarea></td>
+          <td><textarea name="dosage_alt_1">Alt Dosage 1</textarea></td>
+          <td><input type="text" name="startedon_1" value="10/01/2024" /></td>
+          <td><input type="text" name="stoppeon_1" value="15/01/2024" /></td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td><textarea name="drug-name_alt_2">Alt Drug 2</textarea></td>
+          <td><textarea name="dosage_alt_2">Alt Dosage 2</textarea></td>
+          <td><input type="text" name="startedon_2" value="11/01/2024" /></td>
+          <td><input type="text" name="stoppeon_2" value="16/01/2024" /></td>
+        </tr>
+      </table>
+
+      <input type="submit" value="Test Fixed Antibiotic Submission" />
+    </form>
+  </body>
+</html>
