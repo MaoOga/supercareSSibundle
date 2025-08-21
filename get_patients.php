@@ -50,6 +50,7 @@ try {
         LEFT JOIN review_sutures rs ON p.patient_id = rs.patient_id
         LEFT JOIN review_phone rp ON p.patient_id = rp.patient_id
         ORDER BY sd.dos DESC, p.patient_id DESC
+        LIMIT 7
     ";
     
     $stmt = $pdo->prepare($query);

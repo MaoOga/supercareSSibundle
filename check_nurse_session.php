@@ -4,23 +4,19 @@ require_once 'session_config.php';
 
 header('Content-Type: application/json');
 
-// Check if nurse is logged in
-if (isNurseLoggedIn()) {
-    $nurseInfo = getNurseInfo();
-    $timeRemaining = NURSE_SESSION_TIMEOUT - (time() - $_SESSION['last_activity']);
-    
-    echo json_encode([
-        'success' => true,
-        'logged_in' => true,
-        'nurse_info' => $nurseInfo,
-        'time_remaining' => $timeRemaining,
-        'session_active' => $timeRemaining > 0
-    ]);
-} else {
-    echo json_encode([
-        'success' => false,
-        'logged_in' => false,
-        'message' => 'Session expired or not logged in'
-    ]);
-}
+// Check if user is logged in
+$logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true;
+
+// Check session activity
+$session_valid = checkSessionActivity();
+
+$response = [
+    'success' => $logged_in && $session_valid,
+    'logged_in' => $logged_in,
+    'session_valid' => $session_valid,
+    'user_type' => $_SESSION['user_type'] ?? null,
+    'nurse_id' => $_SESSION['nurse_id'] ?? null
+];
+
+echo json_encode($response);
 ?>

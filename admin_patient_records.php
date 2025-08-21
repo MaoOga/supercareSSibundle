@@ -444,7 +444,7 @@ if (!$adminUser) {
 
     function viewDetails(patientId) {
       // Open the form in read-only mode for admin viewing
-      window.open(`form.html?patient_id=${patientId}&readonly=true`, '_blank');
+      window.open(`form.php?patient_id=${patientId}&readonly=true`, '_blank');
     }
 
     function clearSearch() {

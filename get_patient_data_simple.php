@@ -38,6 +38,11 @@ try {
     $stmt->execute([$patient_id]);
     $surgical_skin_preparation = $stmt->fetch(PDO::FETCH_ASSOC);
 
+    // Get risk_factors data
+    $stmt = $pdo->prepare("SELECT * FROM risk_factors WHERE patient_id = ?");
+    $stmt->execute([$patient_id]);
+    $risk_factors = $stmt->fetch(PDO::FETCH_ASSOC);
+
     // Get implanted_materials data
     $stmt = $pdo->prepare("SELECT * FROM implanted_materials WHERE patient_id = ?");
     $stmt->execute([$patient_id]);
@@ -83,6 +88,7 @@ try {
         'patient' => $patient,
         'surgical_details' => $surgical_details,
         'surgical_skin_preparation' => $surgical_skin_preparation,
+        'risk_factors' => $risk_factors,
         'implanted_materials' => $implanted_materials,
         'drains' => $drains,
         'antibiotic_usage' => $antibiotic_usage,

@@ -106,6 +106,7 @@ CREATE TABLE wound_complications (
     purulent_discharge_deep BOOLEAN,
     purulent_discharge_organ BOOLEAN,
     organism_identified_superficial BOOLEAN,
+    organism_identified_deep BOOLEAN,
     organism_identified_organ BOOLEAN,
     clinical_diagnosis_ssi BOOLEAN,
     deep_incision_reopening BOOLEAN,
@@ -116,6 +117,27 @@ CREATE TABLE wound_complications (
     surgeon_opinion_superficial TEXT,
     surgeon_opinion_deep TEXT,
     surgeon_opinion_organ TEXT,
+    FOREIGN KEY (patient_id) REFERENCES patients(patient_id) ON DELETE CASCADE
+);
+
+-- Creating table for risk factors
+CREATE TABLE risk_factors (
+    risk_id INT AUTO_INCREMENT PRIMARY KEY,
+    patient_id INT,
+    weight TEXT,
+    height TEXT,
+    steroids TEXT,
+    tuberculosis TEXT,
+    others TEXT,
+    FOREIGN KEY (patient_id) REFERENCES patients(patient_id) ON DELETE CASCADE
+);
+
+-- Creating table for infection prevention notes and signature
+CREATE TABLE infection_prevention_notes (
+    note_id INT AUTO_INCREMENT PRIMARY KEY,
+    patient_id INT,
+    infection_prevention_notes TEXT,
+    signature VARCHAR(255),
     FOREIGN KEY (patient_id) REFERENCES patients(patient_id) ON DELETE CASCADE
 );
 

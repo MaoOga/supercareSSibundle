@@ -159,6 +159,22 @@ try {
         $formData['surgical_skin_preparation']['removal-done'] ?? null
     ]);
 
+    // Handle risk_factors table
+    if ($isUpdate) {
+        $deleteStmt = $pdo->prepare("DELETE FROM risk_factors WHERE patient_id = ?");
+        $deleteStmt->execute([$patientId]);
+    }
+
+    $riskStmt = $pdo->prepare("INSERT INTO risk_factors (patient_id, weight, height, steroids, tuberculosis, others) VALUES (?, ?, ?, ?, ?, ?)");
+    $riskStmt->execute([
+        $patientId,
+        $formData['risk_factor_weight'] ?? null,
+        $formData['risk_factor_height'] ?? null,
+        $formData['risk_factor_steroids'] ?? null,
+        $formData['risk_factor_tuberculosis'] ?? null,
+        $formData['risk_factor_others'] ?? null
+    ]);
+
     // Handle implanted_materials table
     if ($isUpdate) {
         $deleteStmt = $pdo->prepare("DELETE FROM implanted_materials WHERE patient_id = ?");
@@ -335,11 +351,11 @@ try {
         patient_id, complication_date, wound_dehiscence, allergic_reaction, bleeding_haemorrhage, 
         other_complication, other_specify, notes, superficial_ssi, deep_si, organ_space_ssi,
         purulent_discharge_superficial, purulent_discharge_deep, purulent_discharge_organ,
-        organism_identified_superficial, organism_identified_organ, clinical_diagnosis_ssi,
+        organism_identified_superficial, organism_identified_deep, organism_identified_organ, clinical_diagnosis_ssi,
         deep_incision_reopening, abscess_evidence_organ, deliberate_opening_symptoms,
         abscess_evidence_deep, not_infected_conditions, surgeon_opinion_superficial,
         surgeon_opinion_deep, surgeon_opinion_organ
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
     
     $woundStmt->execute([
         $patientId,
@@ -357,6 +373,7 @@ try {
         isset($formData['wtd1-2']) ? 1 : 0,
         isset($formData['wtd1-3']) ? 1 : 0,
         isset($formData['wtd2-1']) ? 1 : 0,
+        isset($formData['wtd2-1b']) ? 1 : 0,
         isset($formData['wtd2-2']) ? 1 : 0,
         isset($formData['wtd3-1']) ? 1 : 0,
         isset($formData['wtd3-2']) ? 1 : 0,
@@ -402,6 +419,26 @@ try {
         $formData['reviewpus'] ?? null,
         $formData['reviewbleed'] ?? null,
         $formData['reviewother'] ?? null
+    ]);
+
+    // Handle infection prevention notes and signature
+    if ($isUpdate) {
+        $deleteStmt = $pdo->prepare("DELETE FROM infection_prevention_notes WHERE patient_id = ?");
+        $deleteStmt->execute([$patientId]);
+    }
+
+    $infectionStmt = $pdo->prepare("INSERT INTO infection_prevention_notes (patient_id, infection_prevention_notes, signature) VALUES (?, ?, ?)");
+    $infectionStmt->execute([
+        $patientId,
+        $formData['infection_prevention_notes'] ?? null,
+        $formData['signature'] ?? null
+    ]);
+
+    // Update signature in patients table
+    $updateSignatureStmt = $pdo->prepare("UPDATE patients SET signature = ? WHERE patient_id = ?");
+    $updateSignatureStmt->execute([
+        $formData['signature'] ?? null,
+        $patientId
     ]);
 
     $pdo->commit();

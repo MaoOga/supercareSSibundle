@@ -50,6 +50,11 @@ try {
     $stmt->execute([$patient_id]);
     $surgical_skin_preparation = $stmt->fetch(PDO::FETCH_ASSOC);
 
+    // Get risk_factors data
+    $stmt = $pdo->prepare("SELECT * FROM risk_factors WHERE patient_id = ?");
+    $stmt->execute([$patient_id]);
+    $risk_factors = $stmt->fetch(PDO::FETCH_ASSOC);
+
     // Get implanted_materials data
     $stmt = $pdo->prepare("SELECT * FROM implanted_materials WHERE patient_id = ?");
     $stmt->execute([$patient_id]);
@@ -90,11 +95,17 @@ try {
     $stmt->execute([$patient_id]);
     $review_phone = $stmt->fetch(PDO::FETCH_ASSOC);
 
+    // Get infection_prevention_notes data
+    $stmt = $pdo->prepare("SELECT * FROM infection_prevention_notes WHERE patient_id = ?");
+    $stmt->execute([$patient_id]);
+    $infection_prevention_notes = $stmt->fetch(PDO::FETCH_ASSOC);
+
     // Combine all data
     $patientData = [
         'patient' => $patient,
         'surgical_details' => $surgical_details,
         'surgical_skin_preparation' => $surgical_skin_preparation,
+        'risk_factors' => $risk_factors,
         'implanted_materials' => $implanted_materials,
         'drains' => $drains,
         'antibiotic_usage' => $antibiotic_usage,
@@ -102,7 +113,8 @@ try {
         'cultural_dressing' => $cultural_dressing,
         'wound_complications' => $wound_complications,
         'review_sutures' => $review_sutures,
-        'review_phone' => $review_phone
+        'review_phone' => $review_phone,
+        'infection_prevention_notes' => $infection_prevention_notes
     ];
 
     // Clear any output buffer

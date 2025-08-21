@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Test Nurse ID Display</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+    />
+    <style>
+      :root {
+        --bg-body: #f3f4f6;
+        --bg-header: #ffffff;
+        --bg-card: #ffffff;
+        --text-primary: #111827;
+        --text-secondary: #6b7280;
+        --text-icon: rgb(26, 175, 81);
+        --border-primary: #86efac;
+        --border-secondary: #e5e7eb;
+      }
+
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: var(--bg-body);
+        color: var(--text-primary);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="max-w-4xl mx-auto p-6">
+      <h1 class="text-2xl font-bold mb-6">Test Nurse ID Display</h1>
+
+      <div class="grid gap-6">
+        <!-- Test Controls -->
+        <div class="bg-white p-6 rounded-lg shadow border">
+          <h2 class="text-lg font-semibold mb-4">Test Controls</h2>
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium mb-2">Nurse ID:</label>
+              <input
+                type="text"
+                id="testNurseId"
+                value="1212"
+                class="w-full p-2 border rounded"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-2">Nurse Name:</label>
+              <input
+                type="text"
+                id="testNurseName"
+                value="Nomo"
+                class="w-full p-2 border rounded"
+              />
+            </div>
+            <div class="flex gap-2">
+              <button
+                onclick="setNurseInfo()"
+                class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+              >
+                Set Nurse Info
+              </button>
+              <button
+                onclick="clearNurseInfo()"
+                class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+              >
+                Clear Nurse Info
+              </button>
+              <button
+                onclick="loadNurseInfo()"
+                class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+              >
+                Load Nurse Info
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Desktop Display Test -->
+        <div class="bg-white p-6 rounded-lg shadow border">
+          <h2 class="text-lg font-semibold mb-4">Desktop Display Test</h2>
+          <div class="flex items-center justify-end">
+            <div
+              class="hidden sm:flex items-center gap-2 px-3 py-2 rounded-lg border text-sm"
+              style="
+                border-color: var(--border-primary);
+                background-color: var(--bg-card);
+                color: var(--text-secondary);
+              "
+              id="nurseIdDisplay"
+            >
+              <i
+                class="fas fa-user-nurse text-xs"
+                style="color: var(--text-icon)"
+              ></i>
+              <span class="font-medium">Nurse ID:</span>
+              <span class="font-bold" id="nurseIdValue">Loading...</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mobile Display Test -->
+        <div class="bg-white p-6 rounded-lg shadow border">
+          <h2 class="text-lg font-semibold mb-4">Mobile Display Test</h2>
+          <div class="flex items-center justify-center">
+            <div
+              class="flex items-center gap-2 px-3 py-2 rounded-lg border text-sm shadow-md"
+              style="
+                border-color: var(--border-primary);
+                background-color: var(--bg-card);
+                color: var(--text-secondary);
+              "
+              id="mobileNurseIdDisplay"
+            >
+              <i
+                class="fas fa-user-nurse text-xs"
+                style="color: var(--text-icon)"
+              ></i>
+              <span class="font-medium">Nurse ID:</span>
+              <span class="font-bold" id="mobileNurseIdValue">Loading...</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Session Storage Info -->
+        <div class="bg-white p-6 rounded-lg shadow border">
+          <h2 class="text-lg font-semibold mb-4">Session Storage Info</h2>
+          <pre
+            id="sessionInfo"
+            class="bg-gray-100 p-4 rounded text-sm overflow-auto"
+          ></pre>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Function to load and display nurse ID (same as in index.html and search.html)
+      function loadNurseInfo() {
+        try {
+          // Get nurse info from session storage
+          const nurseInfo = sessionStorage.getItem("nurseInfo");
+          if (nurseInfo) {
+            const nurse = JSON.parse(nurseInfo);
+
+            // Desktop nurse ID display
+            const nurseIdValue = document.getElementById("nurseIdValue");
+            const nurseIdDisplay = document.getElementById("nurseIdDisplay");
+
+            // Mobile nurse ID display
+            const mobileNurseIdValue =
+              document.getElementById("mobileNurseIdValue");
+            const mobileNurseIdDisplay = document.getElementById(
+              "mobileNurseIdDisplay"
+            );
+
+            if (nurseIdValue && nurseIdDisplay) {
+              // Display nurse ID on desktop
+              nurseIdValue.textContent = nurse.nurse_id || "Unknown";
+              nurseIdDisplay.style.display = "flex";
+            }
+
+            if (mobileNurseIdValue && mobileNurseIdDisplay) {
+              // Display nurse ID on mobile
+              mobileNurseIdValue.textContent = nurse.nurse_id || "Unknown";
+              mobileNurseIdDisplay.style.display = "flex";
+            }
+
+            console.log("Nurse ID displayed:", nurse.nurse_id);
+            updateSessionInfo();
+          } else {
+            console.log("No nurse info found in session storage");
+            // Hide the nurse ID displays if no info available
+            const nurseIdDisplay = document.getElementById("nurseIdDisplay");
+            const mobileNurseIdDisplay = document.getElementById(
+              "mobileNurseIdDisplay"
+            );
+
+            if (nurseIdDisplay) {
+              nurseIdDisplay.style.display = "none";
+            }
+            if (mobileNurseIdDisplay) {
+              mobileNurseIdDisplay.style.display = "none";
+            }
+            updateSessionInfo();
+          }
+        } catch (error) {
+          console.error("Error loading nurse info:", error);
+          // Hide the nurse ID displays on error
+          const nurseIdDisplay = document.getElementById("nurseIdDisplay");
+          const mobileNurseIdDisplay = document.getElementById(
+            "mobileNurseIdDisplay"
+          );
+
+          if (nurseIdDisplay) {
+            nurseIdDisplay.style.display = "none";
+          }
+          if (mobileNurseIdDisplay) {
+            mobileNurseIdDisplay.style.display = "none";
+          }
+          updateSessionInfo();
+        }
+      }
+
+      // Function to set nurse info in session storage
+      function setNurseInfo() {
+        const nurseId = document.getElementById("testNurseId").value;
+        const nurseName = document.getElementById("testNurseName").value;
+
+        const nurseInfo = {
+          id: 1,
+          nurse_id: nurseId,
+          name: nurseName,
+          email: "nurse@hospital.com",
+          role: "nurse",
+        };
+
+        sessionStorage.setItem("nurseInfo", JSON.stringify(nurseInfo));
+        console.log("Nurse info set:", nurseInfo);
+
+        // Reload the display
+        loadNurseInfo();
+      }
+
+      // Function to clear nurse info
+      function clearNurseInfo() {
+        sessionStorage.removeItem("nurseInfo");
+        console.log("Nurse info cleared");
+
+        // Reload the display
+        loadNurseInfo();
+      }
+
+      // Function to update session info display
+      function updateSessionInfo() {
+        const sessionInfo = document.getElementById("sessionInfo");
+        const nurseInfo = sessionStorage.getItem("nurseInfo");
+
+        if (nurseInfo) {
+          try {
+            const nurse = JSON.parse(nurseInfo);
+            sessionInfo.textContent = JSON.stringify(nurse, null, 2);
+          } catch (error) {
+            sessionInfo.textContent =
+              "Error parsing nurse info: " + error.message;
+          }
+        } else {
+          sessionInfo.textContent = "No nurse info in session storage";
+        }
+      }
+
+      // Load nurse info when page loads
+      document.addEventListener("DOMContentLoaded", function () {
+        loadNurseInfo();
+      });
+    </script>
+  </body>
+</html>

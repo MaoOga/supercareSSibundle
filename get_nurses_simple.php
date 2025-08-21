@@ -3,7 +3,7 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// Include session manager
+// Use admin session manager for consistency with admin panel
 require_once 'admin_session_manager.php';
 
 header('Content-Type: application/json');
@@ -17,6 +17,8 @@ if (!$adminSession->validateSession()) {
     ]);
     exit;
 }
+
+// Session validation and timeout are handled by admin_session_manager.php
 
 try {
     // Database connection

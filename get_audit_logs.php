@@ -31,6 +31,7 @@ try {
     $status = $_GET['status'] ?? '';
     $days = isset($_GET['days']) ? (int)$_GET['days'] : 0;
     $isExport = isset($_GET['export']) && $_GET['export'] === 'true';
+    $auditId = isset($_GET['audit_id']) ? (int)$_GET['audit_id'] : null;
     
     // Validate parameters
     if ($page < 1) $page = 1;
@@ -59,8 +60,28 @@ try {
         $filters['end_date'] = $endDate;
     }
     
-    // Get audit logs
-    $result = $auditLogger->getAuditLogs($filters, $page, $limit);
+    // If audit_id is provided, get specific log entry
+    if ($auditId) {
+        $result = $auditLogger->getAuditLogById($auditId);
+        if (!$result) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Audit log not found'
+            ]);
+            exit;
+        }
+        // Convert single log to array format for consistency
+        $result = [
+            'logs' => [$result],
+            'page' => 1,
+            'total_pages' => 1,
+            'total_count' => 1,
+            'limit' => 1
+        ];
+    } else {
+        // Get audit logs with pagination
+        $result = $auditLogger->getAuditLogs($filters, $page, $limit);
+    }
     
     // Process logs for better display
     $processedLogs = [];

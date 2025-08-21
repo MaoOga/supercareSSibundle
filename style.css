@@ -300,6 +300,13 @@ table.tg,
   vertical-align: middle;
 }
 
+/* Post-operative table specific styling */
+#post-operative-table input,
+#post-operative-table textarea {
+  font-size: 13px !important;
+  font-weight: bold !important;
+}
+
 .ui-datepicker,
 input.datepicker::placeholder,
 .print-textarea::placeholder,
@@ -461,6 +468,14 @@ input[type="checkbox"] {
 
 .wound-complications-table-wrapper input[type="checkbox"]:checked {
   accent-color: #10b981;
+}
+
+/* Signature input styling */
+input[name="signature"] {
+  border: 1px solid #000000 !important;
+  border-radius: 4px !important;
+  padding: 4px 8px !important;
+  background-color: white !important;
 }
 
 .signature-area {
@@ -998,6 +1013,13 @@ label.flex > * {
 
   .action-button {
     display: none !important;
+  }
+
+  /* Post-operative table specific styling */
+  #post-operative-table input,
+  #post-operative-table textarea {
+    font-size: 13px !important;
+    font-weight: bold !important;
   }
 
   label.flex {

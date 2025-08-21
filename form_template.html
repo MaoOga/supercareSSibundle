@@ -33,6 +33,119 @@
           font-size: 0.875rem !important;
         }
       }
+
+      /* Center form and mobile fit */
+      @media (max-width: 768px) {
+        .container {
+          max-width: 100% !important;
+          margin: 0 auto !important;
+          padding: 0 10px !important;
+          box-sizing: border-box !important;
+        }
+
+        .tg {
+          width: 100% !important;
+          max-width: 100% !important;
+          margin: 0 auto !important;
+        }
+
+        /* Ensure tables don't overflow */
+        .cultural-swap-table-wrapper,
+        .wound-complications-table-wrapper,
+        .post-operative-table-wrapper,
+        .antibiotic-table-wrapper {
+          overflow-x: auto !important;
+          max-width: 100% !important;
+        }
+
+        /* Center the form content */
+        #ssiForm {
+          width: 100% !important;
+          max-width: 100% !important;
+          margin: 0 auto !important;
+        }
+
+        /* Center all form elements */
+        .header {
+          text-align: center !important;
+          margin: 0 auto !important;
+        }
+
+        /* Ensure proper centering for all tables */
+        table.tg {
+          margin: 0 auto !important;
+          display: table !important;
+        }
+
+        /* Center action buttons */
+        .mt-4.text-right {
+          text-align: center !important;
+        }
+
+        /* Center submit button container */
+        div[style*="text-align: center"] {
+          text-align: center !important;
+          width: 100% !important;
+        }
+      }
+
+      /* Extra small devices - ensure full width and centering */
+      @media (max-width: 480px) {
+        .container {
+          padding: 0 5px !important;
+          margin: 0 auto !important;
+        }
+
+        .tg {
+          width: 100% !important;
+          margin: 0 auto !important;
+        }
+
+        /* Ensure all content is centered */
+        body {
+          text-align: center !important;
+        }
+
+        /* Reset text alignment for form content */
+        .tg th,
+        .tg td,
+        .label-bold,
+        input,
+        textarea,
+        select {
+          text-align: left !important;
+        }
+      }
+
+      /* Mobile signature layout */
+      @media (max-width: 768px) {
+        /* Date completed and signature container */
+        div[style*="display: flex"][style*="justify-content: space-between"] {
+          flex-direction: column !important;
+          gap: 15px !important;
+        }
+
+        /* Date completed field */
+        div[style*="display: flex"][style*="justify-content: space-between"]
+          label:first-child {
+          width: 100% !important;
+          margin-bottom: 10px !important;
+        }
+
+        /* Signature field */
+        div[style*="display: flex"][style*="justify-content: space-between"]
+          label:last-child {
+          width: 100% !important;
+          margin-top: 10px !important;
+        }
+
+        /* Signature input styling */
+        input[name="signature"] {
+          width: 100% !important;
+          max-width: 100% !important;
+          box-sizing: border-box !important;
+        }
+      }
     </style>
   </head>
 
@@ -43,7 +156,7 @@
         <input type="hidden" name="patient_id" id="patient_id" value="" />
         <div class="header">
           <img src="supercare-hospital_logo.png" alt="Supercare Logo" />
-          <div class="title-main">SSI BUNDLE FORM</div>
+          <div class="title-main">SSI BUNDLE CHECKLIST</div>
           <div class="title-sub">Supercare</div>
         </div>
         <table class="tg">
@@ -64,7 +177,12 @@
               <th class="tg-1wig" style="vertical-align: middle">
                 <label class="flex gap-2 items-center w-full"
                   >Age:
-                  <input type="number" class="input-overlay" name="age" />
+                  <input
+                    type="number"
+                    class="input-overlay"
+                    name="age"
+                    style="font-size: 13px"
+                  />
                 </label>
               </th>
               <th class="tg-1wig" style="vertical-align: middle">
@@ -76,7 +194,8 @@
                     style="
                       width: 80%;
                       margin-left: 8px;
-                      font-size: 15px;
+                      font-size: 13px;
+                      font-weight: bold;
                       border: none;
                       height: 30px;
                       vertical-align: middle;
@@ -111,7 +230,12 @@
               <td class="tg-1wig" style="vertical-align: middle">
                 <label class="flex gap-2 items-center w-full">
                   <span class="whitespace-nowrap label-bold">Phone No: </span>
-                  <input type="tel" class="input-overlay" name="phone" />
+                  <input
+                    type="tel"
+                    class="input-overlay"
+                    name="phone"
+                    style="font-size: 13px"
+                  />
                 </label>
               </td>
               <td class="tg-1wig" style="vertical-align: middle">
@@ -181,7 +305,7 @@
                     name="patient_info[doa]"
                     class="datepicker"
                     placeholder="dd/mm/yyyy"
-                    style="width: 100px"
+                    style="width: 100px; font-size: 13px"
                     value=""
                   />
                 </label>
@@ -194,7 +318,7 @@
                     name="patient_info[dos]"
                     class="datepicker"
                     placeholder="dd/mm/yyyy"
-                    style="width: 100px"
+                    style="width: 100px; font-size: 13px"
                     value=""
                   />
                 </label>
@@ -207,7 +331,7 @@
                     name="patient_info[dod]"
                     class="datepicker"
                     placeholder="dd/mm/yyyy"
-                    style="width: 100px"
+                    style="width: 100px; font-size: 13px"
                     value=""
                   />
                 </label>
@@ -222,7 +346,8 @@
                     style="
                       width: 80%;
                       margin-left: 8px;
-                      font-size: 15px;
+                      font-size: 13px;
+                      font-weight: bold;
                       border: none;
                       height: 30px;
                       vertical-align: middle;
@@ -250,7 +375,89 @@
                     name="operation_duration"
                     class="input-overlay input-full"
                     oninput="autoGrow(this)"
-                    style="min-height: 28px; line-height: 1.3"
+                    style="min-height: 28px; line-height: 1.3; font-size: 13px"
+                  ></textarea>
+                </label>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="section-break"></div>
+        <table class="tg">
+          <thead>
+            <tr>
+              <th class="tg-ty4g" colspan="4">RISK FACTOR</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="tg-1wig" style="vertical-align: middle" colspan="4">
+                <label class="flex gap-2 items-center w-full">
+                  <span class="whitespace-nowrap label-bold">a) Weight:</span>
+                  <textarea
+                    name="risk_factor_weight"
+                    class="input-overlay input-full"
+                    rows="1"
+                    oninput="autoGrow(this)"
+                    style="min-height: 28px; line-height: 1.2"
+                  ></textarea>
+                </label>
+              </td>
+            </tr>
+            <tr>
+              <td class="tg-1wig" style="vertical-align: middle" colspan="4">
+                <label class="flex gap-2 items-center w-full">
+                  <span class="whitespace-nowrap label-bold">b) Height:</span>
+                  <textarea
+                    name="risk_factor_height"
+                    class="input-overlay input-full"
+                    rows="1"
+                    oninput="autoGrow(this)"
+                    style="min-height: 28px; line-height: 1.2"
+                  ></textarea>
+                </label>
+              </td>
+            </tr>
+            <tr>
+              <td class="tg-1wig" style="vertical-align: middle" colspan="4">
+                <label class="flex gap-2 items-center w-full">
+                  <span class="whitespace-nowrap label-bold">c) Steroids:</span>
+                  <textarea
+                    name="risk_factor_steroids"
+                    class="input-overlay input-full"
+                    rows="1"
+                    oninput="autoGrow(this)"
+                    style="min-height: 28px; line-height: 1.2"
+                  ></textarea>
+                </label>
+              </td>
+            </tr>
+            <tr>
+              <td class="tg-1wig" style="vertical-align: middle" colspan="4">
+                <label class="flex gap-2 items-center w-full">
+                  <span class="whitespace-nowrap label-bold"
+                    >d) Tuberculosis:</span
+                  >
+                  <textarea
+                    name="risk_factor_tuberculosis"
+                    class="input-overlay input-full"
+                    rows="1"
+                    oninput="autoGrow(this)"
+                    style="min-height: 28px; line-height: 1.2"
+                  ></textarea>
+                </label>
+              </td>
+            </tr>
+            <tr>
+              <td class="tg-1wig" style="vertical-align: middle" colspan="4">
+                <label class="flex gap-2 items-center w-full">
+                  <span class="whitespace-nowrap label-bold">e) Others:</span>
+                  <textarea
+                    name="risk_factor_others"
+                    class="input-overlay input-full"
+                    rows="1"
+                    oninput="autoGrow(this)"
+                    style="min-height: 28px; line-height: 1.2"
                   ></textarea>
                 </label>
               </td>
@@ -727,7 +934,7 @@
                     name="post-operative[date]_1"
                     class="datepicker"
                     placeholder="dd/mm/yyyy"
-                    style="width: 100px"
+                    style="width: 100px; font-size: 13px; font-weight: bold"
                     value=""
                   />
                 </td>
@@ -741,6 +948,8 @@
                       min-height: 28px;
                       line-height: 1.2;
                       text-align: center;
+                      font-size: 13px;
+                      font-weight: bold;
                     "
                   ></textarea>
                 </td>
@@ -754,6 +963,8 @@
                       min-height: 28px;
                       line-height: 1.2;
                       text-align: center;
+                      font-size: 13px;
+                      font-weight: bold;
                     "
                   ></textarea>
                 </td>
@@ -767,6 +978,8 @@
                       min-height: 28px;
                       line-height: 1.2;
                       text-align: center;
+                      font-size: 13px;
+                      font-weight: bold;
                     "
                   ></textarea>
                 </td>
@@ -780,6 +993,8 @@
                       min-height: 28px;
                       line-height: 1.2;
                       text-align: center;
+                      font-size: 13px;
+                      font-weight: bold;
                     "
                   ></textarea>
                 </td>
@@ -793,6 +1008,8 @@
                       min-height: 28px;
                       line-height: 1.2;
                       text-align: center;
+                      font-size: 13px;
+                      font-weight: bold;
                     "
                   ></textarea>
                 </td>
@@ -805,7 +1022,7 @@
                     name="post-operative[date]_2"
                     class="datepicker"
                     placeholder="dd/mm/yyyy"
-                    style="width: 100px"
+                    style="width: 100px; font-size: 13px; font-weight: bold"
                     value=""
                   />
                 </td>
@@ -819,6 +1036,8 @@
                       min-height: 28px;
                       line-height: 1.2;
                       text-align: center;
+                      font-size: 13px;
+                      font-weight: bold;
                     "
                   ></textarea>
                 </td>
@@ -832,6 +1051,8 @@
                       min-height: 28px;
                       line-height: 1.2;
                       text-align: center;
+                      font-size: 13px;
+                      font-weight: bold;
                     "
                   ></textarea>
                 </td>
@@ -845,6 +1066,8 @@
                       min-height: 28px;
                       line-height: 1.2;
                       text-align: center;
+                      font-size: 13px;
+                      font-weight: bold;
                     "
                   ></textarea>
                 </td>
@@ -858,6 +1081,8 @@
                       min-height: 28px;
                       line-height: 1.2;
                       text-align: center;
+                      font-size: 13px;
+                      font-weight: bold;
                     "
                   ></textarea>
                 </td>
@@ -871,6 +1096,8 @@
                       min-height: 28px;
                       line-height: 1.2;
                       text-align: center;
+                      font-size: 13px;
+                      font-weight: bold;
                     "
                   ></textarea>
                 </td>
@@ -883,7 +1110,7 @@
                     name="post-operative[date]_3"
                     class="datepicker"
                     placeholder="dd/mm/yyyy"
-                    style="width: 100px"
+                    style="width: 100px; font-size: 13px; font-weight: bold"
                     value=""
                   />
                 </td>
@@ -897,6 +1124,8 @@
                       min-height: 28px;
                       line-height: 1.2;
                       text-align: center;
+                      font-size: 13px;
+                      font-weight: bold;
                     "
                   ></textarea>
                 </td>
@@ -910,6 +1139,8 @@
                       min-height: 28px;
                       line-height: 1.2;
                       text-align: center;
+                      font-size: 13px;
+                      font-weight: bold;
                     "
                   ></textarea>
                 </td>
@@ -923,6 +1154,8 @@
                       min-height: 28px;
                       line-height: 1.2;
                       text-align: center;
+                      font-size: 13px;
+                      font-weight: bold;
                     "
                   ></textarea>
                 </td>
@@ -936,6 +1169,8 @@
                       min-height: 28px;
                       line-height: 1.2;
                       text-align: center;
+                      font-size: 13px;
+                      font-weight: bold;
                     "
                   ></textarea>
                 </td>
@@ -949,6 +1184,8 @@
                       min-height: 28px;
                       line-height: 1.2;
                       text-align: center;
+                      font-size: 13px;
+                      font-weight: bold;
                     "
                   ></textarea>
                 </td>
@@ -973,42 +1210,48 @@
           </button>
         </div>
         <div class="section-break"></div>
-        <div class="cultural-swap-table-wrapper">
-          <table class="tg cultural-swap">
-            <thead>
-              <tr>
-                <th class="tg-67s2">
-                  Cultural Swap<br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
-                </th>
-                <th class="tg-0lax">
-                  <textarea
-                    name="Cultural-Swap"
-                    class="input-overlay input-full"
-                    rows="1"
-                    oninput="autoGrow(this)"
-                    style="min-height: 28px; line-height: 1.2; width: 800px"
-                  ></textarea>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td class="tg-67s2">
-                  Dressing/Finding<br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
-                </td>
-                <td class="tg-0lax">
-                  <textarea
-                    name="Dressing-Finding"
-                    class="input-overlay input-full"
-                    rows="1"
-                    oninput="autoGrow(this)"
-                    style="min-height: 28px; line-height: 1.2; width: 800px"
-                  ></textarea>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        <table class="tg">
+          <thead>
+            <tr>
+              <th class="tg-ty4g" colspan="4">Cultural Swap</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="tg-1wig" style="vertical-align: middle" colspan="4">
+                <textarea
+                  name="Cultural-Swap"
+                  class="input-overlay input-full"
+                  rows="3"
+                  oninput="autoGrow(this)"
+                  style="min-height: 84px; line-height: 1.2"
+                ></textarea>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="section-break"></div>
+        <table class="tg">
+          <thead>
+            <tr>
+              <th class="tg-ty4g" colspan="4">Dressing/Finding</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="tg-1wig" style="vertical-align: middle" colspan="4">
+                <textarea
+                  name="Dressing-Finding"
+                  class="input-overlay input-full"
+                  rows="3"
+                  oninput="autoGrow(this)"
+                  style="min-height: 84px; line-height: 1.2"
+                ></textarea>
+              </td>
+            </tr>
+          </tbody>
+        </table>
         <div class="page-break"></div>
         <div class="wound-complications-table-wrapper">
           <h3
@@ -1030,7 +1273,7 @@
                     name="Wound-Complication_Date"
                     class="datepicker"
                     placeholder="dd/mm/yyyy"
-                    style="width: 100px"
+                    style="width: 100px; font-size: 13px; font-weight: bold"
                     value=""
                   /><br /><br />OR<br /><br />Non-Infectious&nbsp;Complications<br /><br />Wound
                   Dehiscence
@@ -1061,14 +1304,24 @@
                     class="input-overlay input-full"
                     rows="1"
                     oninput="autoGrow(this)"
-                    style="min-height: 28px; line-height: 1.2"
+                    style="
+                      min-height: 28px;
+                      line-height: 1.2;
+                      font-size: 13px;
+                      font-weight: normal;
+                    "
                   ></textarea
                   ><br /><br /><br /><br /><br /><br /><br />Notes:<br /><textarea
                     name="WoundD-Notes"
                     class="input-overlay input-full"
                     rows="1"
                     oninput="autoGrow(this)"
-                    style="min-height: 28px; line-height: 1.2"
+                    style="
+                      min-height: 28px;
+                      line-height: 1.2;
+                      font-size: 13px;
+                      font-weight: normal;
+                    "
                   ></textarea
                   ><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
                 </td>
@@ -1110,7 +1363,7 @@
                     class="form-checkbox text-blue-600"
                   />
                 </td>
-                <td class="tg-c3ow" rowspan="2">
+                <td class="tg-c3ow">
                   <br /><br /><br />Purulent discharge from the surgical site
                   <input
                     type="checkbox"
@@ -1136,6 +1389,15 @@
                   <input
                     type="checkbox"
                     name="wtd2-1"
+                    value="Yes"
+                    class="form-checkbox text-blue-600"
+                  />
+                </td>
+                <td class="tg-c3ow">
+                  Identification of an organism from the surgical site
+                  <input
+                    type="checkbox"
+                    name="wtd2-1b"
                     value="Yes"
                     class="form-checkbox text-blue-600"
                   />
@@ -1225,7 +1487,12 @@
                     class="input-overlay input-full"
                     rows="1"
                     oninput="autoGrow(this)"
-                    style="min-height: 28px; line-height: 1.2"
+                    style="
+                      min-height: 28px;
+                      line-height: 1.2;
+                      font-size: 13px;
+                      font-weight: normal;
+                    "
                   ></textarea
                   ><br /><br /><br /><br />
                 </td>
@@ -1235,7 +1502,12 @@
                     class="input-overlay input-full"
                     rows="1"
                     oninput="autoGrow(this)"
-                    style="min-height: 28px; line-height: 1.2"
+                    style="
+                      min-height: 28px;
+                      line-height: 1.2;
+                      font-size: 13px;
+                      font-weight: normal;
+                    "
                   ></textarea>
                 </td>
                 <td class="tg-fymr">
@@ -1244,7 +1516,12 @@
                     class="input-overlay input-full"
                     rows="1"
                     oninput="autoGrow(this)"
-                    style="min-height: 28px; line-height: 1.2"
+                    style="
+                      min-height: 28px;
+                      line-height: 1.2;
+                      font-size: 13px;
+                      font-weight: normal;
+                    "
                   ></textarea>
                 </td>
               </tr>
@@ -1262,7 +1539,7 @@
                   name="ReviewOn"
                   class="datepicker"
                   placeholder="dd/mm/yyyy"
-                  style="width: 100px"
+                  style="width: 100px; font-size: 13px; font-weight: bold"
                   value=""
                 />
               </th>
@@ -1277,9 +1554,35 @@
                   name="SuturesROn"
                   class="datepicker"
                   placeholder="dd/mm/yyyy"
-                  style="width: 100px"
+                  style="width: 100px; font-size: 13px; font-weight: bold"
                   value=""
                 />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="section-break"></div>
+        <table class="tg">
+          <thead>
+            <tr>
+              <th class="tg-ty4g" colspan="4">
+                Infection Prevention Control Nurse Notes
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="tg-1wig" style="vertical-align: middle" colspan="4">
+                <label class="flex gap-2 items-center w-full">
+                  <span class="whitespace-nowrap label-bold">Notes:</span>
+                  <textarea
+                    name="infection_prevention_notes"
+                    class="input-overlay input-full"
+                    rows="3"
+                    oninput="autoGrow(this)"
+                    style="min-height: 84px; line-height: 1.2"
+                  ></textarea>
+                </label>
               </td>
             </tr>
           </tbody>
@@ -1299,7 +1602,7 @@
                   name="RevieworPhoneDate"
                   class="datepicker"
                   placeholder="dd/mm/yyyy"
-                  style="width: 100px"
+                  style="width: 100px; font-size: 13px; font-weight: bold"
                   value=""
                 />
               </td>
@@ -1427,12 +1730,25 @@
               name="date_completed"
               class="datepicker"
               placeholder="dd/mm/yyyy"
-              style="width: 100px"
+              style="width: 100px; font-size: 13px; font-weight: bold"
               value=""
             />
           </label>
           <label class="flex gap-2 items-center justify-end"
             ><span class="label-bold">Signature:</span>
+            <input
+              type="text"
+              name="signature"
+              class="input-overlay"
+              style="
+                width: 200px;
+                font-size: 15px;
+                font-weight: bold;
+                border: 1px solid #000000;
+                border-radius: 4px;
+                padding: 4px 8px;
+              "
+            />
           </label>
         </div>
 
@@ -1624,6 +1940,7 @@
         const patient = patientData.patient;
         const surgical_details = patientData.surgical_details;
         const surgical_skin_preparation = patientData.surgical_skin_preparation;
+        const risk_factors = patientData.risk_factors;
         const implanted_materials = patientData.implanted_materials;
         const drains = patientData.drains;
         const antibiotic_usage = patientData.antibiotic_usage;
@@ -1632,6 +1949,8 @@
         const wound_complications = patientData.wound_complications;
         const review_sutures = patientData.review_sutures;
         const review_phone = patientData.review_phone;
+        const infection_prevention_notes =
+          patientData.infection_prevention_notes;
 
         // Set patient ID for editing
         setFormValue("patient_id", patient.patient_id);
@@ -1697,6 +2016,15 @@
             "surgical_skin_preparation[removal-done]",
             surgical_skin_preparation.hair_removal_location
           );
+        }
+
+        // Set risk factors
+        if (risk_factors) {
+          setFormValue("risk_factor_weight", risk_factors.weight);
+          setFormValue("risk_factor_height", risk_factors.height);
+          setFormValue("risk_factor_steroids", risk_factors.steroids);
+          setFormValue("risk_factor_tuberculosis", risk_factors.tuberculosis);
+          setFormValue("risk_factor_others", risk_factors.others);
         }
 
         // Set implanted materials
@@ -1844,6 +2172,10 @@
             wound_complications.organism_identified_superficial
           );
           setCheckboxValue(
+            "wtd2-1b",
+            wound_complications.organism_identified_deep
+          );
+          setCheckboxValue(
             "wtd2-2",
             wound_complications.organism_identified_organ
           );
@@ -1907,6 +2239,15 @@
           setRadioValue("reviewpus", review_phone.pus);
           setRadioValue("reviewbleed", review_phone.bleeding);
           setRadioValue("reviewother", review_phone.other);
+        }
+
+        // Set infection prevention notes and signature
+        if (infection_prevention_notes) {
+          setFormValue(
+            "infection_prevention_notes",
+            infection_prevention_notes.infection_prevention_notes
+          );
+          setFormValue("signature", infection_prevention_notes.signature);
         }
 
         // Initialize textareas after filling data
@@ -2290,8 +2631,29 @@
         const form = document.querySelector("form");
 
         if (form) {
-          form.addEventListener("submit", function (e) {
+          form.addEventListener("submit", async function (e) {
             e.preventDefault();
+
+            // Check session status before allowing form submission
+            try {
+              const response = await fetch("check_nurse_session.php");
+              const data = await response.json();
+
+              if (!data.success || !data.logged_in) {
+                // User is not logged in, show popup and prevent submission
+                showLoginPopup();
+                return false;
+              }
+
+              // User is logged in, proceed with form submission
+              console.log("Session valid, proceeding with form submission");
+            } catch (error) {
+              console.error("Session check failed:", error);
+              showLoginPopup(
+                "Unable to verify your login status. Please try logging in again."
+              );
+              return false;
+            }
 
             // Get form data
             const formData = new FormData(form);
@@ -2558,7 +2920,7 @@
                 name="post-operative[date]_${newRowNumber}"
                 class="datepicker"
                 placeholder="dd/mm/yyyy"
-                style="width: 100px"
+                style="width: 100px; font-size: 13px !important; font-weight: bold !important; color: #000;"
                 value=""
               />
             </td>
@@ -2568,7 +2930,14 @@
                 class="input-overlay input-full"
                 rows="1"
                 oninput="autoGrow(this)"
-                style="min-height: 28px; line-height: 1.2; text-align: center;"
+                style="
+                  min-height: 28px;
+                  line-height: 1.2;
+                  text-align: center;
+                  font-size: 13px !important;
+                  font-weight: bold !important;
+                  color: #000;
+                "
               ></textarea>
             </td>
             <td class="tg-0lax">
@@ -2577,7 +2946,13 @@
                 class="input-overlay input-full"
                 rows="1"
                 oninput="autoGrow(this)"
-                style="min-height: 28px; line-height: 1.2; text-align: center;"
+                style="
+                  min-height: 28px;
+                  line-height: 1.2;
+                  text-align: center;
+                  font-size: 13px !important;
+                  font-weight: bold !important;
+                "
               ></textarea>
             </td>
             <td class="tg-0lax">
@@ -2586,7 +2961,13 @@
                 class="input-overlay input-full"
                 rows="1"
                 oninput="autoGrow(this)"
-                style="min-height: 28px; line-height: 1.2; text-align: center;"
+                style="
+                  min-height: 28px;
+                  line-height: 1.2;
+                  text-align: center;
+                  font-size: 13px !important;
+                  font-weight: bold !important;
+                "
               ></textarea>
             </td>
             <td class="tg-0lax">
@@ -2595,7 +2976,13 @@
                 class="input-overlay input-full"
                 rows="1"
                 oninput="autoGrow(this)"
-                style="min-height: 28px; line-height: 1.2; text-align: center;"
+                style="
+                  min-height: 28px;
+                  line-height: 1.2;
+                  text-align: center;
+                  font-size: 13px !important;
+                  font-weight: bold !important;
+                "
               ></textarea>
             </td>
             <td class="tg-0lax">
@@ -2604,7 +2991,13 @@
                 class="input-overlay input-full"
                 rows="1"
                 oninput="autoGrow(this)"
-                style="min-height: 28px; line-height: 1.2; text-align: center;"
+                style="
+                  min-height: 28px;
+                  line-height: 1.2;
+                  text-align: center;
+                  font-size: 13px !important;
+                  font-weight: bold !important;
+                "
               ></textarea>
             </td>
           `;
@@ -2739,6 +3132,112 @@
           clearSessionTimers();
           startSessionTimers();
         }
+
+        // Login popup functionality - Global functions
+        function showLoginPopup(
+          message = "Please login to submit the form. You will be redirected to the login page."
+        ) {
+          // Create popup HTML
+          const popupHTML = `
+            <div id="loginPopup" style="
+              position: fixed;
+              top: 0;
+              left: 0;
+              width: 100%;
+              height: 100%;
+              background-color: rgba(0, 0, 0, 0.5);
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              z-index: 10000;
+              font-family: Arial, sans-serif;
+            ">
+              <div style="
+                background-color: white;
+                padding: 30px;
+                border-radius: 10px;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+                max-width: 400px;
+                width: 90%;
+                text-align: center;
+                position: relative;
+              ">
+                <div style="
+                  font-size: 24px;
+                  color: #e74c3c;
+                  margin-bottom: 20px;
+                ">
+                  ⚠️ Login Required
+                </div>
+                <div style="
+                  font-size: 16px;
+                  color: #333;
+                  margin-bottom: 25px;
+                  line-height: 1.5;
+                ">
+                  ${message}
+                </div>
+                <div style="
+                  display: flex;
+                  gap: 15px;
+                  justify-content: center;
+                ">
+                  <button onclick="closeLoginPopup()" style="
+                    background-color: #95a5a6;
+                    color: white;
+                    border: none;
+                    padding: 12px 20px;
+                    border-radius: 5px;
+                    cursor: pointer;
+                    font-size: 14px;
+                    font-weight: bold;
+                  ">
+                    Cancel
+                  </button>
+                  <button onclick="redirectToLogin()" style="
+                    background-color: #3498db;
+                    color: white;
+                    border: none;
+                    padding: 12px 20px;
+                    border-radius: 5px;
+                    cursor: pointer;
+                    font-size: 14px;
+                    font-weight: bold;
+                  ">
+                    Go to Login
+                  </button>
+                </div>
+              </div>
+            </div>
+          `;
+
+          // Add popup to body
+          document.body.insertAdjacentHTML("beforeend", popupHTML);
+
+          // Add escape key listener
+          document.addEventListener("keydown", function (e) {
+            if (e.key === "Escape") {
+              closeLoginPopup();
+            }
+          });
+        }
+
+        function closeLoginPopup() {
+          const popup = document.getElementById("loginPopup");
+          if (popup) {
+            popup.remove();
+          }
+        }
+
+        function redirectToLogin() {
+          closeLoginPopup();
+          window.location.href = "login.html";
+        }
+
+        // Make functions globally accessible
+        window.closeLoginPopup = closeLoginPopup;
+        window.redirectToLogin = redirectToLogin;
+        window.showLoginPopup = showLoginPopup;
 
         // Initialize session management when page loads
         document.addEventListener("DOMContentLoaded", function () {

@@ -5,8 +5,8 @@
  */
 
 class AdminSessionManager {
-    private $session_name = 'ADMIN_SESSION';
-    private $session_timeout = 1800; // 30 minutes
+    private $session_name = 'ADMIN_NEW_SESSION';
+    private $session_timeout = 3600; // 60 minutes (increased for testing)
     private $db_connection;
     
     public function __construct() {
@@ -18,39 +18,43 @@ class AdminSessionManager {
      * Initialize session with proper configuration
      */
     private function initSession() {
-        // Set session parameters before starting
-        ini_set('session.gc_maxlifetime', $this->session_timeout);
-        ini_set('session.cookie_lifetime', 0);
-        ini_set('session.use_strict_mode', 1);
-        ini_set('session.use_cookies', 1);
-        ini_set('session.use_only_cookies', 1);
-        ini_set('session.cookie_httponly', 1);
-        ini_set('session.cookie_samesite', 'Lax');
-        
-        // Set session name
-        session_name($this->session_name);
-        
-        // Set cookie parameters
-        session_set_cookie_params([
-            'lifetime' => 0,
-            'path' => '/supercareSSibundle/',
-            'domain' => '',
-            'secure' => false, // Set to true if using HTTPS
-            'httponly' => true,
-            'samesite' => 'Lax'
-        ]);
-        
-        // Start session if not already started
+        // Only initialize if session hasn't been started yet
         if (session_status() === PHP_SESSION_NONE) {
+            // Set session parameters before starting
+            ini_set('session.gc_maxlifetime', $this->session_timeout);
+            ini_set('session.cookie_lifetime', 0);
+            ini_set('session.use_strict_mode', 1);
+            ini_set('session.use_cookies', 1);
+            ini_set('session.use_only_cookies', 1);
+            ini_set('session.cookie_httponly', 1);
+            ini_set('session.cookie_samesite', 'Lax');
+            
+            // Set session name
+            session_name($this->session_name);
+            
+            // Set cookie parameters
+            session_set_cookie_params([
+                'lifetime' => 0,
+                'path' => '/',
+                'domain' => '',
+                'secure' => false, // Set to true if using HTTPS
+                'httponly' => true,
+                'samesite' => 'Lax'
+            ]);
+            
+            // Start session
             session_start();
-        }
-        
-        // Regenerate session ID periodically for security
-        if (!isset($_SESSION['last_regeneration'])) {
-            $_SESSION['last_regeneration'] = time();
-        } elseif (time() - $_SESSION['last_regeneration'] > 300) { // 5 minutes
-            session_regenerate_id(true);
-            $_SESSION['last_regeneration'] = time();
+            
+            // Initialize regeneration time
+            if (!isset($_SESSION['last_regeneration'])) {
+                $_SESSION['last_regeneration'] = time();
+            }
+        } else {
+            // Session already started, check if we need to regenerate ID
+            if (isset($_SESSION['last_regeneration']) && (time() - $_SESSION['last_regeneration'] > 300)) { // 5 minutes
+                session_regenerate_id(true);
+                $_SESSION['last_regeneration'] = time();
+            }
         }
     }
     
@@ -79,6 +83,8 @@ class AdminSessionManager {
      * Create admin session after successful login
      */
     public function createSession($admin_data) {
+        error_log("Creating admin session for user: " . $admin_data['admin_username']);
+        
         // Clear any existing session data
         $_SESSION = array();
         
@@ -95,6 +101,8 @@ class AdminSessionManager {
         $_SESSION['ip_address'] = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
         $_SESSION['user_agent'] = $_SERVER['HTTP_USER_AGENT'] ?? 'unknown';
         
+        error_log("Session created successfully. Session data: " . print_r($_SESSION, true));
+        
         // Log session creation in database
         $this->logSessionCreation($admin_data['id']);
         
@@ -105,24 +113,30 @@ class AdminSessionManager {
      * Validate current session
      */
     public function validateSession() {
+        error_log("Admin session validation started");
+        
         // Check if session exists
         if (!isset($_SESSION['admin_id']) || !isset($_SESSION['user_type'])) {
+            error_log("Admin session validation failed: Missing session data. Session contents: " . print_r($_SESSION, true));
             return false;
         }
         
         // Check if user type is admin
         if ($_SESSION['user_type'] !== 'admin') {
+            error_log("Admin session validation failed: Invalid user type - " . $_SESSION['user_type']);
             return false;
         }
         
         // Check session timeout
         if (isset($_SESSION['expires_at']) && time() > $_SESSION['expires_at']) {
+            error_log("Admin session validation failed: Session expired. Current time: " . time() . ", Expires at: " . $_SESSION['expires_at']);
             $this->destroySession();
             return false;
         }
         
-        // Check if admin still exists and is active
-        if (!$this->validateAdminExists($_SESSION['admin_id'])) {
+        // Check if admin still exists and is active (only if database is available)
+        if ($this->db_connection && !$this->validateAdminExists($_SESSION['admin_id'])) {
+            error_log("Admin session validation failed: Admin not found in database");
             $this->destroySession();
             return false;
         }
@@ -131,6 +145,7 @@ class AdminSessionManager {
         $_SESSION['last_activity'] = time();
         $_SESSION['expires_at'] = time() + $this->session_timeout;
         
+        error_log("Admin session validation successful");
         return true;
     }
     

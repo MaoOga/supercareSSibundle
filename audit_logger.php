@@ -507,6 +507,16 @@ class AuditLogger {
             $detailsAfter
         );
     }
+    
+    /**
+     * Get a specific audit log by ID
+     */
+    public function getAuditLogById($auditId) {
+        $sql = "SELECT * FROM admin_audit_logs WHERE audit_id = ?";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$auditId]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 }
 
 // Create global audit logger instance
