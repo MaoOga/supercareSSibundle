@@ -110,6 +110,16 @@ try {
     $failedActivities = $statusCounts['FAILED'] ?? 0;
     $successRate = $totalActivities > 0 ? round(($successfulActivities / $totalActivities) * 100, 1) : 0;
     
+    // Get total backup count
+    $sql = "SELECT COUNT(*) as total_backups 
+            FROM admin_audit_logs 
+            WHERE action_type = 'BACKUP' 
+            AND timestamp >= DATE_SUB(CURDATE(), INTERVAL ? DAY)";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$days]);
+    $backupResult = $stmt->fetch(PDO::FETCH_ASSOC);
+    $totalBackups = $backupResult['total_backups'] ?? 0;
+    
     // Get most active admin users
     $sql = "SELECT admin_user, COUNT(*) as count 
             FROM admin_audit_logs 
@@ -176,6 +186,7 @@ try {
                 'successful_activities' => $successfulActivities,
                 'failed_activities' => $failedActivities,
                 'success_rate' => $successRate,
+                'total_backups' => $totalBackups,
                 'period_days' => $days
             ],
             'action_types' => $actionTypeData,

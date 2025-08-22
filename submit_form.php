@@ -3,10 +3,18 @@
 header('Content-Type: application/json');
 
 require_once 'config.php';
+require_once 'session_config.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
     echo json_encode(['success' => false, 'message' => 'Method not allowed']);
+    exit;
+}
+
+// Check if nurse is logged in
+if (!isNurseLoggedIn()) {
+    http_response_code(401);
+    echo json_encode(['success' => false, 'message' => 'Session expired. Please log in again.']);
     exit;
 }
 
@@ -17,8 +25,14 @@ try {
     $patientId = $formData['patient_id'] ?? null;
     $isUpdate = !empty($patientId);
     
+    // Get nurse information from session for logging
+    $nurseInfo = getNurseInfo();
+    $nurseIdCode = $nurseInfo['nurse_id'] ?? 'UNKNOWN';
+    $nurseName = $nurseInfo['name'] ?? 'Unknown Nurse';
+    
     // Debug logging
-    error_log("Working form submission - Patient ID: $patientId, Is Update: " . ($isUpdate ? 'Yes' : 'No'));
+    error_log("Form submission - Patient ID: $patientId, Is Update: " . ($isUpdate ? 'Yes' : 'No'));
+    error_log("Nurse ID: $nurseIdCode, Nurse Name: $nurseName");
     error_log("Form data keys: " . implode(', ', array_keys($formData)));
     
     // Check for post-operative related keys specifically

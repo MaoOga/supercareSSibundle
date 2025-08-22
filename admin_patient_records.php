@@ -151,6 +151,10 @@ if (!$adminUser) {
             <p class="text-sm hidden sm:block" style="color: var(--text-secondary)">
               Patient Records Management
             </p>
+            <p class="text-xs sm:text-sm font-medium" style="color: var(--text-icon);">
+              <i class="fas fa-user-shield mr-1"></i>
+              Logged in as: <span id="adminUsername"><?php echo htmlspecialchars($adminUser['admin_username']); ?></span>
+            </p>
           </div>
         </div>
         <div class="hidden sm:flex items-center gap-3 sm:gap-4">
@@ -195,7 +199,6 @@ if (!$adminUser) {
           <select id="status" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent" style="border-color: var(--border-secondary);">
             <option value="all">All Status</option>
             <option value="pending">Pending Review</option>
-            <option value="in-progress">In Progress</option>
             <option value="completed">Completed</option>
             <option value="complications">With Complications</option>
             <option value="no-complications">No Complications</option>
@@ -420,8 +423,6 @@ if (!$adminUser) {
       let reviewClass = 'bg-yellow-100 text-yellow-800';
       if (reviewStatus === 'Completed') {
         reviewClass = 'bg-green-100 text-green-800';
-      } else if (reviewStatus === 'In Progress') {
-        reviewClass = 'bg-blue-100 text-blue-800';
       }
       
       badges += `

@@ -164,7 +164,7 @@ if (!$is_admin_context && isset($_SESSION['user_type'])) {
             if (isset($_SESSION['user_type']) && $_SESSION['user_type'] === 'nurse') {
                 header('Location: nurse_login.php?msg=session_expired');
             } else {
-                header('Location: index.html?msg=session_expired');
+                header('Location: index.php?msg=session_expired');
             }
             exit();
         }

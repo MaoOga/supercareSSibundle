@@ -450,6 +450,13 @@ if (!$adminUser) {
                >
                  Patient Records Management
                </p>
+               <p
+                 class="text-xs sm:text-sm font-medium"
+                 style="color: var(--error-color)"
+               >
+                 <i class="fas fa-user-shield mr-1"></i>
+                 Logged in as: <span id="adminUsername"><?php echo htmlspecialchars($adminUser['admin_username']); ?></span>
+               </p>
              </div>
           </div>
           <div class="hidden sm:flex items-center gap-3 sm:gap-4">
@@ -510,23 +517,23 @@ if (!$adminUser) {
           </div>
         </div>
 
-        <div
-          class="audit-card p-6"
-          style="
-            background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
-            color: white;
-          "
-        >
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-sm font-medium text-white/90">Active Nurses (Last 30 Days)</p>
-              <p id="activeUsers" class="text-2xl font-bold text-white">—</p>
-            </div>
-            <div class="p-3 bg-white/20 rounded-full">
-              <i class="fas fa-user-nurse text-white text-xl"></i>
-            </div>
-          </div>
-        </div>
+                 <div
+           class="audit-card p-6"
+           style="
+             background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+             color: white;
+           "
+         >
+           <div class="flex items-center justify-between">
+             <div>
+                               <p class="text-sm font-medium text-white/90">Total Backup</p>
+               <p id="totalBackups" class="text-2xl font-bold text-white">—</p>
+             </div>
+             <div class="p-3 bg-white/20 rounded-full">
+               <i class="fas fa-database text-white text-xl"></i>
+             </div>
+           </div>
+         </div>
 
         <div
           class="audit-card p-6"
@@ -587,9 +594,8 @@ if (!$adminUser) {
               <option value="UPDATE">Update</option>
               <option value="DELETE">Delete</option>
               <option value="LOGIN">Login</option>
+              <option value="LOGOUT">Logout</option>
               <option value="BACKUP">Backup</option>
-              <option value="EXPORT">Export</option>
-              <option value="IMPORT">Import</option>
             </select>
           </div>
 
@@ -606,7 +612,6 @@ if (!$adminUser) {
               <option value="SURGEON">Surgeon</option>
               <option value="PATIENT">Patient</option>
               <option value="BACKUP">Backup</option>
-              <option value="SYSTEM">System</option>
             </select>
           </div>
 
@@ -701,48 +706,48 @@ if (!$adminUser) {
           </button>
         </div>
 
-        <!-- Desktop Table View -->
-        <div class="hidden sm:block overflow-x-auto">
-          <table class="w-full">
-            <thead class="bg-gray-50">
-              <tr>
-                <th
-                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Timestamp
-                </th>
-                <th
-                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Admin User
-                </th>
-                <th
-                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Action
-                </th>
-                <th
-                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Entity
-                </th>
-                <th
-                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Description
-                </th>
-                <th
-                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Status
-                </th>
-                <th
-                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Actions
-                </th>
-              </tr>
-            </thead>
+                 <!-- Desktop Table View -->
+         <div class="hidden sm:block">
+           <table class="w-full table-fixed">
+             <thead class="bg-gray-50">
+               <tr>
+                                                     <th
+                    class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-48"
+                  >
+                    Timestamp
+                  </th>
+                  <th
+                    class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32"
+                  >
+                  Performed By
+                  </th>
+                  <th
+                    class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24"
+                  >
+                    Action
+                  </th>
+                  <th
+                    class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32"
+                  >
+                    Entity
+                  </th>
+                  <th
+                    class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-64"
+                  >
+                    Description
+                  </th>
+                 <th
+                   class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-20"
+                 >
+                   Status
+                 </th>
+                 <th
+                   class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-20"
+                 >
+                   Actions
+                 </th>
+               </tr>
+             </thead>
             <tbody
               id="auditTableBody"
               class="bg-white divide-y divide-gray-200"
@@ -892,24 +897,24 @@ if (!$adminUser) {
         }
       }
 
-      // Update statistics cards
-      function updateStatistics(data) {
-        const summary = data.summary;
+             // Update statistics cards
+       function updateStatistics(data) {
+         const summary = data.summary;
 
-        document.getElementById("totalActivities").textContent =
-          summary.total_activities.toLocaleString();
-        document.getElementById("activeUsers").textContent =
-          data.active_nurses.length;
+         document.getElementById("totalActivities").textContent =
+           summary.total_activities.toLocaleString();
+         document.getElementById("totalBackups").textContent =
+           summary.total_backups || 0;
 
-        // Calculate today's activities
-        const today = new Date().toISOString().split("T")[0];
-        const todayActivities = data.daily_activity.find(
-          (item) => item.date === today
-        );
-        document.getElementById("todayActivities").textContent = todayActivities
-          ? todayActivities.count
-          : 0;
-      }
+         // Calculate today's activities
+         const today = new Date().toISOString().split("T")[0];
+         const todayActivities = data.daily_activity.find(
+           (item) => item.date === today
+         );
+         document.getElementById("todayActivities").textContent = todayActivities
+           ? todayActivities.count
+           : 0;
+       }
 
       // Update charts
       function updateCharts(data) {
@@ -1088,70 +1093,67 @@ if (!$adminUser) {
                      </div>
                  `;
         } else {
-          // Desktop table view
-          tbody.innerHTML = logs
-            .map(
-              (log) => `
-                     <tr class="hover:bg-gray-50">
-                         <td class="px-6 py-4 whitespace-nowrap">
-                             <div>
-                                 <div class="text-sm font-medium text-gray-900">${
-                                   log.formatted_time
-                                 }</div>
-                                 
-                             </div>
-                         </td>
-                         <td class="px-6 py-4 whitespace-nowrap">
-                             <div class="text-sm font-medium text-gray-900">${
-                               log.admin_user
-                             }</div>
-                         </td>
-                         <td class="px-6 py-4 whitespace-nowrap">
-                             <span class="action-badge action-${log.action_type.toLowerCase()}">${
-                log.action_type
-              }</span>
-                         </td>
-                         <td class="px-6 py-4 whitespace-nowrap">
-                             <div>
-                                 <div class="text-sm font-medium text-gray-900">${
-                                   log.entity_type
-                                 }</div>
-                                 <div class="text-sm text-gray-500">${
-                                   log.entity_name || "—"
-                                 }</div>
-                             </div>
-                         </td>
-                         <td class="px-6 py-4">
-                             <div class="text-sm text-gray-900 truncate max-w-xs">${
-                               log.description
-                             }</div>
-                         </td>
-                         <td class="px-6 py-4 whitespace-nowrap">
-                             <span class="status-badge status-${log.status.toLowerCase()}">${
-                log.status
-              }</span>
-                         </td>
-                         <td class="px-6 py-4 whitespace-nowrap">
-                                                           <div class="flex items-center space-x-1">
-                                                                     <button
-                                       onclick="showLogDetails(${log.audit_id})"
-                                       class="text-blue-600 hover:text-blue-800 text-xs font-medium rounded hover:bg-blue-50"
-                                       style="width: 32px; height: 24px; padding: 0;"
-                                   >
-                                       <i class="fas fa-eye text-xs"></i>
-                                   </button>
-                                   <button
-                                       onclick="deleteLog(${log.audit_id})"
-                                       class="text-red-600 hover:text-red-800 text-xs font-medium rounded hover:bg-red-50"
-                                       style="width: 32px; height: 24px; padding: 0;"
-                                   >
-                                       <i class="fas fa-trash text-xs"></i>
-                                   </button>
+                     // Desktop table view
+           tbody.innerHTML = logs
+             .map(
+               (log) => `
+                      <tr class="hover:bg-gray-50">
+                          <td class="px-4 py-4">
+                              <div class="text-sm font-medium text-gray-900 truncate">${
+                                log.formatted_time
+                              }</div>
+                          </td>
+                          <td class="px-4 py-4">
+                              <div class="text-sm font-medium text-gray-900 truncate">${
+                                log.admin_user
+                              }</div>
+                          </td>
+                          <td class="px-4 py-4">
+                              <span class="action-badge action-${log.action_type.toLowerCase()}">${
+                 log.action_type
+               }</span>
+                          </td>
+                          <td class="px-4 py-4">
+                              <div>
+                                  <div class="text-sm font-medium text-gray-900 truncate">${
+                                    log.entity_type
+                                  }</div>
+                                  <div class="text-sm text-gray-500 truncate">${
+                                    log.entity_name || "—"
+                                  }</div>
                               </div>
-                         </td>
-                     </tr>
-                 `
-            )
+                          </td>
+                          <td class="px-4 py-4">
+                              <div class="text-sm text-gray-900 truncate">${
+                                log.description
+                              }</div>
+                          </td>
+                          <td class="px-4 py-4">
+                              <span class="status-badge status-${log.status.toLowerCase()}">${
+                 log.status
+               }</span>
+                          </td>
+                          <td class="px-4 py-4">
+                              <div class="flex items-center space-x-1">
+                                  <button
+                                    onclick="showLogDetails(${log.audit_id})"
+                                    class="text-blue-600 hover:text-blue-800 text-xs font-medium rounded hover:bg-blue-50"
+                                    style="width: 32px; height: 24px; padding: 0;"
+                                  >
+                                    <i class="fas fa-eye text-xs"></i>
+                                  </button>
+                                  <button
+                                    onclick="deleteLog(${log.audit_id})"
+                                    class="text-red-600 hover:text-red-800 text-xs font-medium rounded hover:bg-red-50"
+                                    style="width: 32px; height: 24px; padding: 0;"
+                                  >
+                                    <i class="fas fa-trash text-xs"></i>
+                                  </button>
+                              </div>
+                          </td>
+                      </tr>
+                  `
+             )
             .join("");
 
           // Mobile card view

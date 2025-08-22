@@ -673,6 +673,13 @@ if (!$adminUser) {
               >
                 Manage users, surgeons, and audit analytics
               </p>
+              <p
+                class="text-xs sm:text-sm font-medium"
+                style="color: var(--text-icon)"
+              >
+                <i class="fas fa-user-shield mr-1"></i>
+                Logged in as: <span id="adminUsername"><?php echo htmlspecialchars($adminUser['admin_username']); ?></span>
+              </p>
             </div>
           </div>
                      <div class="hidden sm:flex items-center gap-3 sm:gap-4">
