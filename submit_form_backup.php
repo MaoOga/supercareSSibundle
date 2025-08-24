@@ -152,23 +152,38 @@ try {
         $deleteStmt->execute([$patientId]);
     }
 
-    // Insert drains - Look for drain descriptions in the form data
-    $drainUsed = isset($formData['drain-used']) && $formData['drain-used'] === 'Yes' ? 'Yes' : 'No';
-    error_log("Drain used: $drainUsed");
+    // Insert drains - handle both 'Yes' and 'No' cases properly
+    $drainUsed = isset($formData['drain-used']) ? $formData['drain-used'] : null;
+    error_log("Drain used: " . ($drainUsed ?? 'NOT SELECTED'));
     
-    // Check for drain descriptions in the form data
-    for ($i = 1; $i <= 10; $i++) { // Check up to 10 drains
-        $drainDescription = $formData["drain_$i"] ?? null; // Fixed: Use correct field name
-        if (!empty($drainDescription)) {
-            error_log("Inserting drain $i: $drainDescription");
-            $drainStmt = $pdo->prepare("INSERT INTO drains (patient_id, drain_used, drain_description, drain_number) VALUES (?, ?, ?, ?)");
-            $drainStmt->execute([
-                $patientId,
-                $drainUsed,
-                $drainDescription,
-                $i
-            ]);
+    if ($drainUsed === 'Yes') {
+        // Insert drain records only if 'Yes' is selected
+        for ($i = 1; $i <= 10; $i++) { // Check up to 10 drains
+            $drainDescription = $formData["drain_$i"] ?? null; // Fixed: Use correct field name
+            if (!empty($drainDescription)) {
+                error_log("Inserting drain $i: $drainDescription");
+                $drainStmt = $pdo->prepare("INSERT INTO drains (patient_id, drain_used, drain_description, drain_number) VALUES (?, ?, ?, ?)");
+                $drainStmt->execute([
+                    $patientId,
+                    $drainUsed,
+                    $drainDescription,
+                    $i
+                ]);
+            }
         }
+    } elseif ($drainUsed === 'No') {
+        // If 'No' is explicitly selected, insert a record indicating 'No'
+        error_log("Drain used is 'No', inserting record to indicate no drains used");
+        $drainStmt = $pdo->prepare("INSERT INTO drains (patient_id, drain_used, drain_description, drain_number) VALUES (?, ?, ?, ?)");
+        $drainStmt->execute([
+            $patientId,
+            'No',
+            'No drains used',
+            1
+        ]);
+    } else {
+        // If no radio button was selected, don't insert any drain records
+        error_log("No drain-used radio button selected, not inserting any drain records");
     }
 
     // Handle antibiotic_usage table - FIXED: Use correct field names

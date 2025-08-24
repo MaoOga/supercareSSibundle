@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Drain Radio Button Test</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      .form-group {
+        margin: 10px 0;
+      }
+      label {
+        display: inline-block;
+        width: 100px;
+      }
+      input[type="radio"] {
+        margin-right: 5px;
+      }
+      textarea {
+        width: 300px;
+        height: 60px;
+      }
+      button {
+        padding: 10px 20px;
+        background: #007bff;
+        color: white;
+        border: none;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #0056b3;
+      }
+      .debug {
+        background: #f8f9fa;
+        padding: 10px;
+        margin: 10px 0;
+        border: 1px solid #dee2e6;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Drain Radio Button Test Form</h1>
+
+    <form id="testForm" method="POST" action="submit_form.php">
+      <div class="form-group">
+        <label>Name:</label>
+        <input type="text" name="name" value="Test Patient" required />
+      </div>
+
+      <div class="form-group">
+        <label>Age:</label>
+        <input type="number" name="age" value="30" required />
+      </div>
+
+      <div class="form-group">
+        <label>Sex:</label>
+        <select name="Sex" required>
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>UHID:</label>
+        <input type="text" name="uhid" value="TEST001" required />
+      </div>
+
+      <div class="form-group">
+        <label>Phone:</label>
+        <input type="text" name="phone" value="1234567890" required />
+      </div>
+
+      <div class="form-group">
+        <label>Bed:</label>
+        <input type="text" name="bed" value="Ward 1" required />
+      </div>
+
+      <div class="form-group">
+        <label>Address:</label>
+        <input type="text" name="address" value="Test Address" required />
+      </div>
+
+      <div class="form-group">
+        <label>Diagnosis:</label>
+        <input type="text" name="diagnosis" value="Test Diagnosis" required />
+      </div>
+
+      <div class="form-group">
+        <label>Surgical Procedure:</label>
+        <input
+          type="text"
+          name="surgical_procedure"
+          value="Test Procedure"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label>Operation Duration:</label>
+        <input type="text" name="operation_duration" value="2 hours" required />
+      </div>
+
+      <div class="form-group">
+        <label>Patient Info - DOA:</label>
+        <input
+          type="text"
+          name="patient_info[doa]"
+          value="01/01/2025"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label>Patient Info - DOS:</label>
+        <input
+          type="text"
+          name="patient_info[dos]"
+          value="02/01/2025"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label>Patient Info - DOD:</label>
+        <input
+          type="text"
+          name="patient_info[dod]"
+          value="03/01/2025"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label>Patient Info - Surgeon:</label>
+        <input
+          type="text"
+          name="patient_info[surgeon]"
+          value="Dr. Test"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label>Skin Prep - Pre-op Bath:</label>
+        <select name="surgical_skin_preparation[pre_op_bath]">
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Skin Prep - Hair Removal:</label>
+        <select name="surgical_skin_preparation[hair-removal]">
+          <option value="Razor">Razor</option>
+          <option value="Trimmer">Trimmer</option>
+          <option value="Not Done">Not Done</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Implanted Used:</label>
+        <select name="implanted_used">
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
+        </select>
+      </div>
+
+      <hr />
+      <h2>Drain Section (This is what we're testing)</h2>
+
+      <div class="form-group">
+        <label>Drain Used:</label>
+        <input type="radio" name="drain-used" value="Yes" id="drain-yes" />
+        <label for="drain-yes">Yes</label>
+        <input type="radio" name="drain-used" value="No" id="drain-no" />
+        <label for="drain-no">No</label>
+        <span style="color: red"
+          >⚠️ IMPORTANT: Try NOT selecting any radio button to test the
+          fix!</span
+        >
+      </div>
+
+      <div class="form-group">
+        <label>Drain 1:</label>
+        <textarea
+          name="drain_1"
+          placeholder="Enter drain description"
+        ></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Drain 2:</label>
+        <textarea
+          name="drain_2"
+          placeholder="Enter drain description"
+        ></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Drain 3:</label>
+        <textarea
+          name="drain_3"
+          placeholder="Enter drain description"
+        ></textarea>
+      </div>
+
+      <hr />
+
+      <div class="form-group">
+        <label>Drug Name 1:</label>
+        <input type="text" name="drug-name_1" value="Test Drug" />
+      </div>
+
+      <div class="form-group">
+        <label>Dosage 1:</label>
+        <input type="text" name="dosage_1" value="500mg" />
+      </div>
+
+      <div class="form-group">
+        <label>Antibiotic Started On:</label>
+        <input
+          type="text"
+          name="antibiotic_usage[startedon]"
+          value="01/01/2025"
+        />
+      </div>
+
+      <div class="form-group">
+        <label>Antibiotic Stopped On:</label>
+        <input
+          type="text"
+          name="antibiotic_usage[stoppeon]"
+          value="07/01/2025"
+        />
+      </div>
+
+      <div class="form-group">
+        <label>Cultural Swap:</label>
+        <input type="text" name="Cultural-Swap" value="Test" />
+      </div>
+
+      <div class="form-group">
+        <label>Dressing Finding:</label>
+        <input type="text" name="Dressing-Finding" value="Test" />
+      </div>
+
+      <div class="form-group">
+        <label>Review On:</label>
+        <input type="text" name="ReviewOn" value="10/01/2025" />
+      </div>
+
+      <div class="form-group">
+        <label>Sutures Removed On:</label>
+        <input type="text" name="SuturesROn" value="15/01/2025" />
+      </div>
+
+      <div class="form-group">
+        <label>Review Phone Date:</label>
+        <input type="text" name="RevieworPhoneDate" value="20/01/2025" />
+      </div>
+
+      <div class="debug">
+        <h3>Test Instructions:</h3>
+        <ol>
+          <li>
+            <strong>Test 1:</strong> Fill in drain descriptions but DO NOT
+            select any radio button → Submit → Check if drain records are
+            inserted (should NOT be)
+          </li>
+          <li>
+            <strong>Test 2:</strong> Select "Yes" radio button, fill drain
+            descriptions → Submit → Check if drain records are inserted (should
+            be)
+          </li>
+          <li>
+            <strong>Test 3:</strong> Select "No" radio button, fill drain
+            descriptions → Submit → Check if drain records are inserted (should
+            NOT be)
+          </li>
+        </ol>
+      </div>
+
+      <button type="submit">Submit Form</button>
+    </form>
+
+    <script>
+      // Add some debugging
+      document
+        .getElementById("testForm")
+        .addEventListener("submit", function (e) {
+          const formData = new FormData(this);
+          console.log("Form data being submitted:");
+          for (let [key, value] of formData.entries()) {
+            console.log(key + ": " + value);
+          }
+
+          // Check drain-used specifically
+          const drainUsed = formData.get("drain-used");
+          console.log("drain-used value: " + (drainUsed || "NOT SET"));
+
+          if (!drainUsed) {
+            alert(
+              "⚠️ No drain-used radio button selected! This should NOT insert drain records."
+            );
+          }
+        });
+    </script>
+  </body>
+</html>

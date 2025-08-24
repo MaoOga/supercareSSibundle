@@ -16,6 +16,39 @@
     <script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
     <link rel="stylesheet" type="text/css" href="style.css" />
     <style>
+      /* Print styles for better spacing */
+      @media print {
+        .header {
+          margin-bottom: 30px !important;
+          padding-bottom: 20px !important;
+          border-bottom: 2px solid #333 !important;
+        }
+
+        .header img {
+          margin-bottom: 15px !important;
+        }
+
+        .title-main {
+          margin-top: 15px !important;
+        }
+
+        /* Add extra space between header and form table */
+        .tg {
+          margin-top: 25px !important;
+        }
+
+        /* Ensure proper page breaks */
+        .container {
+          page-break-inside: avoid !important;
+        }
+
+        /* Hide non-essential elements when printing */
+        button,
+        .no-print {
+          display: none !important;
+        }
+      }
+
       /* Mobile header consistency for form page */
       @media (max-width: 640px) {
         .header {
@@ -144,6 +177,52 @@
           width: 100% !important;
           max-width: 100% !important;
           box-sizing: border-box !important;
+        }
+        @media print {
+          table.tg {
+            max-width: 600px; /* shrink table width */
+            width: 100%; /* responsive */
+            margin: auto; /* center on page */
+            font-size: 12px; /* optional: smaller font for print */
+          }
+          table.tg th,
+          table.tg td {
+            padding: 4px; /* reduce padding for print */
+          }
+
+          /* Apply same styling to Antibiotic Usage table */
+          .antibiotic-table-wrapper table.tg,
+          .antibiotic-table-wrapper .tg {
+            max-width: 600px !important; /* shrink table width */
+            width: 100% !important; /* responsive */
+            margin: auto !important; /* center on page */
+            font-size: 12px !important; /* optional: smaller font for print */
+          }
+
+          .antibiotic-table-wrapper table.tg th,
+          .antibiotic-table-wrapper table.tg td,
+          .antibiotic-table-wrapper .tg th,
+          .antibiotic-table-wrapper .tg td {
+            padding: 4px !important; /* reduce padding for print */
+          }
+
+          /* Ensure "Stopped On" column is fully visible */
+          .antibiotic-table-wrapper table.tg th:last-child,
+          .antibiotic-table-wrapper table.tg td:last-child,
+          .antibiotic-table-wrapper .tg th:last-child,
+          .antibiotic-table-wrapper .tg td:last-child {
+            min-width: 60px !important; /* Ensure minimum width for date */
+            max-width: 85px !important; /* Limit maximum width */
+            white-space: nowrap !important; /* Prevent text wrapping */
+            overflow: visible !important; /* Ensure content is not cut off */
+            word-wrap: normal !important; /* Prevent word breaking */
+          }
+
+          /* Additional safety for the entire table wrapper */
+          .antibiotic-table-wrapper {
+            overflow: visible !important; /* Ensure no horizontal scroll */
+            max-width: 100% !important; /* Use full available width */
+          }
         }
       }
     </style>
@@ -2036,9 +2115,16 @@
           setFormValue("Shunt", implanted_materials.shunt_stent);
         }
 
-        // Set drains - dynamically create rows for all drains
+        // Set drains - use the actual drain_used value from database
         if (drains && drains.length > 0) {
-          setRadioValue("drain-used", "Yes");
+          // Check the drain_used value from the first drain record
+          const drainUsedValue = drains[0].drain_used;
+
+          // Only set radio button if it's a valid value (Yes or No)
+          if (drainUsedValue === "Yes" || drainUsedValue === "No") {
+            setRadioValue("drain-used", drainUsedValue);
+          }
+          // If drainUsedValue is null or undefined, don't set any radio button
 
           // First, add extra rows if needed (beyond the 3 existing rows)
           const maxDrainNumber = Math.max(...drains.map((d) => d.drain_number));
@@ -2058,8 +2144,8 @@
             );
           });
         } else {
-          // If no drains, set to "No"
-          setRadioValue("drain-used", "No");
+          // If no drains exist, don't set any radio button (leave unselected)
+          // This indicates no radio button was originally selected
         }
 
         // Set antibiotic usage - dynamically create rows for all antibiotics
