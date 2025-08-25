@@ -165,11 +165,12 @@ try {
         $deleteStmt->execute([$patientId]);
     }
 
-    $riskStmt = $pdo->prepare("INSERT INTO risk_factors (patient_id, weight, height, steroids, tuberculosis, others) VALUES (?, ?, ?, ?, ?, ?)");
+    $riskStmt = $pdo->prepare("INSERT INTO risk_factors (patient_id, weight, height, sga, steroids, tuberculosis, others) VALUES (?, ?, ?, ?, ?, ?, ?)");
     $riskStmt->execute([
         $patientId,
         $formData['risk_factor_weight'] ?? null,
         $formData['risk_factor_height'] ?? null,
+        $formData['risk_factor_sga'] ?? null,
         $formData['risk_factor_steroids'] ?? null,
         $formData['risk_factor_tuberculosis'] ?? null,
         $formData['risk_factor_others'] ?? null

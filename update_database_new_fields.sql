@@ -32,6 +32,9 @@ CREATE TABLE IF NOT EXISTS infection_prevention_notes (
 ALTER TABLE patients 
 ADD COLUMN signature VARCHAR(255) AFTER date_completed;
 
+-- Add SGA column to risk_factors table
+ALTER TABLE risk_factors ADD COLUMN sga TEXT AFTER height;
+
 -- Update existing records to set default values
 UPDATE wound_complications SET organism_identified_deep = 0 WHERE organism_identified_deep IS NULL;
 

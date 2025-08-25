@@ -500,7 +500,21 @@
             <tr>
               <td class="tg-1wig" style="vertical-align: middle" colspan="4">
                 <label class="flex gap-2 items-center w-full">
-                  <span class="whitespace-nowrap label-bold">c) Steroids:</span>
+                  <span class="whitespace-nowrap label-bold">c) SGA:</span>
+                  <textarea
+                    name="risk_factor_sga"
+                    class="input-overlay input-full"
+                    rows="1"
+                    oninput="autoGrow(this)"
+                    style="min-height: 28px; line-height: 1.2"
+                  ></textarea>
+                </label>
+              </td>
+            </tr>
+            <tr>
+              <td class="tg-1wig" style="vertical-align: middle" colspan="4">
+                <label class="flex gap-2 items-center w-full">
+                  <span class="whitespace-nowrap label-bold">d) Steroids:</span>
                   <textarea
                     name="risk_factor_steroids"
                     class="input-overlay input-full"
@@ -515,7 +529,7 @@
               <td class="tg-1wig" style="vertical-align: middle" colspan="4">
                 <label class="flex gap-2 items-center w-full">
                   <span class="whitespace-nowrap label-bold"
-                    >d) Tuberculosis:</span
+                    >e) Tuberculosis:</span
                   >
                   <textarea
                     name="risk_factor_tuberculosis"
@@ -530,7 +544,7 @@
             <tr>
               <td class="tg-1wig" style="vertical-align: middle" colspan="4">
                 <label class="flex gap-2 items-center w-full">
-                  <span class="whitespace-nowrap label-bold">e) Others:</span>
+                  <span class="whitespace-nowrap label-bold">f) Others:</span>
                   <textarea
                     name="risk_factor_others"
                     class="input-overlay input-full"
@@ -1289,7 +1303,7 @@
           </button>
         </div>
         <div class="section-break"></div>
-        <table class="tg">
+        <table class="tg cultural-swap-section">
           <thead>
             <tr>
               <th class="tg-ty4g" colspan="4">Cultural Swap</th>
@@ -1311,7 +1325,7 @@
         </table>
 
         <div class="section-break"></div>
-        <table class="tg">
+        <table class="tg dressing-finding-section">
           <thead>
             <tr>
               <th class="tg-ty4g" colspan="4">Dressing/Finding</th>
@@ -1666,7 +1680,6 @@
             </tr>
           </tbody>
         </table>
-        <div class="page-break"></div>
         <table class="tg tg-review-phone">
           <thead>
             <tr>
@@ -2101,6 +2114,7 @@
         if (risk_factors) {
           setFormValue("risk_factor_weight", risk_factors.weight);
           setFormValue("risk_factor_height", risk_factors.height);
+          setFormValue("risk_factor_sga", risk_factors.sga);
           setFormValue("risk_factor_steroids", risk_factors.steroids);
           setFormValue("risk_factor_tuberculosis", risk_factors.tuberculosis);
           setFormValue("risk_factor_others", risk_factors.others);
