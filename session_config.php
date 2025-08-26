@@ -70,9 +70,9 @@ if (!$is_admin_context) {
     error_log("Session config: Admin context detected, skipping session configuration");
 }
 
-// 30 minutes timeout for nurse sessions
-define('NURSE_SESSION_TIMEOUT', 1800); // 30 minutes in seconds
-define('SESSION_TIMEOUT', 1800); // 30 minutes for other sessions (increased from 10 minutes)
+// 60 minutes timeout for nurse sessions
+define('NURSE_SESSION_TIMEOUT', 3600); // 60 minutes in seconds
+define('SESSION_TIMEOUT', 3600); // 60 minutes for other sessions
 
 // Function to check and update session activity
 function checkSessionActivity() {

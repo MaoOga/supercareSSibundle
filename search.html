@@ -965,7 +965,7 @@
       // Session management variables
       let sessionCheckInterval;
       let sessionTimeout;
-      const SESSION_TIMEOUT_MINUTES = 30;
+      const SESSION_TIMEOUT_MINUTES = 60;
       const SESSION_CHECK_INTERVAL = 60000; // Check every minute
 
       // Function to check session status
@@ -977,7 +977,7 @@
           if (!data.success || !data.logged_in) {
             // Session expired, redirect to login
             clearSessionTimers();
-            alert("Your session has expired. Please log in again.");
+            // Directly redirect without showing alert
             window.location.href = "login.html?msg=session_expired";
             return false;
           }
@@ -1008,12 +1008,10 @@
           SESSION_CHECK_INTERVAL
         );
 
-        // Set timeout for 30 minutes
+        // Set timeout for 60 minutes
         sessionTimeout = setTimeout(() => {
           clearSessionTimers();
-          alert(
-            "Your session has expired due to inactivity. Please log in again."
-          );
+          // Directly redirect without showing alert
           window.location.href = "login.html?msg=session_expired";
         }, SESSION_TIMEOUT_MINUTES * 60 * 1000);
       }
