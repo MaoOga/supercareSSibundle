@@ -1,0 +1,1359 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Super Admin Dashboard - SSI Bundle</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <style>
+      /* Custom styles for better UI */
+      .glass-effect {
+        background: rgba(255, 255, 255, 0.25);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+      }
+      .loading-spinner {
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #3498db;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .session-warning {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: white;
+        border: 2px solid #f59e0b;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        z-index: 1001;
+        display: none;
+        max-width: 400px;
+        text-align: center;
+      }
+
+      .session-timeout {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: white;
+        border: 2px solid #ef4444;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        z-index: 1001;
+        display: none;
+        max-width: 400px;
+        text-align: center;
+      }
+
+      /* Password toggle button styling */
+      #togglePassword {
+        transition: all 0.2s ease;
+      }
+
+      #togglePassword:hover {
+        color: #dc2626 !important;
+      }
+
+      #togglePassword:focus {
+        outline: none;
+        color: #dc2626;
+      }
+
+      /* Password input with toggle button */
+      .password-input-container {
+        position: relative;
+      }
+
+      .password-input-container input[type="password"],
+      .password-input-container input[type="text"] {
+        padding-right: 2.5rem;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-100 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm border-b">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-14 sm:h-16">
+          <div class="flex items-center">
+            <img
+              src="../assets/supercare-hospital_logo.png"
+              alt="SuperCare Hospital Logo"
+              class="h-8 sm:h-10 w-auto mr-2 sm:mr-3"
+            />
+            <h1 class="text-lg sm:text-xl font-semibold text-gray-800">
+              Super Admin Dashboard
+            </h1>
+          </div>
+          <div class="flex items-center space-x-2 sm:space-x-4">
+            <span class="text-xs sm:text-sm text-gray-600 hidden sm:block"
+              >Welcome, Super Admin</span
+            >
+
+            <button
+              id="superAdminNavLogout"
+              class="bg-red-600 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-md hover:bg-red-700 transition-colors text-xs sm:text-sm"
+            >
+              <i class="fas fa-sign-out-alt mr-1 sm:mr-2"></i>Logout
+            </button>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <div id="sessionWarning" class="session-warning">
+      <i class="fas fa-exclamation-triangle text-3xl text-yellow-500 mb-3"></i>
+      <h3 class="text-lg font-semibold mb-2">Session Expiring Soon</h3>
+      <p class="text-gray-600 mb-4">
+        Your session will expire in
+        <span id="warningTimeLeft">5:00</span> minutes due to inactivity.
+      </p>
+      <button
+        id="extendSessionBtn"
+        class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
+      >
+        <i class="fas fa-refresh mr-1"></i>Extend Session
+      </button>
+    </div>
+
+    <div id="sessionTimeout" class="session-timeout">
+      <i class="fas fa-times-circle text-3xl text-red-500 mb-3"></i>
+      <h3 class="text-lg font-semibold mb-2">Session Expired</h3>
+      <p class="text-gray-600 mb-4">
+        Your session has expired due to inactivity. You will be redirected to
+        the login page.
+      </p>
+      <div class="text-sm text-gray-500">
+        Redirecting in <span id="redirectCountdown">5</span> seconds...
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
+      <!-- Stats Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
+        <div class="bg-red-600 rounded-lg shadow-lg p-4 sm:p-6">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center">
+              <div class="p-2 sm:p-3 rounded-full bg-red-500 text-white">
+                <i class="fas fa-users text-xl sm:text-2xl"></i>
+              </div>
+              <div class="ml-3 sm:ml-4">
+                <p class="text-xs sm:text-sm font-medium text-red-100">
+                  Total Admins
+                </p>
+                <p
+                  class="text-xl sm:text-2xl font-semibold text-white"
+                  id="statAdmins"
+                >
+                  0
+                </p>
+              </div>
+            </div>
+            <button
+              onclick="updateStats()"
+              class="text-red-100 hover:text-white text-sm"
+            >
+              <i class="fas fa-sync-alt"></i>
+            </button>
+          </div>
+        </div>
+        <div class="bg-red-600 rounded-lg shadow-lg p-4 sm:p-6">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center">
+              <div class="p-2 sm:p-3 rounded-full bg-red-500 text-white">
+                <i class="fas fa-user-nurse text-xl sm:text-2xl"></i>
+              </div>
+              <div class="ml-3 sm:ml-4">
+                <p class="text-xs sm:text-sm font-medium text-red-100">
+                  Total Nurses
+                </p>
+                <p
+                  class="text-xl sm:text-2xl font-semibold text-white"
+                  id="statNurses"
+                >
+                  0
+                </p>
+              </div>
+            </div>
+            <button
+              onclick="updateStats()"
+              class="text-red-100 hover:text-white text-sm"
+            >
+              <i class="fas fa-sync-alt"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Backup Management Section -->
+      <div class="bg-white rounded-lg shadow mb-6">
+        <div class="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200">
+          <div class="flex justify-between items-center">
+            <div>
+              <h2 class="text-base sm:text-lg font-medium text-gray-900">
+                Database Backup Management
+              </h2>
+              <p class="text-xs sm:text-sm text-gray-600 mt-1">
+                Create and manage database backups
+              </p>
+            </div>
+            <button
+              onclick="createBackup()"
+              id="createBackupBtn"
+              class="bg-green-600 text-white px-2 sm:px-4 py-1.5 sm:py-2 rounded-md hover:bg-green-700 transition-colors text-xs sm:text-sm"
+            >
+              <i class="fas fa-plus mr-1 sm:mr-2"></i>Create Backup
+            </button>
+          </div>
+        </div>
+
+        <div class="p-4 sm:p-6">
+          <div id="backupFilesContainer">
+            <div class="text-center py-8">
+              <i class="fas fa-spinner fa-spin text-2xl text-gray-400 mb-2"></i>
+              <p class="text-gray-500">Loading backup files...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Admin Management Section -->
+      <div class="bg-white rounded-lg shadow">
+        <div class="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200">
+          <h2 class="text-base sm:text-lg font-medium text-gray-900">
+            Admin Account Management
+          </h2>
+          <p class="text-xs sm:text-sm text-gray-600 mt-1">
+            Create and manage admin accounts
+          </p>
+        </div>
+
+        <!-- Create Admin Form -->
+        <div class="p-4 sm:p-6 border-b border-gray-200">
+          <form
+            id="adminForm"
+            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4"
+          >
+            <div>
+              <label
+                for="adminUsername"
+                class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2"
+                >Username</label
+              >
+              <input
+                type="text"
+                id="adminUsername"
+                name="adminUsername"
+                required
+                class="w-full px-2 sm:px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                placeholder="Enter username"
+              />
+            </div>
+            <div>
+              <label
+                for="adminName"
+                class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2"
+                >Full Name</label
+              >
+              <input
+                type="text"
+                id="adminName"
+                name="adminName"
+                required
+                class="w-full px-2 sm:px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                placeholder="Enter full name"
+              />
+            </div>
+            <div>
+              <label
+                for="adminEmail"
+                class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2"
+                >Email</label
+              >
+              <input
+                type="email"
+                id="adminEmail"
+                name="adminEmail"
+                required
+                class="w-full px-2 sm:px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                placeholder="Enter email"
+                onblur="validateEmailField(this)"
+              />
+              <div id="emailValidation" class="text-xs mt-1 hidden"></div>
+            </div>
+            <div>
+              <label
+                for="adminPassword"
+                class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2"
+                >Password</label
+              >
+              <div class="relative">
+                <input
+                  type="password"
+                  id="adminPassword"
+                  name="adminPassword"
+                  required
+                  class="w-full px-2 sm:px-3 py-2 pr-10 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                  placeholder="Enter password"
+                  onblur="validatePasswordField(this)"
+                />
+                <button
+                  type="button"
+                  id="togglePassword"
+                  class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none"
+                  onclick="togglePasswordVisibility()"
+                  onkeydown="if(event.key === 'Enter' || event.key === ' ') togglePasswordVisibility()"
+                  aria-label="Toggle password visibility"
+                  title="Show password"
+                >
+                  <i id="passwordIcon" class="fas fa-eye"></i>
+                </button>
+              </div>
+              <div id="passwordValidation" class="text-xs mt-1 hidden"></div>
+            </div>
+            <div class="sm:col-span-2 lg:col-span-4">
+              <button
+                type="submit"
+                id="adminSubmit"
+                class="w-full sm:w-auto bg-red-600 text-white px-4 sm:px-6 py-2 sm:py-2 rounded-md hover:bg-red-700 transition-colors text-sm sm:text-base"
+              >
+                <i class="fas fa-plus mr-2"></i>Create Admin Account
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Admins List -->
+        <div class="p-4 sm:p-6">
+          <h3
+            class="text-base sm:text-lg font-medium text-gray-900 mb-3 sm:mb-4"
+          >
+            Existing Admin Accounts
+          </h3>
+
+          <!-- Mobile Cards View -->
+          <div class="block sm:hidden">
+            <div id="adminsMobileCards" class="space-y-3">
+              <!-- Mobile cards will be loaded here -->
+            </div>
+          </div>
+
+          <!-- Desktop Table View -->
+          <div class="hidden sm:block overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th
+                    class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    #
+                  </th>
+                  <th
+                    class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Username
+                  </th>
+                  <th
+                    class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Name
+                  </th>
+                  <th
+                    class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Email
+                  </th>
+                  <th
+                    class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Created
+                  </th>
+                  <th
+                    class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody
+                id="adminsTableBody"
+                class="bg-white divide-y divide-gray-200"
+              >
+                <!-- Admins will be loaded here -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Centered Message Display -->
+    <div
+      id="messageContainer"
+      class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 hidden"
+    >
+      <div
+        id="messageContent"
+        class="p-4 sm:p-6 rounded-lg shadow-xl max-w-xs sm:max-w-md text-center mx-4"
+      ></div>
+    </div>
+
+    <script>
+      // Session timeout variables
+      let sessionTimeout;
+      let warningTimeout;
+      let sessionTimer;
+      let warningTimer;
+      let redirectTimer;
+      const SESSION_DURATION = 30 * 60 * 1000; // 30 minutes in milliseconds
+      const WARNING_TIME = 5 * 60 * 1000; // 5 minutes warning
+      const REDIRECT_DELAY = 5; // 5 seconds to redirect after timeout
+
+      // Session management functions
+      function initializeSessionTimeout() {
+        // Reset timers on any user activity
+        resetSessionTimers();
+
+        // Set up activity listeners
+        document.addEventListener("mousemove", resetSessionTimers);
+        document.addEventListener("keypress", resetSessionTimers);
+        document.addEventListener("click", resetSessionTimers);
+        document.addEventListener("scroll", resetSessionTimers);
+
+        // Start the session timer
+        startSessionTimer();
+      }
+
+      function resetSessionTimers() {
+        // Clear existing timers
+        clearTimeout(sessionTimeout);
+        clearTimeout(warningTimeout);
+        clearInterval(sessionTimer);
+        clearInterval(warningTimer);
+
+        // Hide warning and timeout dialogs
+        document.getElementById("sessionWarning").style.display = "none";
+        document.getElementById("sessionTimeout").style.display = "none";
+
+        // Restart timers
+        startSessionTimer();
+      }
+
+      function startSessionTimer() {
+        const startTime = Date.now();
+        const endTime = startTime + SESSION_DURATION;
+        const warningTime = endTime - WARNING_TIME;
+
+        // Set warning timeout
+        warningTimeout = setTimeout(() => {
+          showSessionWarning();
+        }, SESSION_DURATION - WARNING_TIME);
+
+        // Set session timeout
+        sessionTimeout = setTimeout(() => {
+          handleSessionTimeout();
+        }, SESSION_DURATION);
+      }
+
+      function showSessionWarning() {
+        const warningElement = document.getElementById("sessionWarning");
+        const timeLeftElement = document.getElementById("warningTimeLeft");
+
+        // Update warning time display
+        let warningTimeLeft = WARNING_TIME / 1000 / 60; // Convert to minutes
+        timeLeftElement.textContent = `${warningTimeLeft}:00`;
+
+        warningElement.style.display = "block";
+
+        // Update warning countdown
+        warningTimer = setInterval(() => {
+          warningTimeLeft -= 1 / 60; // Decrease by 1 second
+          if (warningTimeLeft > 0) {
+            const minutes = Math.floor(warningTimeLeft);
+            const seconds = Math.floor((warningTimeLeft - minutes) * 60);
+            timeLeftElement.textContent = `${minutes}:${seconds
+              .toString()
+              .padStart(2, "0")}`;
+          }
+        }, 1000);
+      }
+
+      function handleSessionTimeout() {
+        // Clear all timers
+        clearTimeout(sessionTimeout);
+        clearTimeout(warningTimeout);
+        clearInterval(sessionTimer);
+        clearInterval(warningTimer);
+
+        // Hide warning dialog
+        document.getElementById("sessionWarning").style.display = "none";
+
+        // Show timeout dialog
+        const timeoutElement = document.getElementById("sessionTimeout");
+        const countdownElement = document.getElementById("redirectCountdown");
+        timeoutElement.style.display = "block";
+
+        // Start redirect countdown
+        let countdown = REDIRECT_DELAY;
+        countdownElement.textContent = countdown;
+
+        redirectTimer = setInterval(() => {
+          countdown--;
+          countdownElement.textContent = countdown;
+
+          if (countdown <= 0) {
+            clearInterval(redirectTimer);
+            logout();
+          }
+        }, 1000);
+      }
+
+      function extendSession() {
+        // Call server to extend session
+        fetch("../security/update_session_activity.php", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ action: "extend_session" }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success) {
+              // Hide warning dialog
+              document.getElementById("sessionWarning").style.display = "none";
+              // Reset timers
+              resetSessionTimers();
+              showMessage("Session extended successfully!", "success");
+            } else {
+              showMessage(
+                "Failed to extend session. Please login again.",
+                "error"
+              );
+              setTimeout(() => logout(), 2000);
+            }
+          })
+          .catch((error) => {
+            console.error("Error extending session:", error);
+            showMessage(
+              "Error extending session. Please login again.",
+              "error"
+            );
+            setTimeout(() => logout(), 2000);
+          });
+      }
+
+      // Validation functions
+      function validateEmail(email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+      }
+
+      function validatePassword(password) {
+        // Password must be at least 8 characters with at least one uppercase, one lowercase, one number, and one special character
+        const passwordRegex =
+          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+        return passwordRegex.test(password);
+      }
+
+      function getPasswordValidationMessage(password) {
+        if (password.length < 8) {
+          return "Password must be at least 8 characters long";
+        }
+        if (!/(?=.*[a-z])/.test(password)) {
+          return "Password must contain at least one lowercase letter";
+        }
+        if (!/(?=.*[A-Z])/.test(password)) {
+          return "Password must contain at least one uppercase letter";
+        }
+        if (!/(?=.*\d)/.test(password)) {
+          return "Password must contain at least one number";
+        }
+        if (!/(?=.*[@$!%*?&])/.test(password)) {
+          return "Password must contain at least one special character (@$!%*?&)";
+        }
+        return "Password is valid";
+      }
+
+      // Show message function
+      function showMessage(message, type = "info") {
+        const container = document.getElementById("messageContainer");
+        const content = document.getElementById("messageContent");
+
+        content.innerHTML = `
+           <div class="flex items-center justify-center mb-2 sm:mb-3">
+             <i class="fas ${
+               type === "error"
+                 ? "fa-exclamation-triangle text-red-600"
+                 : type === "success"
+                 ? "fa-check-circle text-green-600"
+                 : "fa-info-circle text-blue-600"
+             } text-xl sm:text-2xl"></i>
+           </div>
+           <p class="text-base sm:text-lg font-medium">${message}</p>
+         `;
+
+        content.className = `p-4 sm:p-6 rounded-lg shadow-xl max-w-xs sm:max-w-md text-center mx-4 ${
+          type === "error"
+            ? "bg-red-50 text-red-700 border-2 border-red-200"
+            : type === "success"
+            ? "bg-green-50 text-green-700 border-2 border-green-200"
+            : "bg-blue-50 text-blue-700 border-2 border-blue-200"
+        }`;
+
+        container.classList.remove("hidden");
+        setTimeout(() => {
+          container.classList.add("hidden");
+        }, 3000);
+      }
+
+      // Render admins function
+      function renderAdmins() {
+        const tbody = document.getElementById("adminsTableBody");
+        const mobileCards = document.getElementById("adminsMobileCards");
+
+        fetch("../admin/get_admins_simple.php")
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success) {
+              if (data.admins && data.admins.length > 0) {
+                // Desktop table view
+                tbody.innerHTML = data.admins
+                  .map(
+                    (admin, idx) => `
+                                 <tr>
+                                     <td class="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900">${
+                                       idx + 1
+                                     }</td>
+                                     <td class="px-3 sm:px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${
+                                       admin.admin_username
+                                     }</td>
+                                     <td class="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900">${
+                                       admin.name || "—"
+                                     }</td>
+                                     <td class="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900">${
+                                       admin.email
+                                     }</td>
+                                     <td class="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500">${
+                                       admin.created_at
+                                         ? new Date(
+                                             admin.created_at
+                                           ).toLocaleDateString()
+                                         : "—"
+                                     }</td>
+                                     <td class="px-3 sm:px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                         <button onclick="deleteAdmin(${
+                                           admin.id
+                                         })" class="text-red-600 hover:text-red-900">
+                                             <i class="fas fa-trash"></i> Delete
+                                         </button>
+                                     </td>
+                                 </tr>
+                             `
+                  )
+                  .join("");
+
+                // Mobile cards view
+                mobileCards.innerHTML = data.admins
+                  .map(
+                    (admin, idx) => `
+                                 <div class="bg-white rounded-lg shadow p-4 border border-gray-200">
+                                   <div class="flex justify-between items-start mb-3">
+                                     <div class="flex items-center">
+                                       <span class="bg-red-100 text-red-600 text-xs font-medium px-2 py-1 rounded-full mr-2">#${
+                                         idx + 1
+                                       }</span>
+                                       <h4 class="font-medium text-gray-900">${
+                                         admin.admin_username
+                                       }</h4>
+                                     </div>
+                                     <button onclick="deleteAdmin(${
+                                       admin.id
+                                     })" class="text-red-600 hover:text-red-900 text-sm">
+                                       <i class="fas fa-trash"></i>
+                                     </button>
+                                   </div>
+                                   <div class="space-y-2 text-sm">
+                                     <div class="flex justify-between">
+                                       <span class="text-gray-500">Name:</span>
+                                       <span class="text-gray-900">${
+                                         admin.name || "—"
+                                       }</span>
+                                     </div>
+                                     <div class="flex justify-between">
+                                       <span class="text-gray-500">Email:</span>
+                                       <span class="text-gray-900 break-all">${
+                                         admin.email
+                                       }</span>
+                                     </div>
+                                     <div class="flex justify-between">
+                                       <span class="text-gray-500">Created:</span>
+                                       <span class="text-gray-900">${
+                                         admin.created_at
+                                           ? new Date(
+                                               admin.created_at
+                                             ).toLocaleDateString()
+                                           : "—"
+                                       }</span>
+                                     </div>
+                                   </div>
+                                 </div>
+                             `
+                  )
+                  .join("");
+              } else {
+                tbody.innerHTML =
+                  '<tr><td colspan="6" class="px-3 sm:px-6 py-4 text-center text-sm text-gray-500">No admin accounts found</td></tr>';
+                mobileCards.innerHTML =
+                  '<div class="text-center text-sm text-gray-500 py-8">No admin accounts found</div>';
+              }
+            } else {
+              tbody.innerHTML = `<tr><td colspan="6" class="px-3 sm:px-6 py-4 text-center text-sm text-red-600">Error loading admins: ${data.message}</td></tr>`;
+              mobileCards.innerHTML = `<div class="text-center text-sm text-red-600 py-8">Error loading admins: ${data.message}</div>`;
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            tbody.innerHTML =
+              '<tr><td colspan="6" class="px-3 sm:px-6 py-4 text-center text-sm text-red-600">Network error occurred</td></tr>';
+            mobileCards.innerHTML =
+              '<div class="text-center text-sm text-red-600 py-8">Network error occurred</div>';
+          });
+      }
+
+      // Handle admin form submission
+      function handleAdminSubmit(e) {
+        e.preventDefault();
+        const form = e.target;
+
+        const username = form.adminUsername.value.trim();
+        const name = form.adminName.value.trim();
+        const email = form.adminEmail.value.trim();
+        const password = form.adminPassword.value;
+
+        // Validation
+        if (!username || !name || !email || !password) {
+          showMessage("All fields are required", "error");
+          return;
+        }
+
+        if (username.length < 3) {
+          showMessage("Username must be at least 3 characters long", "error");
+          return;
+        }
+
+        if (!validateEmail(email)) {
+          showMessage("Please enter a valid email address", "error");
+          return;
+        }
+
+        if (!validatePassword(password)) {
+          showMessage(getPasswordValidationMessage(password), "error");
+          return;
+        }
+
+        const formData = new FormData();
+        formData.append("username", username);
+        formData.append("name", name);
+        formData.append("email", email);
+        formData.append("password", password);
+
+        const submitBtn = document.getElementById("adminSubmit");
+        const originalText = submitBtn.innerText;
+        submitBtn.innerText = "Creating...";
+        submitBtn.disabled = true;
+
+        fetch("../admin/create_admin_simple.php", {
+          method: "POST",
+          body: formData,
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success) {
+              showMessage(data.message, "success");
+              form.reset();
+              // Clear validation messages
+              document.getElementById("emailValidation").textContent = "";
+              document
+                .getElementById("emailValidation")
+                .classList.add("hidden");
+              document.getElementById("passwordValidation").textContent = "";
+              document
+                .getElementById("passwordValidation")
+                .classList.add("hidden");
+              renderAdmins();
+              updateStats();
+            } else {
+              showMessage(data.message, "error");
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            showMessage("Network error occurred", "error");
+          })
+          .finally(() => {
+            submitBtn.innerText = originalText;
+            submitBtn.disabled = false;
+          });
+      }
+
+      // Delete admin
+      function deleteAdmin(id) {
+        showDeleteConfirmPopup(id);
+      }
+
+      // Show delete confirmation popup
+      function showDeleteConfirmPopup(adminId) {
+        const popup = document.getElementById("deleteConfirmPopup");
+        const adminIdInput = document.getElementById("deleteAdminId");
+        adminIdInput.value = adminId;
+        popup.classList.remove("hidden");
+      }
+
+      // Hide delete confirmation popup
+      function hideDeleteConfirmPopup() {
+        const popup = document.getElementById("deleteConfirmPopup");
+        popup.classList.add("hidden");
+      }
+
+      // Confirm delete admin
+      function confirmDeleteAdmin() {
+        const adminId = document.getElementById("deleteAdminId").value;
+        hideDeleteConfirmPopup();
+
+        const formData = new FormData();
+        formData.append("id", adminId);
+
+        fetch("../admin/delete_admin_simple.php", {
+          method: "POST",
+          body: formData,
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success) {
+              showMessage(data.message, "success");
+              renderAdmins();
+              updateStats();
+            } else {
+              showMessage(data.message, "error");
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            showMessage("Network error occurred", "error");
+          });
+      }
+
+      // Update stats
+      function updateStats() {
+        // Show loading state
+        const adminStat = document.getElementById("statAdmins");
+        const nurseStat = document.getElementById("statNurses");
+
+        adminStat.innerText = "Loading...";
+        nurseStat.innerText = "Loading...";
+
+        // Fetch admins count
+        fetch("../admin/get_admins_simple.php")
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success) {
+              adminStat.innerText = data.total_count || 0;
+              console.log("Admins count updated:", data.total_count);
+            } else {
+              console.error("Error loading admins:", data.message);
+              adminStat.innerText = "Error";
+            }
+          })
+          .catch((error) => {
+            console.error("Error loading admins stats:", error);
+            adminStat.innerText = "Error";
+          });
+
+        // Fetch nurses count
+        fetch("../admin/get_nurses_simple.php")
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success) {
+              nurseStat.innerText = data.total_count || 0;
+              console.log("Nurses count updated:", data.total_count);
+            } else {
+              console.error("Error loading nurses:", data.message);
+              nurseStat.innerText = "Error";
+            }
+          })
+          .catch((error) => {
+            console.error("Error loading nurses stats:", error);
+            nurseStat.innerText = "Error";
+          });
+      }
+
+      // Logout function
+      function logout() {
+        // Show custom logout confirmation popup
+        showLogoutConfirmPopup();
+      }
+
+      // Show logout confirmation popup
+      function showLogoutConfirmPopup() {
+        const popup = document.getElementById("logoutConfirmPopup");
+        popup.classList.remove("hidden");
+      }
+
+      // Hide logout confirmation popup
+      function hideLogoutConfirmPopup() {
+        const popup = document.getElementById("logoutConfirmPopup");
+        popup.classList.add("hidden");
+      }
+
+      // Confirm logout
+      function confirmLogout() {
+        hideLogoutConfirmPopup();
+        window.location.href = "../auth/super_admin_logout.php";
+      }
+
+      // Real-time validation functions
+      function validateEmailField(field) {
+        const validationDiv = document.getElementById("emailValidation");
+        const email = field.value.trim();
+
+        if (!email) {
+          validationDiv.textContent = "";
+          validationDiv.classList.add("hidden");
+          return;
+        }
+
+        if (validateEmail(email)) {
+          validationDiv.textContent = "✓ Valid email format";
+          validationDiv.className = "text-xs mt-1 text-green-600";
+          validationDiv.classList.remove("hidden");
+        } else {
+          validationDiv.textContent = "✗ Please enter a valid email address";
+          validationDiv.className = "text-xs mt-1 text-red-600";
+          validationDiv.classList.remove("hidden");
+        }
+      }
+
+      function validatePasswordField(field) {
+        const validationDiv = document.getElementById("passwordValidation");
+        const password = field.value;
+
+        if (!password) {
+          validationDiv.textContent = "";
+          validationDiv.classList.add("hidden");
+          return;
+        }
+
+        if (validatePassword(password)) {
+          validationDiv.textContent = "✓ Password meets all requirements";
+          validationDiv.className = "text-xs mt-1 text-green-600";
+          validationDiv.classList.remove("hidden");
+        } else {
+          validationDiv.textContent = getPasswordValidationMessage(password);
+          validationDiv.className = "text-xs mt-1 text-red-600";
+          validationDiv.classList.remove("hidden");
+        }
+      }
+
+      // Password visibility toggle function
+      function togglePasswordVisibility() {
+        const passwordInput = document.getElementById("adminPassword");
+        const passwordIcon = document.getElementById("passwordIcon");
+        const toggleButton = document.getElementById("togglePassword");
+
+        if (passwordInput.type === "password") {
+          // Show password
+          passwordInput.type = "text";
+          passwordIcon.className = "fas fa-eye-slash";
+          passwordIcon.title = "Hide password";
+          toggleButton.title = "Hide password";
+          toggleButton.setAttribute("aria-label", "Hide password");
+        } else {
+          // Hide password
+          passwordInput.type = "password";
+          passwordIcon.className = "fas fa-eye";
+          passwordIcon.title = "Show password";
+          toggleButton.title = "Show password";
+          toggleButton.setAttribute("aria-label", "Show password");
+        }
+      }
+
+      // Backup management functions
+      function createBackup() {
+        const button = document.getElementById("createBackupBtn");
+        const originalText = button.innerHTML;
+
+        button.innerHTML =
+          '<i class="fas fa-spinner fa-spin mr-1 sm:mr-2"></i>Creating...';
+        button.disabled = true;
+
+        fetch("../backup/backup_system.php?ajax=1")
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success) {
+              showMessage(
+                `Backup created successfully! File: ${data.file}`,
+                "success"
+              );
+              loadBackupFiles();
+            } else {
+              showMessage("Backup failed: " + data.message, "error");
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            showMessage(
+              "An error occurred while creating the backup.",
+              "error"
+            );
+          })
+          .finally(() => {
+            button.innerHTML = originalText;
+            button.disabled = false;
+          });
+      }
+
+      function loadBackupFiles() {
+        fetch("../backup/get_backup_files_simple.php")
+          .then((response) => response.json())
+          .then((data) => {
+            const container = document.getElementById("backupFilesContainer");
+
+            if (data.success) {
+              if (data.files && data.files.length > 0) {
+                // Desktop table view
+                let desktopHtml = `
+                   <div class="hidden sm:block overflow-x-auto">
+                     <table class="min-w-full divide-y divide-gray-200">
+                       <thead class="bg-gray-50">
+                         <tr>
+                           <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">File Name</th>
+                           <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Size</th>
+                           <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
+                           <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                         </tr>
+                       </thead>
+                       <tbody class="bg-white divide-y divide-gray-200">
+                 `;
+
+                data.files.forEach((file) => {
+                  const date = new Date(file.date * 1000);
+                  const formattedDate =
+                    date.toLocaleDateString() + " " + date.toLocaleTimeString();
+
+                  desktopHtml += `
+                     <tr class="hover:bg-gray-50">
+                       <td class="px-3 sm:px-6 py-4 whitespace-nowrap">
+                         <div class="flex items-center">
+                           <i class="fas fa-file-archive text-blue-500 mr-3"></i>
+                           <div>
+                             <div class="text-sm font-medium text-gray-900">${file.name}</div>
+                             <div class="text-sm text-gray-500">Database backup</div>
+                           </div>
+                         </div>
+                       </td>
+                       <td class="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900">${file.size}</td>
+                       <td class="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900">${formattedDate}</td>
+                       <td class="px-3 sm:px-6 py-4 whitespace-nowrap text-sm font-medium">
+                         <div class="flex gap-2">
+                           <button onclick="downloadBackup('${file.name}')" class="text-blue-600 hover:text-blue-900">
+                             <i class="fas fa-download mr-1"></i>Download
+                           </button>
+                           <button onclick="deleteBackup('${file.name}')" class="text-red-600 hover:text-red-900">
+                             <i class="fas fa-trash mr-1"></i>Delete
+                           </button>
+                         </div>
+                       </td>
+                     </tr>
+                   `;
+                });
+
+                desktopHtml += "</tbody></table></div>";
+
+                // Mobile cards view
+                let mobileHtml = '<div class="sm:hidden space-y-4">';
+
+                data.files.forEach((file) => {
+                  const date = new Date(file.date * 1000);
+                  const formattedDate =
+                    date.toLocaleDateString() + " " + date.toLocaleTimeString();
+
+                  mobileHtml += `
+                     <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                       <div class="flex items-start justify-between mb-3">
+                         <div class="flex items-center">
+                           <i class="fas fa-file-archive text-blue-500 mr-3 text-lg"></i>
+                           <div>
+                             <div class="font-medium text-gray-900 text-sm">${file.name}</div>
+                             <div class="text-xs text-gray-500">Database backup</div>
+                           </div>
+                         </div>
+                       </div>
+                       <div class="space-y-2 text-sm">
+                         <div class="flex justify-between">
+                           <span class="text-gray-600">Size:</span>
+                           <span class="font-medium">${file.size}</span>
+                         </div>
+                         <div class="flex justify-between">
+                           <span class="text-gray-600">Created:</span>
+                           <span class="font-medium">${formattedDate}</span>
+                         </div>
+                       </div>
+                       <div class="flex gap-2 mt-4">
+                         <button onclick="downloadBackup('${file.name}')" class="flex-1 bg-blue-500 text-white text-center py-2 px-3 rounded text-sm hover:bg-blue-600 transition-colors">
+                           <i class="fas fa-download mr-1"></i>Download
+                         </button>
+                         <button onclick="deleteBackup('${file.name}')" class="flex-1 bg-red-500 text-white py-2 px-3 rounded text-sm hover:bg-red-600 transition-colors">
+                           <i class="fas fa-trash mr-1"></i>Delete
+                         </button>
+                       </div>
+                     </div>
+                   `;
+                });
+
+                mobileHtml += "</div>";
+
+                container.innerHTML = desktopHtml + mobileHtml;
+              } else {
+                container.innerHTML = `
+                   <div class="text-center py-8">
+                     <i class="fas fa-database text-4xl text-gray-300 mb-4"></i>
+                     <p class="text-gray-500">No backup files found.</p>
+                     <p class="text-sm text-gray-400 mt-2">Create your first backup to get started.</p>
+                   </div>
+                 `;
+              }
+            } else {
+              container.innerHTML = `
+                 <div class="text-center py-8">
+                   <i class="fas fa-exclamation-triangle text-4xl text-red-300 mb-4"></i>
+                   <p class="text-red-500">Error loading backup files: ${data.message}</p>
+                 </div>
+               `;
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            const container = document.getElementById("backupFilesContainer");
+            container.innerHTML = `
+               <div class="text-center py-8">
+                 <i class="fas fa-exclamation-triangle text-4xl text-red-300 mb-4"></i>
+                 <p class="text-red-500">Network error occurred while loading backup files.</p>
+               </div>
+             `;
+          });
+      }
+
+      function downloadBackup(filename) {
+        window.open(
+          `download_backup_simple.php?file=${encodeURIComponent(filename)}`,
+          "_blank"
+        );
+      }
+
+      function deleteBackup(filename) {
+        if (
+          !confirm(
+            "Are you sure you want to delete this backup file? This action cannot be undone."
+          )
+        ) {
+          return;
+        }
+
+        const formData = new FormData();
+        formData.append("filename", filename);
+
+        fetch("../backup/delete_backup_simple.php", {
+          method: "POST",
+          body: formData,
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success) {
+              showMessage("Backup file deleted successfully.", "success");
+              loadBackupFiles();
+            } else {
+              showMessage(
+                "Failed to delete backup file: " + data.message,
+                "error"
+              );
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            showMessage(
+              "Network error occurred while deleting backup file.",
+              "error"
+            );
+          });
+      }
+
+      // Check session status first
+      function checkSessionStatus() {
+        fetch("check_super_admin_session.php")
+          .then((response) => response.json())
+          .then((data) => {
+            console.log("Session status:", data);
+            if (data.success && data.is_super_admin) {
+              // Session is valid, load data
+              renderAdmins();
+              updateStats();
+              loadBackupFiles();
+            } else {
+              // Session is invalid, redirect to login
+              console.error("Invalid session, redirecting to login");
+              console.log("Session data:", data);
+              window.location.href = "../auth/super_admin_login.html";
+            }
+          })
+          .catch((error) => {
+            console.error("Error checking session:", error);
+            // On error, try to load data anyway
+            renderAdmins();
+            updateStats();
+            loadBackupFiles();
+          });
+      }
+
+      // Event listeners
+      document.addEventListener("DOMContentLoaded", () => {
+        document
+          .getElementById("adminForm")
+          .addEventListener("submit", handleAdminSubmit);
+        document
+          .getElementById("superAdminNavLogout")
+          ?.addEventListener("click", logout);
+
+        // Add extend session button event listener
+        document
+          .getElementById("extendSessionBtn")
+          ?.addEventListener("click", extendSession);
+
+        // Check session before loading data
+        checkSessionStatus();
+
+        // Initialize session timeout after session check
+        setTimeout(() => {
+          initializeSessionTimeout();
+        }, 1000);
+      });
+    </script>
+
+    <!-- Delete Confirmation Popup -->
+    <div
+      id="deleteConfirmPopup"
+      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden"
+    >
+      <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+        <div class="p-6">
+          <div class="flex items-center mb-4">
+            <div class="flex-shrink-0">
+              <i class="fas fa-exclamation-triangle text-3xl text-red-500"></i>
+            </div>
+            <div class="ml-3">
+              <h3 class="text-lg font-medium text-gray-900">
+                Delete Admin Account
+              </h3>
+            </div>
+          </div>
+
+          <div class="mb-6">
+            <p class="text-sm text-gray-600">
+              Are you sure you want to delete this admin account? This action
+              cannot be undone and will permanently remove the admin's access to
+              the system.
+            </p>
+          </div>
+
+          <input type="hidden" id="deleteAdminId" value="" />
+
+          <div class="flex justify-end space-x-3">
+            <button
+              type="button"
+              onclick="hideDeleteConfirmPopup()"
+              class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onclick="confirmDeleteAdmin()"
+              class="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
+            >
+              <i class="fas fa-trash mr-2"></i>
+              Delete Account
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Logout Confirmation Popup -->
+    <div
+      id="logoutConfirmPopup"
+      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden"
+    >
+      <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+        <div class="p-6">
+          <div class="flex items-center mb-4">
+            <div class="flex-shrink-0">
+              <i class="fas fa-sign-out-alt text-3xl text-red-500"></i>
+            </div>
+            <div class="ml-3">
+              <h3 class="text-lg font-medium text-gray-900">Confirm Logout</h3>
+            </div>
+          </div>
+
+          <div class="mb-6">
+            <p class="text-sm text-gray-600">
+              Are you sure you want to logout? You will be redirected to the
+              login page.
+            </p>
+          </div>
+
+          <div class="flex justify-end space-x-3">
+            <button
+              type="button"
+              onclick="hideLogoutConfirmPopup()"
+              class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onclick="confirmLogout()"
+              class="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
+            >
+              <i class="fas fa-sign-out-alt mr-2"></i>
+              Logout
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

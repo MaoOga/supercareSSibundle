@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Test Wound Complications</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      .form-group {
+        margin-bottom: 15px;
+      }
+      label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+      }
+      input[type="text"],
+      textarea {
+        width: 300px;
+        padding: 8px;
+        border: 1px solid #ccc;
+      }
+      input[type="checkbox"] {
+        margin-right: 10px;
+      }
+      .checkbox-group {
+        margin: 10px 0;
+      }
+      button {
+        padding: 10px 20px;
+        background: #007bff;
+        color: white;
+        border: none;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #0056b3;
+      }
+      #result {
+        margin-top: 20px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Test Wound Complications Form</h1>
+
+    <form id="woundForm">
+      <div class="form-group">
+        <label>Name:</label>
+        <input type="text" name="name" value="Test Patient" />
+      </div>
+
+      <div class="form-group">
+        <label>Age:</label>
+        <input type="text" name="age" value="30" />
+      </div>
+
+      <div class="form-group">
+        <label>Sex:</label>
+        <input type="text" name="Sex" value="Male" />
+      </div>
+
+      <div class="form-group">
+        <label>UHID:</label>
+        <input type="text" name="uhid" value="WOUNDTEST" />
+      </div>
+
+      <div class="form-group">
+        <label>Phone:</label>
+        <input type="text" name="phone" value="1234567890" />
+      </div>
+
+      <div class="form-group">
+        <label>Bed/Ward:</label>
+        <input type="text" name="bed" value="A1" />
+      </div>
+
+      <div class="form-group">
+        <label>Address:</label>
+        <input type="text" name="address" value="Test Address" />
+      </div>
+
+      <div class="form-group">
+        <label>Diagnosis:</label>
+        <input type="text" name="diagnosis" value="Test Diagnosis" />
+      </div>
+
+      <div class="form-group">
+        <label>Surgical Procedure:</label>
+        <input type="text" name="surgical_procedure" value="Test Procedure" />
+      </div>
+
+      <h2>Wound Complications</h2>
+
+      <div class="form-group">
+        <label>Complication Date:</label>
+        <input
+          type="text"
+          name="Wound-Complication Date"
+          value="15/01/2024"
+          placeholder="dd/mm/yyyy"
+        />
+      </div>
+
+      <div class="checkbox-group">
+        <h3>Non-Infectious Complications:</h3>
+        <label
+          ><input type="checkbox" name="wounddehiscene" value="Yes" /> Wound
+          Dehiscence</label
+        ><br />
+        <label
+          ><input type="checkbox" name="AllergicR" value="Yes" /> Allergic
+          Reaction To Dressing</label
+        ><br />
+        <label
+          ><input type="checkbox" name="BleedingH" value="Yes" /> Bleeding/
+          Haemorrhage</label
+        ><br />
+        <label><input type="checkbox" name="Other" value="Yes" /> Other</label
+        ><br />
+      </div>
+
+      <div class="form-group">
+        <label>Specify Other:</label>
+        <textarea name="WoundD-Specify" rows="2">
+Test other complication</textarea
+        >
+      </div>
+
+      <div class="form-group">
+        <label>Notes:</label>
+        <textarea name="WoundD-Notes" rows="3">
+Test wound complication notes</textarea
+        >
+      </div>
+
+      <div class="checkbox-group">
+        <h3>SSI Types:</h3>
+        <label
+          ><input type="checkbox" name="SuperficialSSI" value="Yes" />
+          Superficial SSI (Skin/Sub-Cutaneous)</label
+        ><br />
+        <label
+          ><input type="checkbox" name="DeepSI" value="Yes" /> Deep SI
+          (Fascia/Muscle)</label
+        ><br />
+        <label
+          ><input type="checkbox" name="OrganSI" value="Yes" /> Organ/Space
+          SSI</label
+        ><br />
+      </div>
+
+      <div class="checkbox-group">
+        <h3>SSI Criteria - Superficial:</h3>
+        <label
+          ><input type="checkbox" name="wtd1-1" value="Yes" /> Presence of
+          purulent discharge from the surgical site</label
+        ><br />
+        <label
+          ><input type="checkbox" name="wtd2-1" value="Yes" /> Identification of
+          an organism from the surgical site</label
+        ><br />
+        <label
+          ><input type="checkbox" name="wtd3-1" value="Yes" /> Clinical
+          diagnosis of a SSI by the surgeon</label
+        ><br />
+        <label
+          ><input type="checkbox" name="wtd4-1" value="Yes" /> Deliberate
+          opening of the wound by the surgeon, and ≥1 infectious symptom</label
+        ><br />
+      </div>
+
+      <div class="checkbox-group">
+        <h3>SSI Criteria - Deep:</h3>
+        <label
+          ><input type="checkbox" name="wtd1-2" value="Yes" /> Purulent
+          discharge from the surgical site</label
+        ><br />
+        <label
+          ><input type="checkbox" name="wtd2-2" value="Yes" /> Identification of
+          an isolated organism from the involved organ, cavity, or related
+          abscess</label
+        ><br />
+        <label
+          ><input type="checkbox" name="wtd3-2" value="Yes" /> Deliberate
+          reopening of a deep incision by the surgeon for suspected
+          infection</label
+        ><br />
+        <label
+          ><input type="checkbox" name="wtd4-2" value="Yes" /> Evidence of
+          abscess formation or infection involving deep tissues as observed on
+          CT</label
+        ><br />
+      </div>
+
+      <div class="checkbox-group">
+        <h3>SSI Criteria - Organ/Space:</h3>
+        <label
+          ><input type="checkbox" name="wtd1-3" value="Yes" /> Purulent
+          discharge from a drain placed in the organ, space, or cavity</label
+        ><br />
+        <label
+          ><input type="checkbox" name="wtd3-3" value="Yes" /> Evidence of
+          abscess or infection involving the organ, cavity, or anatomic space,
+          as observed on CT</label
+        ><br />
+        <label
+          ><input type="checkbox" name="wtd4-3" value="Yes" /> A wound is not
+          considered infected if only a stitch abscess, localized cellulitis, or
+          infected superficial stab puncture is present</label
+        ><br />
+      </div>
+
+      <div class="form-group">
+        <label>Surgeon's Opinion (Superficial):</label>
+        <textarea name="SurgeonOpinion1" rows="2">
+Test surgeon opinion for superficial</textarea
+        >
+      </div>
+
+      <div class="form-group">
+        <label>Surgeon's Opinion (Deep):</label>
+        <textarea name="SurgeonOpinion2" rows="2">
+Test surgeon opinion for deep</textarea
+        >
+      </div>
+
+      <div class="form-group">
+        <label>Surgeon's Opinion (Organ/Space):</label>
+        <textarea name="SurgeonOpinion3" rows="2">
+Test surgeon opinion for organ/space</textarea
+        >
+      </div>
+
+      <button type="submit">Test Wound Complications Submission</button>
+    </form>
+
+    <div id="result"></div>
+
+    <script>
+      document
+        .getElementById("woundForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+          const formData = new FormData(this);
+          const resultDiv = document.getElementById("result");
+
+          fetch("../tests/test_wound_complications.php", {
+            method: "POST",
+            body: formData,
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              resultDiv.style.display = "block";
+              resultDiv.innerHTML =
+                "<h3>Response:</h3><pre>" +
+                JSON.stringify(data, null, 2) +
+                "</pre>";
+            })
+            .catch((error) => {
+              resultDiv.style.display = "block";
+              resultDiv.innerHTML =
+                "<h3>Error:</h3><pre>" + error.message + "</pre>";
+            });
+        });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Search - SSI Nurse Panel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+    />
+    <style>
+      :root {
+        --bg-body: #f3f4f6;
+        --bg-header: #ffffff;
+        --bg-card: #ffffff;
+        --bg-table-header: #ecfdf5;
+        --text-primary: #111827;
+        --text-secondary: #6b7280;
+        --text-icon: rgb(26, 175, 81);
+        --border-primary: #86efac;
+        --border-secondary: #e5e7eb;
+        --button-bg: rgb(26, 175, 81);
+        --button-bg-hover: rgb(22, 163, 74);
+        --button-text: #ffffff;
+        --link-text: rgb(26, 175, 81);
+        --link-text-hover: rgb(22, 163, 74);
+        --table-row-hover: #f9fafb;
+      }
+
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: var(--bg-body);
+        color: var(--text-primary);
+        overflow-x: hidden;
+      }
+
+      .table-container {
+        max-height: 65vh;
+        overflow-y: auto;
+      }
+
+      .table-row {
+        transition: all 0.2s ease;
+      }
+
+      .table-row:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        background-color: var(--table-row-hover);
+      }
+
+      .complication-badge {
+        background-color: #fef2f2;
+        color: #dc2626;
+      }
+
+      .action-button {
+        transition: all 0.3s ease;
+      }
+
+      .action-button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+      }
+
+      /* Mobile table container layout */
+      @media (max-width: 640px) {
+        .search-table {
+          display: block;
+          overflow-x: hidden;
+          white-space: normal;
+          width: 100%;
+        }
+
+        .search-table thead {
+          display: none;
+        }
+
+        .search-table tbody,
+        .search-table tr {
+          display: block;
+          white-space: normal;
+        }
+
+        .search-table tr {
+          margin-bottom: 1rem;
+          border: 1px solid var(--border-secondary);
+          border-radius: 0.75rem;
+          padding: 1rem;
+          background: var(--bg-card);
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-table td {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 0.5rem 0;
+          border: none;
+          min-width: 0;
+          word-break: break-word;
+          overflow-wrap: anywhere;
+        }
+
+        .search-table td:before {
+          content: attr(data-label);
+          font-weight: 600;
+          color: var(--text-icon);
+          width: 40%;
+          flex-shrink: 0;
+        }
+
+        .search-table .action-button {
+          width: 100%;
+          max-width: 200px;
+          justify-content: center;
+          margin-top: 0.5rem;
+          margin-left: auto;
+          margin-right: auto;
+          border-radius: 0.25rem;
+          padding: 0.5rem 1rem;
+          font-size: 0.875rem;
+        }
+
+        .search-table .status-badges {
+          flex-direction: column;
+          gap: 0.25rem;
+        }
+      }
+
+      /* Mobile header consistency */
+      @media (max-width: 640px) {
+        header .max-w-7xl {
+          padding-top: 0.75rem !important;
+          padding-bottom: 0.75rem !important;
+        }
+        header img[alt="Hospital Logo"] {
+          height: 56px !important;
+          width: 56px !important;
+        }
+        header h1 {
+          font-size: 1.125rem !important;
+          line-height: 1.5 !important;
+        }
+        header p {
+          font-size: 0.875rem !important;
+        }
+      }
+
+      /* Mobile bottom nav improvements */
+      .mobile-bottom-nav {
+        -webkit-tap-highlight-color: transparent;
+        backdrop-filter: blur(4px);
+        z-index: 1000;
+      }
+      .mobile-bottom-nav .nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 10px 6px;
+        color: var(--text-primary);
+        text-decoration: none;
+        user-select: none;
+        -webkit-user-select: none;
+        transition: all 0.2s ease;
+        width: 100%;
+        text-align: center;
+      }
+      .mobile-bottom-nav .nav-item:hover {
+        color: var(--button-bg);
+        transform: translateY(-1px);
+      }
+      .mobile-bottom-nav .nav-item i {
+        font-size: 18px;
+        line-height: 1;
+      }
+      .mobile-bottom-nav .nav-item span {
+        font-size: 11px;
+        line-height: 1;
+        margin-top: 2px;
+        font-weight: 500;
+      }
+
+      /* Ensure mobile nav is always visible */
+      @media (max-width: 640px) {
+        .mobile-bottom-nav {
+          display: flex !important;
+          position: fixed !important;
+          bottom: 0 !important;
+          left: 0 !important;
+          right: 0 !important;
+          background-color: var(--bg-card) !important;
+          border-top: 1px solid var(--border-secondary) !important;
+          box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1) !important;
+        }
+        .mobile-bottom-nav .grid {
+          width: 100%;
+          height: 100%;
+        }
+        .mobile-bottom-nav .nav-item {
+          justify-self: center;
+          align-self: center;
+        }
+      }
+
+      .mobile-bottom-nav .nav-item.is-active {
+        color: var(--button-bg);
+      }
+      .mobile-bottom-nav .nav-item:active {
+        transform: translateY(1px);
+      }
+
+      /* Mobile visual refinements */
+      @media (max-width: 640px) {
+        header .max-w-7xl {
+          padding-top: 0.75rem !important;
+          padding-bottom: 0.75rem !important;
+        }
+        header img[alt="Hospital Logo"] {
+          height: 56px !important;
+          width: 56px !important;
+        }
+
+        header h1 {
+          font-size: 1.125rem !important;
+          line-height: 1.5 !important;
+        }
+        header p {
+          font-size: 0.875rem !important;
+        }
+
+        /* Mobile nurse ID display refinements */
+        #mobileNurseIdDisplay {
+          font-size: 0.75rem !important;
+          padding: 0.25rem 0.5rem !important;
+        }
+        #mobileNurseIdDisplay i {
+          font-size: 0.75rem !important;
+        }
+        #mobileNurseIdDisplay span {
+          font-size: 0.75rem !important;
+        }
+
+        /* Hide desktop nurse ID on mobile */
+        #nurseIdDisplay {
+          display: none !important;
+        }
+      }
+
+      /* Custom Logout Popup Styles */
+      .logout-popup-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+      }
+
+      .logout-popup-overlay.show {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .logout-popup {
+        background-color: var(--bg-card);
+        border-radius: 12px;
+        padding: 2rem;
+        max-width: 400px;
+        width: 90%;
+        text-align: center;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+          0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        transform: scale(0.9);
+        transition: transform 0.3s ease;
+      }
+
+      .logout-popup.show {
+        transform: scale(1);
+      }
+
+      .logout-popup-icon {
+        font-size: 3rem;
+        color: #ef4444;
+        margin-bottom: 1rem;
+      }
+
+      .logout-popup-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: var(--text-primary);
+      }
+
+      .logout-popup-message {
+        color: var(--text-secondary);
+        margin-bottom: 1.5rem;
+        line-height: 1.5;
+      }
+
+      .logout-popup-buttons {
+        display: flex;
+        gap: 0.75rem;
+        justify-content: center;
+      }
+
+      .logout-popup-btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        cursor: pointer;
+        border: none;
+        min-width: 100px;
+      }
+
+      .logout-popup-btn-cancel {
+        background-color: #e5e7eb;
+        color: #374151;
+      }
+
+      .logout-popup-btn-cancel:hover {
+        background-color: #d1d5db;
+      }
+
+      .logout-popup-btn-confirm {
+        background-color: #ef4444;
+        color: white;
+      }
+
+      .logout-popup-btn-confirm:hover {
+        background-color: #dc2626;
+      }
+    </style>
+  </head>
+  <body>
+    <header
+      class="shadow-lg sticky top-0 z-20 border-b"
+      style="background-color: var(--bg-header); border-color: var(--button-bg)"
+    >
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <img
+              src="../assets/supercare-hospital_logo.png"
+              alt="Hospital Logo"
+              style="height: 56px; width: 56px"
+            />
+            <div>
+              <h1 class="text-xl font-bold">Search Patients</h1>
+              <p class="text-sm" style="color: var(--text-secondary)">
+                Find and edit patient records
+              </p>
+            </div>
+          </div>
+
+          <!-- Mobile Nurse ID Display (Top Right) -->
+          <div class="sm:hidden flex items-center">
+            <div
+              class="flex items-center gap-1 px-1.5 py-0.5 rounded border text-xs"
+              style="
+                border-color: var(--border-primary);
+                background-color: var(--bg-card);
+                color: var(--text-secondary);
+              "
+              id="mobileNurseIdDisplay"
+            >
+              <i
+                class="fas fa-user-nurse text-xs"
+                style="color: var(--text-icon)"
+              ></i>
+              <span class="font-medium text-xs">ID:</span>
+              <span class="font-bold text-xs" id="mobileNurseIdValue"
+                >Loading...</span
+              >
+            </div>
+          </div>
+
+          <!-- Nurse ID Display and Logout Button -->
+          <div class="hidden sm:flex items-center gap-3">
+            <div
+              class="flex items-center gap-2 px-3 py-2 rounded-lg border text-sm"
+              style="
+                border-color: var(--border-primary);
+                background-color: var(--bg-card);
+                color: var(--text-secondary);
+              "
+              id="nurseIdDisplay"
+            >
+              <i
+                class="fas fa-user-nurse text-xs"
+                style="color: var(--text-icon)"
+              ></i>
+              <span class="font-medium">Nurse ID:</span>
+              <span class="font-bold" id="nurseIdValue">Loading...</span>
+            </div>
+
+            <button
+              id="logoutBtn"
+              class="px-3 py-2 rounded-lg flex items-center justify-center gap-2 text-sm border hover:bg-gray-50 transition-all duration-300"
+              style="
+                border-color: var(--border-secondary);
+                color: var(--text-primary);
+              "
+            >
+              <i class="fas fa-sign-out-alt"></i>
+              <span>Logout</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-32 sm:pb-6">
+      <!-- Search Form -->
+      <div
+        class="rounded-xl shadow-lg p-6 border mb-6"
+        style="
+          background-color: var(--bg-card);
+          border-color: var(--border-secondary);
+        "
+      >
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-end">
+          <div class="lg:col-span-5">
+            <label
+              class="block text-sm font-medium mb-1"
+              style="color: var(--text-secondary)"
+              >Search</label
+            >
+            <div class="relative">
+              <input
+                id="query"
+                type="text"
+                placeholder="UHID, Name, or Surgeon"
+                class="w-full p-3 pl-10 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+                style="border-color: var(--border-secondary)"
+              />
+              <i
+                class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+              ></i>
+            </div>
+          </div>
+          <div class="lg:col-span-2">
+            <label
+              class="block text-sm font-medium mb-1"
+              style="color: var(--text-secondary)"
+              >Status</label
+            >
+            <select
+              id="status"
+              class="w-full p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+              style="border-color: var(--border-secondary)"
+            >
+              <option value="all">All Patients</option>
+              <option value="complications">With Complications</option>
+              <option value="no-complications">No Complications</option>
+              <option value="pending-review">Pending Review</option>
+              <option value="completed-review">Completed Review</option>
+            </select>
+          </div>
+          <div class="lg:col-span-5">
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label
+                  class="block text-sm font-medium mb-1"
+                  style="color: var(--text-secondary)"
+                  >From Date</label
+                >
+                <input
+                  id="startDate"
+                  type="date"
+                  class="w-full p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+                  style="border-color: var(--border-secondary)"
+                />
+              </div>
+              <div>
+                <label
+                  class="block text-sm font-medium mb-1"
+                  style="color: var(--text-secondary)"
+                  >To Date</label
+                >
+                <input
+                  id="endDate"
+                  type="date"
+                  class="w-full p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+                  style="border-color: var(--border-secondary)"
+                />
+              </div>
+            </div>
+          </div>
+          <div class="lg:col-span-12 flex gap-2 lg:justify-end">
+            <button
+              id="runSearch"
+              class="px-6 py-3 rounded-lg text-white font-medium"
+              style="background-color: var(--button-bg)"
+            >
+              <i class="fas fa-search mr-2"></i>Search
+            </button>
+            <button
+              id="clear"
+              class="px-6 py-3 rounded-lg font-medium"
+              style="background-color: #e5e7eb; color: #374151"
+            >
+              <i class="fas fa-times mr-2"></i>Clear
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Results Section -->
+      <div
+        id="results"
+        class="rounded-xl shadow-lg border"
+        style="
+          background-color: var(--bg-card);
+          border-color: var(--border-secondary);
+        "
+      >
+        <!-- Loading State -->
+        <div id="loadingState" class="hidden p-8 text-center">
+          <div
+            class="inline-block animate-spin rounded-full h-8 w-8 border-b-2"
+            style="border-color: var(--button-bg)"
+          ></div>
+          <p class="mt-2 text-sm" style="color: var(--text-secondary)">
+            Searching...
+          </p>
+        </div>
+
+        <!-- No Results State -->
+        <div id="noResultsState" class="hidden p-8 text-center">
+          <i
+            class="fas fa-search text-4xl mb-4"
+            style="color: var(--text-secondary)"
+          ></i>
+          <p class="text-lg font-medium mb-2">No results found</p>
+          <p class="text-sm" style="color: var(--text-secondary)">
+            Try adjusting your search criteria
+          </p>
+        </div>
+
+        <!-- Results Table -->
+        <div id="resultsTable" class="hidden">
+          <div
+            class="p-6 border-b"
+            style="border-color: var(--border-secondary)"
+          >
+            <div class="flex justify-between items-center">
+              <h2 class="text-lg font-semibold">Search Results</h2>
+              <span
+                id="resultCount"
+                class="text-sm"
+                style="color: var(--text-secondary)"
+              ></span>
+            </div>
+          </div>
+
+          <div class="table-container">
+            <table class="w-full search-table">
+              <thead
+                class="sticky top-0"
+                style="background-color: var(--bg-table-header)"
+              >
+                <tr
+                  class="border-b"
+                  style="border-color: var(--border-secondary)"
+                >
+                  <th class="p-3 sm:p-4 text-left font-semibold text-sm">
+                    UHID
+                  </th>
+                  <th class="p-3 sm:p-4 text-left font-semibold text-sm">
+                    Name
+                  </th>
+                  <th class="p-3 sm:p-4 text-left font-semibold text-sm">
+                    Age/Sex
+                  </th>
+                  <th class="p-3 sm:p-4 text-left font-semibold text-sm">
+                    Ward
+                  </th>
+                  <th class="p-3 sm:p-4 text-left font-semibold text-sm">
+                    Surgeon
+                  </th>
+                  <th class="p-3 sm:p-4 text-left font-semibold text-sm">
+                    Surgery Date
+                  </th>
+                  <th class="p-3 sm:p-4 text-left font-semibold text-sm">
+                    Status
+                  </th>
+                  <th class="p-3 sm:p-4 text-center font-semibold text-sm">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody id="tableBody">
+                <!-- Results will be populated here -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      // DOM Elements
+      const runBtn = document.getElementById("runSearch");
+      const clearBtn = document.getElementById("clear");
+      const query = document.getElementById("query");
+      const status = document.getElementById("status");
+      const startDate = document.getElementById("startDate");
+      const endDate = document.getElementById("endDate");
+      const results = document.getElementById("results");
+      const loadingState = document.getElementById("loadingState");
+      const noResultsState = document.getElementById("noResultsState");
+      const resultsTable = document.getElementById("resultsTable");
+      const tableBody = document.getElementById("tableBody");
+      const resultCount = document.getElementById("resultCount");
+
+      // Search functionality
+      async function performSearch() {
+        console.log("Performing search...");
+        const searchQuery = query.value.trim();
+        const statusFilter = status.value;
+        const startDateValue = startDate.value;
+        const endDateValue = endDate.value;
+
+        console.log("Search parameters:", {
+          searchQuery,
+          statusFilter,
+          startDateValue,
+          endDateValue,
+        });
+
+        // Check if any search criteria are provided
+        const hasSearchCriteria =
+          searchQuery ||
+          statusFilter !== "all" ||
+          startDateValue ||
+          endDateValue;
+
+        if (!hasSearchCriteria) {
+          // No search criteria provided, show initial state
+          showInitialState();
+          return;
+        }
+
+        // Show loading state
+        loadingState.classList.remove("hidden");
+        noResultsState.classList.add("hidden");
+        resultsTable.classList.add("hidden");
+
+        // Add 2-second delay for loading animation
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+
+        try {
+          // Build query parameters
+          const params = new URLSearchParams();
+          if (searchQuery) params.append("query", searchQuery);
+          if (statusFilter !== "all") params.append("status", statusFilter);
+          if (startDateValue) params.append("startDate", startDateValue);
+          if (endDateValue) params.append("endDate", endDateValue);
+
+          // Fetch search results
+          const response = await fetch(
+            `search_patients.php?${params.toString()}`
+          );
+          const data = await response.json();
+
+          // Debug: Log the response
+          console.log("Search response:", data);
+
+          // Hide loading state
+          loadingState.classList.add("hidden");
+
+          if (data.success) {
+            displayResults(data.patients);
+          } else {
+            showError(data.message || "Search failed");
+          }
+        } catch (error) {
+          console.error("Search error:", error);
+          loadingState.classList.add("hidden");
+          showError("Network error occurred. Please try again.");
+        }
+      }
+
+      // Display search results
+      function displayResults(patients) {
+        console.log("Displaying results for patients:", patients);
+
+        if (patients.length === 0) {
+          console.log("No patients found, showing no results state");
+          showNoResultsState();
+          return;
+        }
+
+        // Update result count
+        resultCount.textContent = `${patients.length} patient${
+          patients.length !== 1 ? "s" : ""
+        } found`;
+
+        // Clear existing table content
+        tableBody.innerHTML = "";
+
+        // Populate table with results
+        patients.forEach((patient) => {
+          const ageSex = `${patient.age || "N/A"}/${patient.sex || "N/A"}`;
+          const complications = patient.has_complications ? "Yes" : "No";
+          const reviewStatus = patient.review_status;
+
+          const row = document.createElement("tr");
+          row.className = "table-row border-b";
+          row.style.cssText =
+            "background-color: var(--bg-card); border-color: var(--border-secondary);";
+          row.dataset.uhid = patient.uhid;
+          row.dataset.name = patient.name;
+          row.dataset.surgeon = patient.surgeon;
+          row.dataset.dos = patient.dos;
+          row.dataset.complications = complications;
+          row.dataset.review = reviewStatus;
+
+          // Determine status badges
+          let statusBadges = "";
+          if (patient.has_complications) {
+            statusBadges += `
+            <span class="complication-badge px-2 py-1 rounded-full text-xs font-semibold">
+              <i class="fas fa-exclamation-triangle mr-1"></i>Complications
+            </span>
+          `;
+          }
+
+          if (reviewStatus === "Completed") {
+            statusBadges += `
+            <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-semibold">Completed</span>
+          `;
+          } else if (reviewStatus === "In Progress") {
+            statusBadges += `
+            <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-semibold">In Progress</span>
+          `;
+          } else {
+            statusBadges += `
+            <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-semibold">Pending</span>
+          `;
+          }
+
+          row.innerHTML = `
+          <td class="p-3 sm:p-4" data-label="UHID">
+            <span class="font-medium">${patient.uhid || "N/A"}</span>
+          </td>
+          <td class="p-3 sm:p-4" data-label="Name">
+            <span class="font-medium">${patient.name || "N/A"}</span>
+          </td>
+          <td class="p-3 sm:p-4" data-label="Age/Sex">${ageSex}</td>
+          <td class="p-3 sm:p-4" data-label="Ward">${patient.ward || "N/A"}</td>
+          <td class="p-3 sm:p-4" data-label="Surgeon">${
+            patient.surgeon || "N/A"
+          }</td>
+          <td class="p-3 sm:p-4" data-label="Surgery Date">${
+            patient.dos || "N/A"
+          }</td>
+          <td class="p-3 sm:p-4" data-label="Status">
+            <div class="flex flex-col gap-1 sm:gap-2 status-badges">
+              ${statusBadges}
+            </div>
+          </td>
+          <td class="p-3 sm:p-4">
+            <div class="flex justify-center">
+              <a href="form.php?patient_id=${
+                patient.patient_id
+              }" target="_blank" rel="noopener noreferrer"
+                 class="action-button w-full max-w-[200px] mx-auto sm:mx-0 text-white px-3 sm:px-4 py-2 rounded-lg flex items-center justify-center gap-2 transition-all duration-300 text-sm hover:bg-[var(--button-bg-hover)]"
+                 style="background-color: var(--button-bg)">
+                <i class="fas fa-edit"></i>
+                <span>View/Edit</span>
+              </a>
+            </div>
+          </td>
+        `;
+
+          tableBody.appendChild(row);
+        });
+
+        // Show results table
+        resultsTable.classList.remove("hidden");
+      }
+
+      // Show error message
+      function showError(message) {
+        noResultsState.classList.remove("hidden");
+        noResultsState.innerHTML = `
+         <i class="fas fa-exclamation-triangle text-4xl mb-4 text-red-500"></i>
+         <p class="text-lg font-medium mb-2 text-red-600">Error</p>
+         <p class="text-sm text-red-500">${message}</p>
+       `;
+      }
+
+      // Show no results state when search returns empty
+      function showNoResultsState() {
+        const searchQuery = query.value.trim();
+        const statusFilter = status.value;
+        const startDateValue = startDate.value;
+        const endDateValue = endDate.value;
+
+        // Reset display states
+        loadingState.classList.add("hidden");
+        resultsTable.classList.add("hidden");
+        noResultsState.classList.remove("hidden");
+
+        // Create a more informative message based on search criteria
+        let searchCriteria = [];
+        if (searchQuery) searchCriteria.push(`"${searchQuery}"`);
+        if (statusFilter !== "all") {
+          const statusText = status.options[status.selectedIndex].text;
+          searchCriteria.push(statusText);
+        }
+        if (startDateValue || endDateValue) {
+          const dateRange = [];
+          if (startDateValue) dateRange.push(startDateValue);
+          if (endDateValue) dateRange.push(endDateValue);
+          searchCriteria.push(`Date: ${dateRange.join(" to ")}`);
+        }
+
+        const criteriaText =
+          searchCriteria.length > 0
+            ? searchCriteria.join(", ")
+            : "your search criteria";
+
+        noResultsState.innerHTML = `
+         <i class="fas fa-search text-4xl mb-4" style="color: var(--text-secondary);"></i>
+         <p class="text-lg font-medium mb-2">No patients found</p>
+         <p class="text-sm mb-4" style="color: var(--text-secondary);">
+           No patient records match ${criteriaText}
+         </p>
+         <div class="text-xs" style="color: var(--text-secondary);">
+           <p class="mb-2"><strong>Try:</strong></p>
+           <ul class="list-disc list-inside space-y-1">
+             <li>Check spelling of UHID, name, or surgeon</li>
+             <li>Use partial names or UHID numbers</li>
+             <li>Adjust date range or status filters</li>
+             <li>Clear filters and try a broader search</li>
+           </ul>
+         </div>
+       `;
+      }
+
+      // Show initial state when no search criteria are provided
+      function showInitialState() {
+        // Reset display states
+        loadingState.classList.add("hidden");
+        noResultsState.classList.add("hidden");
+        resultsTable.classList.add("hidden");
+
+        // Show initial state
+        noResultsState.classList.remove("hidden");
+        noResultsState.innerHTML = `
+         <i class="fas fa-search text-4xl mb-4" style="color: var(--text-secondary);"></i>
+         <p class="text-lg font-medium mb-2">Search for patients</p>
+         <p class="text-sm" style="color: var(--text-secondary);">Enter UHID, Name, or Surgeon to find patient records</p>
+       `;
+      }
+
+      // Clear search form
+      function clearSearch() {
+        query.value = "";
+        status.value = "all";
+        startDate.value = "";
+        endDate.value = "";
+
+        // Show initial state
+        showInitialState();
+      }
+
+      // Event listeners
+      runBtn.addEventListener("click", function () {
+        console.log("Search button clicked");
+        performSearch();
+      });
+      clearBtn.addEventListener("click", clearSearch);
+
+      // Allow search on Enter key
+      query.addEventListener("keypress", function (e) {
+        if (e.key === "Enter") {
+          performSearch();
+        }
+      });
+
+      // Initialize page
+      document.addEventListener("DOMContentLoaded", function () {
+        showInitialState();
+      });
+    </script>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav
+      id="mobileNav"
+      class="mobile-bottom-nav sm:hidden fixed bottom-0 left-0 right-0 border-t shadow-lg z-30"
+      style="
+        background-color: var(--bg-card);
+        border-color: var(--border-secondary);
+        padding-bottom: max(env(safe-area-inset-bottom), 8px);
+      "
+    >
+      <div class="grid grid-cols-4 items-stretch justify-items-center">
+        <a href="../pages/index.php" class="nav-item">
+          <i class="fas fa-home"></i>
+          <span>Home</span>
+        </a>
+        <button class="nav-item is-active">
+          <i class="fas fa-search"></i>
+          <span>Search</span>
+        </button>
+        <a
+          href="form.php"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="nav-item"
+        >
+          <i class="fas fa-plus-circle"></i>
+          <span>New</span>
+        </a>
+        <button class="nav-item">
+          <i class="fas fa-sign-out-alt"></i>
+          <span>Logout</span>
+        </button>
+      </div>
+    </nav>
+
+    <!-- Custom Logout Popup -->
+    <div id="logoutPopup" class="logout-popup-overlay">
+      <div class="logout-popup">
+        <div class="logout-popup-icon">
+          <i class="fas fa-sign-out-alt"></i>
+        </div>
+        <div class="logout-popup-title">Confirm Logout</div>
+        <div class="logout-popup-message">
+          Are you sure you want to logout? You will be redirected to the login
+          page.
+        </div>
+        <div class="logout-popup-buttons">
+          <button
+            class="logout-popup-btn logout-popup-btn-cancel"
+            onclick="hideLogoutPopup()"
+          >
+            Cancel
+          </button>
+          <button
+            class="logout-popup-btn logout-popup-btn-confirm"
+            onclick="performLogout()"
+          >
+            Logout
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Session management variables
+      let sessionCheckInterval;
+      let sessionTimeout;
+      const SESSION_TIMEOUT_MINUTES = 60;
+      const SESSION_CHECK_INTERVAL = 60000; // Check every minute
+
+      // Function to check session status
+      async function checkSessionStatus() {
+        try {
+          const response = await fetch("../security/check_nurse_session.php");
+          const data = await response.json();
+
+          if (!data.success || !data.logged_in) {
+            // Session expired, redirect to login
+            clearSessionTimers();
+            // Directly redirect without showing alert
+            window.location.href = "../auth/login.html?msg=session_expired";
+            return false;
+          }
+
+          // Update session activity
+          updateSessionActivity();
+          return true;
+        } catch (error) {
+          console.error("Session check failed:", error);
+          return false;
+        }
+      }
+
+      // Function to update session activity
+      async function updateSessionActivity() {
+        try {
+          await fetch("../security/update_session_activity.php");
+        } catch (error) {
+          console.error("Failed to update session activity:", error);
+        }
+      }
+
+      // Function to start session timers
+      function startSessionTimers() {
+        // Check session every minute
+        sessionCheckInterval = setInterval(
+          checkSessionStatus,
+          SESSION_CHECK_INTERVAL
+        );
+
+        // Set timeout for 60 minutes
+        sessionTimeout = setTimeout(() => {
+          clearSessionTimers();
+          // Directly redirect without showing alert
+          window.location.href = "../auth/login.html?msg=session_expired";
+        }, SESSION_TIMEOUT_MINUTES * 60 * 1000);
+      }
+
+      // Function to clear session timers
+      function clearSessionTimers() {
+        if (sessionCheckInterval) {
+          clearInterval(sessionCheckInterval);
+        }
+        if (sessionTimeout) {
+          clearTimeout(sessionTimeout);
+        }
+      }
+
+      // Function to reset session timeout on user activity
+      function resetSessionTimeout() {
+        clearSessionTimers();
+        startSessionTimers();
+      }
+
+      // Function to load and display nurse ID
+      function loadNurseInfo() {
+        try {
+          // Get nurse info from session storage
+          const nurseInfo = sessionStorage.getItem("nurseInfo");
+          if (nurseInfo) {
+            const nurse = JSON.parse(nurseInfo);
+
+            // Desktop nurse ID display
+            const nurseIdValue = document.getElementById("nurseIdValue");
+            const nurseIdDisplay = document.getElementById("nurseIdDisplay");
+
+            // Mobile nurse ID display
+            const mobileNurseIdValue =
+              document.getElementById("mobileNurseIdValue");
+            const mobileNurseIdDisplay = document.getElementById(
+              "mobileNurseIdDisplay"
+            );
+
+            if (nurseIdValue && nurseIdDisplay) {
+              // Display nurse ID on desktop
+              nurseIdValue.textContent = nurse.nurse_id || "Unknown";
+              nurseIdDisplay.style.display = "flex";
+            }
+
+            if (mobileNurseIdValue && mobileNurseIdDisplay) {
+              // Display nurse ID on mobile
+              mobileNurseIdValue.textContent = nurse.nurse_id || "Unknown";
+              mobileNurseIdDisplay.style.display = "flex";
+            }
+
+            console.log("Nurse ID displayed:", nurse.nurse_id);
+          } else {
+            console.log("No nurse info found in session storage");
+            // Hide the nurse ID displays if no info available
+            const nurseIdDisplay = document.getElementById("nurseIdDisplay");
+            const mobileNurseIdDisplay = document.getElementById(
+              "mobileNurseIdDisplay"
+            );
+
+            if (nurseIdDisplay) {
+              nurseIdDisplay.style.display = "none";
+            }
+            if (mobileNurseIdDisplay) {
+              mobileNurseIdDisplay.style.display = "none";
+            }
+          }
+        } catch (error) {
+          console.error("Error loading nurse info:", error);
+          // Hide the nurse ID displays on error
+          const nurseIdDisplay = document.getElementById("nurseIdDisplay");
+          const mobileNurseIdDisplay = document.getElementById(
+            "mobileNurseIdDisplay"
+          );
+
+          if (nurseIdDisplay) {
+            nurseIdDisplay.style.display = "none";
+          }
+          if (mobileNurseIdDisplay) {
+            mobileNurseIdDisplay.style.display = "none";
+          }
+        }
+      }
+
+      // Show logout popup
+      function showLogoutPopup() {
+        const popup = document.getElementById("logoutPopup");
+        popup.classList.add("show");
+        setTimeout(() => {
+          popup.querySelector(".logout-popup").classList.add("show");
+        }, 10);
+      }
+
+      // Hide logout popup
+      function hideLogoutPopup() {
+        const popup = document.getElementById("logoutPopup");
+        popup.querySelector(".logout-popup").classList.remove("show");
+        setTimeout(() => {
+          popup.classList.remove("show");
+        }, 300);
+      }
+
+      // Perform actual logout
+      async function performLogout() {
+        try {
+          // Call logout endpoint
+          await fetch("../auth/nurse_logout.php");
+        } catch (error) {
+          console.error("Logout error:", error);
+        }
+
+        // Clear any stored session data
+        sessionStorage.removeItem("nurseInfo");
+        localStorage.removeItem("nurseInfo");
+        clearSessionTimers();
+
+        // Redirect to login page
+        window.location.href = "../auth/login.html";
+      }
+
+      // Mobile navigation functionality
+      document.addEventListener("DOMContentLoaded", function () {
+        // Load nurse info first (this will work regardless of session status)
+        loadNurseInfo();
+
+        // Check session status first
+        checkSessionStatus().then((sessionValid) => {
+          if (sessionValid) {
+            // Start session timers
+            startSessionTimers();
+
+            // Add activity listeners to reset timeout
+            const activityEvents = [
+              "mousedown",
+              "mousemove",
+              "keypress",
+              "scroll",
+              "touchstart",
+              "click",
+            ];
+            activityEvents.forEach((event) => {
+              document.addEventListener(event, resetSessionTimeout, true);
+            });
+          }
+        });
+
+        // Desktop logout button functionality
+        const desktopLogoutBtn = document.getElementById("logoutBtn");
+        if (desktopLogoutBtn) {
+          desktopLogoutBtn.addEventListener("click", function () {
+            showLogoutPopup();
+          });
+        }
+
+        // Mobile logout button functionality
+        const mobileLogoutBtn = document.querySelector(
+          "#mobileNav .nav-item:last-child"
+        );
+        if (mobileLogoutBtn) {
+          mobileLogoutBtn.addEventListener("click", () => {
+            showLogoutPopup();
+          });
+        }
+      });
+    </script>
+  </body>
+</html>

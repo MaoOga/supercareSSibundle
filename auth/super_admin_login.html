@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super Admin Login - SuperCare</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-body: #f8fafc;
+            --bg-card: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border-color: #e2e8f0;
+            --accent-color: #dc2626;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --error-color: #ef4444;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            min-height: 100vh;
+            font-family: "Inter", sans-serif;
+            color: var(--text-primary);
+        }
+
+        .login-container {
+            background: var(--bg-card);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+              0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border: 1px solid var(--border-color);
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        .input-group input {
+            transition: all 0.3s ease;
+            border-color: var(--border-color);
+        }
+
+        .input-group input:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+        }
+
+        .login-btn {
+            background-color: var(--accent-color);
+            transition: all 0.3s ease;
+        }
+
+        .login-btn:hover {
+            background-color: #b91c1c;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+        }
+
+        .login-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading-spinner {
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #dc2626;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+        .step {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 10px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .step.active {
+            background: #dc2626;
+            color: white;
+        }
+        .step.completed {
+            background: #10b981;
+            color: white;
+        }
+        .step.pending {
+            background: #e5e7eb;
+            color: #6b7280;
+        }
+        .step-line {
+            width: 60px;
+            height: 2px;
+            background: #e5e7eb;
+            margin-top: 19px;
+        }
+        .step-line.active {
+            background: #dc2626;
+        }
+
+        .hospital-logo {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+        }
+
+        @media (max-width: 640px) {
+            body {
+                padding: 0.25rem;
+                min-height: 100vh;
+                height: 100vh;
+                overflow: hidden;
+            }
+
+            .login-container {
+                margin: 0;
+                padding: 0.75rem;
+                border-radius: 8px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                max-height: 100vh;
+                overflow-y: auto;
+            }
+
+            .hospital-logo {
+                width: 45px;
+                height: 45px;
+            }
+
+            .text-2xl.sm\\:text-3xl {
+                font-size: 1rem;
+                line-height: 1.375rem;
+            }
+
+            .space-y-6 > * + * {
+                margin-top: 0.75rem;
+            }
+
+            .p-8 {
+                padding: 0.75rem;
+            }
+
+            .mb-8 {
+                margin-bottom: 0.75rem;
+            }
+
+            .mt-6 {
+                margin-top: 0.5rem;
+            }
+
+            .p-4 {
+                padding: 0.5rem;
+            }
+
+            .py-3 {
+                padding-top: 0.4rem;
+                padding-bottom: 0.4rem;
+            }
+
+            .px-4 {
+                padding-left: 0.75rem;
+                padding-right: 0.75rem;
+            }
+
+            .text-sm {
+                font-size: 0.7rem;
+                line-height: 0.9rem;
+            }
+
+            .max-w-md {
+                max-width: 100%;
+                width: 100%;
+            }
+
+            .w-full.max-w-md {
+                width: 100%;
+            }
+
+            .flex.items-center.justify-center.min-h-screen {
+                align-items: center;
+                padding-top: 0;
+            }
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4 sm:p-4">
+    <div class="w-full max-w-md">
+        <div class="login-container p-8">
+        <!-- Logo and Title -->
+        <div class="text-center mb-8">
+            <div class="flex justify-center mb-4">
+                <img
+                    src="/supercareSSibundle/assets/supercare-hospital_logo.png"
+                    alt="Supercare Hospital Logo"
+                    class="hospital-logo"
+                />
+            </div>
+            <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">Super Admin Access</h1>
+            <p class="text-gray-600 text-xs sm:text-sm">Two-Factor Authentication Required</p>
+        </div>
+
+        <!-- Step Indicator -->
+        <div class="step-indicator">
+            <div class="step active" id="step1">1</div>
+            <div class="step-line" id="line1"></div>
+            <div class="step pending" id="step2">2</div>
+        </div>
+
+        <!-- Alert Message -->
+        <div id="alertMessage" class="hidden mb-4"></div>
+
+        <!-- Step 1: Email & Password -->
+        <div id="step1Form">
+            <form id="loginForm" class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-envelope mr-2"></i>Email Address
+                    </label>
+                    <input type="email" id="email" name="email" required
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                           placeholder="Enter your email">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-lock mr-2"></i>Password
+                    </label>
+                    <div class="relative">
+                        <input type="password" id="password" name="password" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent pr-12"
+                               placeholder="Enter your password">
+                        <button
+                            type="button"
+                            id="togglePassword"
+                            class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                        >
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" id="loginBtn"
+                        class="login-btn w-full py-3 px-4 rounded-lg font-medium text-white flex items-center justify-center">
+                    <span id="loginBtnText">Send OTP Code</span>
+                    <div id="loginSpinner" class="loading-spinner ml-2 hidden"></div>
+                </button>
+            </form>
+        </div>
+
+        <!-- Step 2: OTP Verification -->
+        <div id="step2Form" class="hidden">
+            <form id="otpForm" class="space-y-6">
+                <div class="text-center mb-6">
+                    <p class="text-gray-600">We've sent a 6-digit code to:</p>
+                    <p class="font-semibold text-gray-800" id="userEmail"></p>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-key mr-2"></i>OTP Code
+                    </label>
+                    <input type="text" id="otp" name="otp" maxlength="6" required
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent text-center text-2xl tracking-widest"
+                           placeholder="000000">
+                </div>
+
+                <div class="text-center">
+                    <p class="text-sm text-gray-600">Code expires in <span id="countdown" class="font-semibold">10:00</span></p>
+                </div>
+
+                <button type="submit" id="verifyBtn"
+                        class="login-btn w-full py-3 px-4 rounded-lg font-medium text-white flex items-center justify-center">
+                    <span id="verifyBtnText">Verify & Login</span>
+                    <div id="verifySpinner" class="loading-spinner ml-2 hidden"></div>
+                </button>
+
+                <div class="text-center">
+                    <button type="button" id="resendBtn" class="text-red-600 hover:text-red-700 text-sm font-medium">
+                        <i class="fas fa-redo mr-1"></i>Resend Code
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Back to Step 1 -->
+        <div id="backToStep1" class="hidden text-center mt-4">
+            <button type="button" onclick="goBackToStep1()" class="text-gray-600 hover:text-gray-800 text-sm">
+                <i class="fas fa-arrow-left mr-1"></i>Back to Login
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let countdownInterval;
+        let currentEmail = '';
+        let currentPassword = '';
+
+        // Password visibility toggle
+        const togglePassword = document.getElementById("togglePassword");
+        const passwordField = document.getElementById("password");
+
+        togglePassword.addEventListener("click", function () {
+            const type = passwordField.getAttribute("type") === "password" ? "text" : "password";
+            passwordField.setAttribute("type", type);
+            this.innerHTML = type === "password" ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+        });
+
+        const utils = {
+            showAlert: function(message, type = "info") {
+                const alertDiv = document.getElementById("alertMessage");
+                
+                let iconClass, alertClass;
+                switch (type) {
+                    case "success":
+                        iconClass = "fas fa-check-circle";
+                        alertClass = "bg-green-50 border-green-200 text-green-800";
+                        break;
+                    case "error":
+                        iconClass = "fas fa-exclamation-triangle";
+                        alertClass = "bg-red-50 border-red-200 text-red-800";
+                        break;
+                    case "warning":
+                        iconClass = "fas fa-exclamation-circle";
+                        alertClass = "bg-yellow-50 border-yellow-200 text-yellow-800";
+                        break;
+                    default:
+                        iconClass = "fas fa-info-circle";
+                        alertClass = "bg-blue-50 border-blue-200 text-blue-800";
+                }
+
+                alertDiv.innerHTML = `
+                    <div class="border rounded-lg p-4 ${alertClass}">
+                        <div class="flex items-center">
+                            <i class="${iconClass} mr-2"></i>
+                            <span>${message}</span>
+                        </div>
+                    </div>
+                `;
+                alertDiv.classList.remove("hidden");
+
+                setTimeout(() => {
+                    this.hideAlert();
+                }, 5000);
+            },
+
+            hideAlert: function() {
+                const alertDiv = document.getElementById("alertMessage");
+                alertDiv.classList.add("hidden");
+            },
+
+            showLoading: function(buttonId, spinnerId, textId) {
+                document.getElementById(buttonId).disabled = true;
+                document.getElementById(spinnerId).classList.remove("hidden");
+                document.getElementById(textId).textContent = "Processing...";
+            },
+
+            hideLoading: function(buttonId, spinnerId, textId, originalText) {
+                document.getElementById(buttonId).disabled = false;
+                document.getElementById(spinnerId).classList.add("hidden");
+                document.getElementById(textId).textContent = originalText;
+            }
+        };
+
+        function goToStep2() {
+            document.getElementById("step1Form").classList.add("hidden");
+            document.getElementById("step2Form").classList.remove("hidden");
+            document.getElementById("backToStep1").classList.remove("hidden");
+            
+            document.getElementById("step1").classList.remove("active");
+            document.getElementById("step1").classList.add("completed");
+            document.getElementById("line1").classList.add("active");
+            document.getElementById("step2").classList.remove("pending");
+            document.getElementById("step2").classList.add("active");
+            
+            startCountdown();
+        }
+
+        function goBackToStep1() {
+            document.getElementById("step2Form").classList.add("hidden");
+            document.getElementById("step1Form").classList.remove("hidden");
+            document.getElementById("backToStep1").classList.add("hidden");
+            
+            document.getElementById("step1").classList.remove("completed");
+            document.getElementById("step1").classList.add("active");
+            document.getElementById("line1").classList.remove("active");
+            document.getElementById("step2").classList.remove("active");
+            document.getElementById("step2").classList.add("pending");
+            
+            stopCountdown();
+        }
+
+        function startCountdown() {
+            let timeLeft = 600; // 10 minutes in seconds
+            
+            function updateCountdown() {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                document.getElementById("countdown").textContent = 
+                    `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                if (timeLeft <= 0) {
+                    stopCountdown();
+                    utils.showAlert("OTP has expired. Please request a new code.", "error");
+                    goBackToStep1();
+                }
+                timeLeft--;
+            }
+            
+            updateCountdown();
+            countdownInterval = setInterval(updateCountdown, 1000);
+        }
+
+        function stopCountdown() {
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+                countdownInterval = null;
+            }
+        }
+
+        // Step 1: Send OTP
+        document.getElementById("loginForm").addEventListener("submit", async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+            
+            currentEmail = email;
+            currentPassword = password;
+            
+            utils.showLoading("loginBtn", "loginSpinner", "loginBtnText");
+            
+            try {
+                const response = await fetch("send_otp.php", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                    },
+                    body: `email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    utils.showAlert(data.message, "success");
+                    document.getElementById("userEmail").textContent = email;
+                    goToStep2();
+                } else {
+                    utils.showAlert(data.message, "error");
+                }
+            } catch (error) {
+                utils.showAlert("Network error. Please try again.", "error");
+            } finally {
+                utils.hideLoading("loginBtn", "loginSpinner", "loginBtnText", "Send OTP Code");
+            }
+        });
+
+        // Step 2: Verify OTP
+        document.getElementById("otpForm").addEventListener("submit", async function(e) {
+            e.preventDefault();
+            
+            const otp = document.getElementById("otp").value;
+            
+            utils.showLoading("verifyBtn", "verifySpinner", "verifyBtnText");
+            
+            try {
+                const response = await fetch("verify_otp.php", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                    },
+                    body: `email=${encodeURIComponent(currentEmail)}&password=${encodeURIComponent(currentPassword)}&otp=${encodeURIComponent(otp)}`
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    utils.showAlert("Login successful! Redirecting...", "success");
+                    setTimeout(() => {
+                        window.location.href = "../super admin/super_admin_dashboard_simple.html";
+                    }, 1500);
+                } else {
+                    utils.showAlert(data.message, "error");
+                }
+            } catch (error) {
+                utils.showAlert("Network error. Please try again.", "error");
+            } finally {
+                utils.hideLoading("verifyBtn", "verifySpinner", "verifyBtnText", "Verify & Login");
+            }
+        });
+
+        // Resend OTP
+        document.getElementById("resendBtn").addEventListener("click", async function() {
+            if (!currentEmail || !currentPassword) {
+                utils.showAlert("Please go back and enter your credentials first.", "error");
+                return;
+            }
+            
+            this.disabled = true;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i>Sending...';
+            
+            try {
+                const response = await fetch("send_otp.php", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                    },
+                    body: `email=${encodeURIComponent(currentEmail)}&password=${encodeURIComponent(currentPassword)}`
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    utils.showAlert("New OTP sent successfully!", "success");
+                    stopCountdown();
+                    startCountdown();
+                } else {
+                    utils.showAlert(data.message, "error");
+                }
+            } catch (error) {
+                utils.showAlert("Network error. Please try again.", "error");
+            } finally {
+                this.disabled = false;
+                this.innerHTML = '<i class="fas fa-redo mr-1"></i>Resend Code';
+            }
+        });
+
+        // Auto-focus OTP input
+        document.getElementById("otp").addEventListener("input", function() {
+            if (this.value.length === 6) {
+                document.getElementById("verifyBtn").click();
+            }
+        });
+    </script>
+</body>
+</html>
