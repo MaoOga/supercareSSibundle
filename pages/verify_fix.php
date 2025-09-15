@@ -23,7 +23,7 @@ try {
     echo "<p>This should return JSON with all the data including risk_factors and infection_prevention_notes.</p>";
     
     echo "<h3>Step 2: Test Form Loading</h3>";
-    echo "<p><a href='../forms/form.html' target='_blank'>Open the form</a></p>";
+    echo "<p><a href='../forms/form.php' target='_blank'>Open the form</a></p>";
     echo "<p>Then click 'View/Edit' for patient: {$patient['name']}</p>";
     echo "<p>Check the browser console (F12) for any error messages.</p>";
     

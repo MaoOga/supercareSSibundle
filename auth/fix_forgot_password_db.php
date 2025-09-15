@@ -42,7 +42,7 @@ try {
     }
     
     echo "<h3>🎉 Database structure is now ready for forgot password functionality!</h3>";
-    echo "<p><a href='../auth/forgot_password.html' style='color: blue;'>→ Test Forgot Password Now</a></p>";
+    echo "<p><a href='forgot_password.html' style='color: blue;'>→ Test Forgot Password Now</a></p>";
     
 } catch (Exception $e) {
     echo "<p style='color: red;'>❌ Error: " . $e->getMessage() . "</p>";

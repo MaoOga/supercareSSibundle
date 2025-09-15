@@ -3,7 +3,7 @@
 header('Content-Type: application/json');
 
 require_once '../database/config.php';
-require_once '../auth/session_config.php';
+// Session management removed - no authentication required
 require_once '../audit/audit_logger.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -13,12 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 try {
-    // Check if nurse is logged in
-    if (!isNurseLoggedIn()) {
-        http_response_code(401);
-        echo json_encode(['success' => false, 'message' => 'Session expired. Please log in again.']);
-        exit;
-    }
+    // Session management removed - no authentication required
 
     $pdo->beginTransaction();
     
@@ -26,8 +21,8 @@ try {
     $patientId = $formData['patient_id'] ?? null;
     $isUpdate = !empty($patientId);
     
-    // Get nurse information from session for audit logging
-    $nurseInfo = getNurseInfo();
+    // Session management removed - using default nurse info for audit logging
+    $nurseInfo = ['nurse_id' => 'SYSTEM', 'name' => 'System User'];
     $nurseIdCode = $nurseInfo['nurse_id'] ?? 'UNKNOWN';
     $nurseName = $nurseInfo['name'] ?? 'Unknown Nurse';
     
@@ -35,6 +30,15 @@ try {
     error_log("Working form submission - Patient ID: $patientId, Is Update: " . ($isUpdate ? 'Yes' : 'No'));
     error_log("Nurse ID: $nurseIdCode, Nurse Name: $nurseName");
     error_log("Form data keys: " . implode(', ', array_keys($formData)));
+    
+    // Debug antibiotic form data specifically (can be removed in production)
+    // $antibioticKeys = [];
+    // foreach (array_keys($formData) as $key) {
+    //     if (strpos($key, 'started-on') !== false || strpos($key, 'stopped-on') !== false || strpos($key, 'drug-name') !== false) {
+    //         $antibioticKeys[] = $key . '=' . $formData[$key];
+    //     }
+    // }
+    // error_log("Antibiotic form data: " . implode(', ', $antibioticKeys));
     
     // Check for post-operative related keys specifically
     $postOpKeys = [];
@@ -65,6 +69,12 @@ try {
 
     // Handle patients table
     if ($isUpdate) {
+        // Convert date_completed from DD/MM/YYYY to YYYY-MM-DD format
+        $dateCompleted = null;
+        if (!empty($formData['date_completed'])) {
+            $dateCompleted = date('Y-m-d', strtotime(str_replace('/', '-', $formData['date_completed'])));
+        }
+        
         $patientStmt = $pdo->prepare("UPDATE patients SET name = ?, age = ?, sex = ?, uhid = ?, phone = ?, bed_ward = ?, address = ?, primary_diagnosis = ?, surgical_procedure = ?, date_completed = ? WHERE patient_id = ?");
         $patientStmt->execute([
             $formData['name'],
@@ -76,7 +86,7 @@ try {
             $formData['address'],
             $formData['diagnosis'],
             $formData['surgical_procedure'],
-            date('Y-m-d'),
+            $dateCompleted,
             $patientId
         ]);
         
@@ -93,6 +103,12 @@ try {
             $formData
         );
     } else {
+        // Convert date_completed from DD/MM/YYYY to YYYY-MM-DD format
+        $dateCompleted = null;
+        if (!empty($formData['date_completed'])) {
+            $dateCompleted = date('Y-m-d', strtotime(str_replace('/', '-', $formData['date_completed'])));
+        }
+        
         $patientStmt = $pdo->prepare("INSERT INTO patients (name, age, sex, uhid, phone, bed_ward, address, primary_diagnosis, surgical_procedure, date_completed) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         $patientStmt->execute([
             $formData['name'],
@@ -104,7 +120,7 @@ try {
             $formData['address'],
             $formData['diagnosis'],
             $formData['surgical_procedure'],
-            date('Y-m-d')
+            $dateCompleted
         ]);
         $patientId = $pdo->lastInsertId();
         
@@ -204,7 +220,7 @@ try {
     
     if ($drainUsed === 'Yes') {
         // Insert drain records only if 'Yes' is selected
-        for ($i = 1; $i <= 10; $i++) {
+        for ($i = 1; $i <= 40; $i++) {
             $drainDescription = $formData["drain_$i"] ?? null;
             if (!empty($drainDescription)) {
                 error_log("Inserting drain $i: $drainDescription");
@@ -238,37 +254,24 @@ try {
         $deleteStmt->execute([$patientId]);
     }
 
-    for ($i = 1; $i <= 10; $i++) {
+    for ($i = 1; $i <= 40; $i++) {
         $drugName = $formData["drug-name_$i"] ?? null;
+        // Debug: error_log("Checking antibiotic row $i: drug-name='$drugName'");
         if (!empty($drugName)) {
-            $startedOn = null;
-            $stoppedOn = null;
+            // Get started_on and stopped_on exactly like drug_name and dosage (simple field access)
+            $startedOn = $formData["started-on_$i"] ?? null;
+            $stoppedOn = $formData["stopped-on_$i"] ?? null;
             
-            // Check if the antibiotic_usage array exists and has the date fields
-            if (isset($formData['antibiotic_usage']) && is_array($formData['antibiotic_usage'])) {
-                if (isset($formData['antibiotic_usage']['startedon']) && !isset($formData['antibiotic_usage']["startedon_$i"])) {
-                    $startedOn = !empty($formData['antibiotic_usage']['startedon']) ? date('Y-m-d', strtotime(str_replace('/', '-', $formData['antibiotic_usage']['startedon']))) : null;
-                    $stoppedOn = !empty($formData['antibiotic_usage']['stoppeon']) ? date('Y-m-d', strtotime(str_replace('/', '-', $formData['antibiotic_usage']['stoppeon']))) : null;
-                } else {
-                    $startedOn = !empty($formData['antibiotic_usage']["startedon_$i"]) ? date('Y-m-d', strtotime(str_replace('/', '-', $formData['antibiotic_usage']["startedon_$i"]))) : null;
-                    $stoppedOn = !empty($formData['antibiotic_usage']["stoppeon_$i"]) ? date('Y-m-d', strtotime(str_replace('/', '-', $formData['antibiotic_usage']["stoppeon_$i"]))) : null;
-                }
-            } else {
-                $startedOnKey = "antibiotic_usage[startedon]_$i";
-                $stoppedOnKey = "antibiotic_usage[stoppeon]_$i";
-                
-                $startedOn = !empty($formData[$startedOnKey]) ? date('Y-m-d', strtotime(str_replace('/', '-', $formData[$startedOnKey]))) : null;
-                $stoppedOn = !empty($formData[$stoppedOnKey]) ? date('Y-m-d', strtotime(str_replace('/', '-', $formData[$stoppedOnKey]))) : null;
-                
-                if (empty($startedOn)) {
-                    $startedOn = !empty($formData["startedon_$i"]) ? date('Y-m-d', strtotime(str_replace('/', '-', $formData["startedon_$i"]))) : null;
-                }
-                if (empty($stoppedOn)) {
-                    $stoppedOn = !empty($formData["stoppeon_$i"]) ? date('Y-m-d', strtotime(str_replace('/', '-', $formData["stoppeon_$i"]))) : null;
-                }
-            }
+            // Debug the exact field names being accessed (can be removed in production)
+            // error_log("Antibiotic $i - Field access debug:");
+            // error_log("  Looking for: started-on_$i");
+            // error_log("  Found value: " . ($startedOn ?? 'NULL'));
+            // error_log("  Looking for: stopped-on_$i");
+            // error_log("  Found value: " . ($stoppedOn ?? 'NULL'));
             
-            error_log("Inserting antibiotic $i: $drugName, Started: $startedOn, Stopped: $stoppedOn");
+            // No date conversion needed - columns are now TEXT and accept any value
+            
+            error_log("Inserting antibiotic $i: $drugName, Started: '$startedOn', Stopped: '$stoppedOn'");
             $antibioticStmt = $pdo->prepare("INSERT INTO antibiotic_usage (patient_id, serial_no, drug_name, dosage_route_frequency, started_on, stopped_on) VALUES (?, ?, ?, ?, ?, ?)");
             $antibioticStmt->execute([
                 $patientId,
@@ -287,38 +290,22 @@ try {
         $deleteStmt->execute([$patientId]);
     }
 
-    for ($i = 1; $i <= 10; $i++) {
-        $monitoringDate = null;
-        
-        // Method 1: Try the array notation directly
-        $dateKey = "post-operative[date]_$i";
-        $monitoringDate = $formData[$dateKey] ?? null;
-        
-        // Method 2: If not found, try the array access
-        if (empty($monitoringDate) && isset($formData['post-operative']) && is_array($formData['post-operative'])) {
-            if (isset($formData['post-operative']["date_$i"])) {
-                $monitoringDate = $formData['post-operative']["date_$i"];
-            } elseif (isset($formData['post-operative']['date'])) {
-                $monitoringDate = $formData['post-operative']['date'];
-            }
-        }
-        
-        // Method 3: Try simple field name
-        if (empty($monitoringDate)) {
-            $monitoringDate = $formData["date_$i"] ?? null;
-        }
+    for ($i = 1; $i <= 40; $i++) {
+        // Get monitoring date using simple field name
+        $monitoringDate = $formData["postop-date_$i"] ?? null;
         
         // Check if there's actual data in this row
-        $hasData = !empty($formData["post-dosage_$i"]) || 
+        $hasData = !empty($monitoringDate) ||
+                   !empty($formData["post-dosage_$i"]) || 
                    !empty($formData["type-ofdischarge_$i"]) || 
                    !empty($formData["tenderness-pain_$i"]) || 
                    !empty($formData["swelling_$i"]) || 
                    !empty($formData["Fever_$i"]);
         
-        error_log("Post-operative row $i - Date: '$monitoringDate', HasData: " . ($hasData ? 'Yes' : 'No') . ", Dosage: '" . ($formData["post-dosage_$i"] ?? 'NOT SET') . "', DateKey: '$dateKey'");
+        error_log("Post-operative row $i - Date: '$monitoringDate', HasData: " . ($hasData ? 'Yes' : 'No') . ", Dosage: '" . ($formData["post-dosage_$i"] ?? 'NOT SET') . "'");
         
-        if (!empty($monitoringDate) && $hasData) {
-            $monitoringDate = date('Y-m-d', strtotime(str_replace('/', '-', $monitoringDate)));
+        if ($hasData) {
+            // No date conversion needed - column is now TEXT and accepts any value
             
             error_log("Inserting post-operative monitoring $i: Date=$monitoringDate, Fever=" . ($formData["Fever_$i"] ?? 'NOT SET'));
             $postOpStmt = $pdo->prepare("INSERT INTO post_operative_monitoring (patient_id, day, monitoring_date, dosage, discharge_fluid, tenderness_pain, swelling, fever) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");

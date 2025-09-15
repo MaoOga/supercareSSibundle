@@ -63,7 +63,7 @@ try {
     echo "<li>✅ Data retrieval when editing existing patient records</li>";
     echo "<li>✅ Database compatibility with existing data</li>";
     echo "</ul>";
-    echo "<p><a href='../forms/form.html'>Go to form</a></p>";
+    echo "<p><a href='../forms/form_template.html'>Go to form</a></p>";
     
 } catch (Exception $e) {
     $pdo->rollBack();

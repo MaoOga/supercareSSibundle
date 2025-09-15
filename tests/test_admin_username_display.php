@@ -22,7 +22,7 @@ if (!$adminUser) {
 
 echo "<h2>✅ Admin session is valid</h2>";
 echo "<p><strong>Admin Username:</strong> " . htmlspecialchars($adminUser['admin_username']) . "</p>";
-echo "<p><strong>Admin Name:</strong> " . htmlspecialchars($adminUser['admin_name']) . "</p>";
+echo "<p><strong>Admin Username:</strong> " . htmlspecialchars($adminUser['admin_username']) . "</p>";
 echo "<p><strong>Admin Email:</strong> " . htmlspecialchars($adminUser['admin_email']) . "</p>";
 
 echo "<h2>Test Admin Pages with Username Display</h2>";

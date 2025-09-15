@@ -137,6 +137,6 @@ echo "<h3>Next Steps:</h3>";
 echo "<ol>";
 echo "<li>If any columns are missing, run the provided SQL commands</li>";
 echo "<li>Test the password reset functionality again</li>";
-echo "<li>Use <a href='../auth/reset_token_debug.php'>reset_token_debug.php</a> to troubleshoot token issues</li>";
+echo "<li>Use <a href='../debug/reset_token_debug.php'>reset_token_debug.php</a> to troubleshoot token issues</li>";
 echo "</ol>";
 ?>

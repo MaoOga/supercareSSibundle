@@ -11,7 +11,7 @@ echo "<a href='../admin/admin.php' target='_blank'>Access Admin Panel</a><br>";
 
 // Test 2: Check if get_nurses_simple.php works
 echo "<h3>Test 2: Nurses API</h3>";
-$nurses_url = 'get_nurses_simple.php';
+$nurses_url = '../admin/get_nurses_simple.php';
 $nurses_response = file_get_contents($nurses_url);
 $nurses_data = json_decode($nurses_response, true);
 
@@ -28,7 +28,7 @@ if ($nurses_data && isset($nurses_data['success'])) {
 
 // Test 3: Check if get_surgeons.php works
 echo "<h3>Test 3: Surgeons API</h3>";
-$surgeons_url = 'get_surgeons.php';
+$surgeons_url = '../admin/get_surgeons.php';
 $surgeons_response = file_get_contents($surgeons_url);
 $surgeons_data = json_decode($surgeons_response, true);
 
@@ -45,7 +45,7 @@ if ($surgeons_data && isset($surgeons_data['success'])) {
 
 // Test 4: Check if get_patients.php works
 echo "<h3>Test 4: Patients API</h3>";
-$patients_url = 'get_patients.php';
+$patients_url = '../forms/get_patients.php';
 $patients_response = file_get_contents($patients_url);
 $patients_data = json_decode($patients_response, true);
 
@@ -62,7 +62,7 @@ if ($patients_data && isset($patients_data['success'])) {
 
 // Test 5: Check if update_session_activity.php works
 echo "<h3>Test 5: Session Activity API</h3>";
-$activity_url = 'update_session_activity.php';
+$activity_url = '../security/update_session_activity.php';
 $context = stream_context_create([
     'http' => [
         'method' => 'POST',

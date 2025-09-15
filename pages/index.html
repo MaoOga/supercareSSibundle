@@ -401,470 +401,455 @@
         transform: translateY(1px);
       }
 
-      /* Custom Logout Popup Styles */
-      .logout-popup-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 9999;
-        opacity: 0;
-        visibility: hidden;
-        transition: all 0.3s ease;
+      /* Logout popup styles */
+      #logoutPopup {
+        backdrop-filter: blur(4px);
       }
 
-      .logout-popup-overlay.show {
-        opacity: 1;
-        visibility: visible;
+      #logoutPopup .bg-white {
+        animation: popupSlideIn 0.3s ease-out;
       }
 
-      .logout-popup {
-        background-color: var(--bg-card);
-        border-radius: 12px;
-        padding: 2rem;
-        max-width: 400px;
-        width: 90%;
-        text-align: center;
-        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
-          0 10px 10px -5px rgba(0, 0, 0, 0.04);
-        transform: scale(0.9);
-        transition: transform 0.3s ease;
+      @keyframes popupSlideIn {
+        from {
+          opacity: 0;
+          transform: translateY(-20px) scale(0.95);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
       }
 
-      .logout-popup.show {
-        transform: scale(1);
+      /* Mobile responsive adjustments */
+      @media (max-width: 640px) {
+        #logoutPopup .max-w-md {
+          max-width: calc(100vw - 2rem);
+          margin: 1rem;
+        }
       }
 
-      .logout-popup-icon {
-        font-size: 3rem;
-        color: #ef4444;
-        margin-bottom: 1rem;
+      /* Hide main content until session check is complete */
+      #mainContent {
+        display: none;
       }
 
-      .logout-popup-title {
-        font-size: 1.25rem;
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-        color: var(--text-primary);
-      }
-
-      .logout-popup-message {
-        color: var(--text-secondary);
-        margin-bottom: 1.5rem;
-        line-height: 1.5;
-      }
-
-      .logout-popup-buttons {
-        display: flex;
-        gap: 0.75rem;
-        justify-content: center;
-      }
-
-      .logout-popup-btn {
-        padding: 0.75rem 1.5rem;
-        border-radius: 8px;
-        font-weight: 500;
-        transition: all 0.2s ease;
-        cursor: pointer;
-        border: none;
-        min-width: 100px;
-      }
-
-      .logout-popup-btn-cancel {
-        background-color: var(--clear-button-bg);
-        color: var(--clear-button-text);
-      }
-
-      .logout-popup-btn-cancel:hover {
-        background-color: var(--clear-button-bg-hover);
-      }
-
-      .logout-popup-btn-confirm {
-        background-color: #ef4444;
-        color: white;
-      }
-
-      .logout-popup-btn-confirm:hover {
-        background-color: #dc2626;
+      /* Show main content when session is verified */
+      .session-verified #mainContent {
+        display: block;
       }
     </style>
   </head>
 
   <body>
-    <header
-      class="shadow-lg sticky top-0 z-20 border-b"
-      style="background-color: var(--bg-header); border-color: var(--button-bg)"
+    <!-- Loading Screen -->
+    <div
+      id="loadingScreen"
+      class="fixed inset-0 bg-white flex items-center justify-center z-50"
     >
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <div class="flex justify-between items-center">
-          <div class="flex items-center gap-3">
-            <img
-              src="../assets/supercare-hospital_logo.png"
-              alt="Hospital Logo"
-              style="height: 56px; width: 56px"
-            />
-            <div>
-              <h1
-                class="text-xl sm:text-2xl font-bold"
-                style="color: var(--text-primary)"
-              >
-                Supercare Hospital SSI Nurse Panel
-              </h1>
-              <p
-                class="text-sm hidden sm:block"
-                style="color: var(--text-secondary)"
-              >
-                Surgical Site Infection Monitoring System
-              </p>
-            </div>
-          </div>
+      <div class="text-center">
+        <div
+          class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500 mx-auto mb-4"
+        ></div>
+        <p class="text-gray-600">Checking session...</p>
+      </div>
+    </div>
 
-          <!-- Mobile Nurse ID Display (Top Right) -->
-          <div class="sm:hidden flex items-center">
-            <div
-              class="flex items-center gap-1 px-1.5 py-0.5 rounded border text-xs"
-              style="
-                border-color: var(--border-primary);
-                background-color: var(--bg-card);
-                color: var(--text-secondary);
-              "
-              id="mobileNurseIdDisplay"
-            >
-              <i
-                class="fas fa-user-nurse text-xs"
-                style="color: var(--text-icon)"
-              ></i>
-              <span class="font-medium text-xs">ID:</span>
-              <span class="font-bold text-xs" id="mobileNurseIdValue"
-                >Loading...</span
-              >
-            </div>
-          </div>
-
-          <div class="hidden sm:flex items-center gap-3 sm:gap-4">
-            <a
-              href="../forms/search.php"
-              class="px-3 sm:px-4 py-2 rounded-lg flex items-center justify-center gap-2 text-sm sm:text-base hover:bg-[var(--button-bg-hover)]"
-              style="
-                background-color: var(--button-bg);
-                color: var(--button-text);
-              "
-            >
-              <i class="fas fa-search"></i>
-              <span>Search</span>
-            </a>
-
-            <a
-              id="newPatientButton"
-              href="../forms/form.php"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="new-patient-button text-white px-3 sm:px-4 py-2 rounded-lg flex items-center justify-center gap-2 transition-all duration-300 text-sm sm:text-base hover:bg-[var(--button-bg-hover)]"
-              style="background-color: var(--button-bg)"
-            >
-              <i class="fas fa-plus"></i>
-              <span>New Patient</span>
-            </a>
+    <div id="mainContent">
+      <header
+        class="shadow-lg sticky top-0 z-20 border-b"
+        style="
+          background-color: var(--bg-header);
+          border-color: var(--button-bg);
+        "
+      >
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div class="flex justify-between items-center">
             <div class="flex items-center gap-3">
-              <!-- Nurse ID Display -->
+              <img
+                src="../assets/supercare-hospital_logo.png"
+                alt="Hospital Logo"
+                style="height: 56px; width: 56px"
+              />
+              <div>
+                <h1
+                  class="text-xl sm:text-2xl font-bold"
+                  style="color: var(--text-primary)"
+                >
+                  Supercare Hospital SSI Nurse Panel
+                </h1>
+                <p
+                  class="text-sm hidden sm:block"
+                  style="color: var(--text-secondary)"
+                >
+                  Surgical Site Infection Monitoring System
+                </p>
+              </div>
+            </div>
+
+            <!-- Mobile Nurse ID Display (Top Right) -->
+            <div class="sm:hidden flex items-center">
               <div
-                class="hidden sm:flex items-center gap-2 px-3 py-2 rounded-lg border text-sm"
+                class="flex items-center gap-1 px-1.5 py-0.5 rounded border text-xs"
                 style="
                   border-color: var(--border-primary);
                   background-color: var(--bg-card);
                   color: var(--text-secondary);
                 "
-                id="nurseIdDisplay"
+                id="mobileNurseIdDisplay"
               >
                 <i
                   class="fas fa-user-nurse text-xs"
                   style="color: var(--text-icon)"
                 ></i>
-                <span class="font-medium">Nurse ID:</span>
-                <span class="font-bold" id="nurseIdValue">Loading...</span>
+                <span class="font-medium text-xs">ID:</span>
+                <span class="font-bold text-xs" id="mobileNurseIdValue"
+                  >Loading...</span
+                >
               </div>
+            </div>
 
-              <button
-                id="logoutBtn"
-                class="px-3 sm:px-4 py-2 rounded-lg flex items-center justify-center gap-2 text-sm sm:text-base border hover:bg-gray-50 transition-all duration-300"
+            <div class="hidden sm:flex items-center gap-3 sm:gap-4">
+              <a
+                href="../forms/search.php"
+                class="px-3 sm:px-4 py-2 rounded-lg flex items-center justify-center gap-2 text-sm sm:text-base hover:bg-[var(--button-bg-hover)]"
                 style="
-                  border-color: var(--border-secondary);
-                  color: var(--text-primary);
+                  background-color: var(--button-bg);
+                  color: var(--button-text);
                 "
               >
-                <i class="fas fa-sign-out-alt"></i>
-                <span>Logout</span>
+                <i class="fas fa-search"></i>
+                <span>Search</span>
+              </a>
+
+              <a
+                id="newPatientButton"
+                href="../forms/form.php"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="new-patient-button text-white px-3 sm:px-4 py-2 rounded-lg flex items-center justify-center gap-2 transition-all duration-300 text-sm sm:text-base hover:bg-[var(--button-bg-hover)]"
+                style="background-color: var(--button-bg)"
+              >
+                <i class="fas fa-plus"></i>
+                <span>New Patient</span>
+              </a>
+              <div class="flex items-center gap-3">
+                <!-- Nurse ID Display -->
+                <div
+                  class="hidden sm:flex items-center gap-2 px-3 py-2 rounded-lg border text-sm"
+                  style="
+                    border-color: var(--border-primary);
+                    background-color: var(--bg-card);
+                    color: var(--text-secondary);
+                  "
+                  id="nurseIdDisplay"
+                >
+                  <i
+                    class="fas fa-user-nurse text-xs"
+                    style="color: var(--text-icon)"
+                  ></i>
+                  <span class="font-medium">Nurse ID:</span>
+                  <span class="font-bold" id="nurseIdValue">Loading...</span>
+                </div>
+
+                <!-- Logout Button -->
+                <button
+                  onclick="showLogoutPopup()"
+                  class="flex items-center space-x-2 px-3 py-2 text-sm font-medium text-white bg-red-500 hover:bg-red-600 rounded-lg transition-colors duration-200"
+                  id="logoutBtn"
+                >
+                  <i class="fas fa-sign-out-alt"></i>
+                  <span>Logout</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main
+        id="mainContent"
+        class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-32 sm:pb-6"
+      >
+        <div class="grid stat-grid gap-4 sm:gap-6 mb-6 sm:mb-8">
+          <div class="stat-card text-white p-4 sm:p-6 rounded-xl shadow-lg">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-white/90 text-sm font-medium">Total Patients</p>
+                <p class="text-2xl sm:text-3xl font-bold" id="totalPatients">
+                  0
+                </p>
+              </div>
+              <i class="fas fa-users text-2xl sm:text-3xl text-white/80"></i>
+            </div>
+          </div>
+          <div class="stat-card text-white p-4 sm:p-6 rounded-xl shadow-lg">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-white/90 text-sm font-medium">Complications</p>
+                <p
+                  class="text-2xl sm:text-3xl font-bold"
+                  id="complicationsCount"
+                >
+                  0
+                </p>
+              </div>
+              <i
+                class="fas fa-exclamation-triangle text-2xl sm:text-3xl text-white/80"
+              ></i>
+            </div>
+          </div>
+          <div class="stat-card text-white p-4 sm:p-6 rounded-xl shadow-lg">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-white/90 text-sm font-medium">
+                  Recent Surgeries (30d)
+                </p>
+                <p
+                  class="text-2xl sm:text-3xl font-bold"
+                  id="recentSurgeriesCount"
+                >
+                  0
+                </p>
+              </div>
+              <i
+                class="fas fa-calendar-day text-2xl sm:text-3xl text-white/80"
+              ></i>
+            </div>
+          </div>
+          <div class="stat-card text-white p-4 sm:p-6 rounded-xl shadow-lg">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-white/90 text-sm font-medium">Pending Reviews</p>
+                <p
+                  class="text-2xl sm:text-3xl font-bold"
+                  id="pendingReviewsCount"
+                >
+                  0
+                </p>
+              </div>
+              <i class="fas fa-clock text-2xl sm:text-3xl text-white/80"></i>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="rounded-xl shadow-lg p-4 sm:p-6 mb-6 border"
+          style="
+            background-color: var(--bg-card);
+            border-color: var(--border-primary);
+          "
+        >
+          <div class="search-container flex flex-wrap items-end gap-3">
+            <div class="relative w-full min-w-0 md:flex-1 md:min-w-[240px]">
+              <input
+                type="text"
+                id="searchInput"
+                placeholder="Search by UHID, Name, or Surgeon..."
+                class="w-full p-3 pl-10 border rounded-lg shadow-sm focus:outline-none focus:ring-2 text-sm sm:text-base"
+                style="
+                  border-color: var(--border-secondary);
+                  background-color: var(--bg-card);
+                  color: var(--text-primary);
+                  --tw-ring-color: var(--button-bg);
+                "
+              />
+              <i
+                class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2"
+                style="color: var(--search-icon)"
+              ></i>
+            </div>
+            <div class="w-full md:w-56">
+              <select
+                id="filterStatus"
+                class="w-full p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 text-sm sm:text-base"
+                style="
+                  border-color: var(--border-secondary);
+                  background-color: var(--bg-card);
+                  color: var(--text-primary);
+                  --tw-ring-color: var(--button-bg);
+                "
+              >
+                <option value="all">All Status</option>
+                <option value="complications">With Complications</option>
+                <option value="no-complications">No Complications</option>
+                <option value="pending-review">Pending Review</option>
+                <option value="completed-review">Completed Review</option>
+              </select>
+            </div>
+
+            <div class="w-full md:w-auto md:ml-auto flex gap-2">
+              <button
+                id="applyFilters"
+                class="px-4 py-3 rounded-lg flex items-center justify-center gap-2 text-sm sm:text-base hover:bg-[var(--button-bg-hover)]"
+                style="
+                  background-color: var(--button-bg);
+                  color: var(--button-text);
+                "
+              >
+                <i class="fas fa-filter"></i>
+                <span>Apply Filters</span>
+              </button>
+              <button
+                id="clearFilters"
+                class="px-4 py-3 rounded-lg flex items-center justify-center gap-2 text-sm sm:text-base hover:bg-[var(--clear-button-bg-hover)]"
+                style="
+                  background-color: var(--clear-button-bg);
+                  color: var(--clear-button-text);
+                "
+              >
+                <i class="fas fa-times"></i>
+                <span>Clear</span>
               </button>
             </div>
           </div>
+          <div id="filterFeedback" class="filter-feedback"></div>
         </div>
-      </div>
-    </header>
 
-    <main
-      id="mainContent"
-      class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-32 sm:pb-6"
-    >
-      <div class="grid stat-grid gap-4 sm:gap-6 mb-6 sm:mb-8">
-        <div class="stat-card text-white p-4 sm:p-6 rounded-xl shadow-lg">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-white/90 text-sm font-medium">Total Patients</p>
-              <p class="text-2xl sm:text-3xl font-bold" id="totalPatients">0</p>
-            </div>
-            <i class="fas fa-users text-2xl sm:text-3xl text-white/80"></i>
-          </div>
-        </div>
-        <div class="stat-card text-white p-4 sm:p-6 rounded-xl shadow-lg">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-white/90 text-sm font-medium">Complications</p>
-              <p class="text-2xl sm:text-3xl font-bold" id="complicationsCount">
-                0
-              </p>
-            </div>
-            <i
-              class="fas fa-exclamation-triangle text-2xl sm:text-3xl text-white/80"
-            ></i>
-          </div>
-        </div>
-        <div class="stat-card text-white p-4 sm:p-6 rounded-xl shadow-lg">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-white/90 text-sm font-medium">
-                Recent Surgeries (30d)
-              </p>
-              <p
-                class="text-2xl sm:text-3xl font-bold"
-                id="recentSurgeriesCount"
-              >
-                0
-              </p>
-            </div>
-            <i
-              class="fas fa-calendar-day text-2xl sm:text-3xl text-white/80"
-            ></i>
-          </div>
-        </div>
-        <div class="stat-card text-white p-4 sm:p-6 rounded-xl shadow-lg">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-white/90 text-sm font-medium">Pending Reviews</p>
-              <p
-                class="text-2xl sm:text-3xl font-bold"
-                id="pendingReviewsCount"
-              >
-                0
-              </p>
-            </div>
-            <i class="fas fa-clock text-2xl sm:text-3xl text-white/80"></i>
-          </div>
-        </div>
-      </div>
-
-      <div
-        class="rounded-xl shadow-lg p-4 sm:p-6 mb-6 border"
-        style="
-          background-color: var(--bg-card);
-          border-color: var(--border-primary);
-        "
-      >
-        <div class="search-container flex flex-wrap items-end gap-3">
-          <div class="relative w-full min-w-0 md:flex-1 md:min-w-[240px]">
-            <input
-              type="text"
-              id="searchInput"
-              placeholder="Search by UHID, Name, or Surgeon..."
-              class="w-full p-3 pl-10 border rounded-lg shadow-sm focus:outline-none focus:ring-2 text-sm sm:text-base"
-              style="
-                border-color: var(--border-secondary);
-                background-color: var(--bg-card);
-                color: var(--text-primary);
-                --tw-ring-color: var(--button-bg);
-              "
-            />
-            <i
-              class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2"
-              style="color: var(--search-icon)"
-            ></i>
-          </div>
-          <div class="w-full md:w-56">
-            <select
-              id="filterStatus"
-              class="w-full p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 text-sm sm:text-base"
-              style="
-                border-color: var(--border-secondary);
-                background-color: var(--bg-card);
-                color: var(--text-primary);
-                --tw-ring-color: var(--button-bg);
-              "
-            >
-              <option value="all">All Status</option>
-              <option value="complications">With Complications</option>
-              <option value="no-complications">No Complications</option>
-              <option value="pending-review">Pending Review</option>
-              <option value="completed-review">Completed Review</option>
-            </select>
-          </div>
-
-          <div class="w-full md:w-auto md:ml-auto flex gap-2">
-            <button
-              id="applyFilters"
-              class="px-4 py-3 rounded-lg flex items-center justify-center gap-2 text-sm sm:text-base hover:bg-[var(--button-bg-hover)]"
-              style="
-                background-color: var(--button-bg);
-                color: var(--button-text);
-              "
-            >
-              <i class="fas fa-filter"></i>
-              <span>Apply Filters</span>
-            </button>
-            <button
-              id="clearFilters"
-              class="px-4 py-3 rounded-lg flex items-center justify-center gap-2 text-sm sm:text-base hover:bg-[var(--clear-button-bg-hover)]"
-              style="
-                background-color: var(--clear-button-bg);
-                color: var(--clear-button-text);
-              "
-            >
-              <i class="fas fa-times"></i>
-              <span>Clear</span>
-            </button>
-          </div>
-        </div>
-        <div id="filterFeedback" class="filter-feedback"></div>
-      </div>
-
-      <div
-        class="rounded-xl shadow-lg border fade-in"
-        style="
-          background-color: var(--bg-card);
-          border-color: var(--border-primary);
-        "
-      >
         <div
-          class="p-4 sm:p-6 border-b"
-          style="border-color: var(--border-secondary)"
+          class="rounded-xl shadow-lg border fade-in"
+          style="
+            background-color: var(--bg-card);
+            border-color: var(--border-primary);
+          "
         >
           <div
-            class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
+            class="p-4 sm:p-6 border-b"
+            style="border-color: var(--border-secondary)"
           >
-            <h2
-              class="text-lg sm:text-xl font-semibold"
-              style="color: var(--text-primary)"
+            <div
+              class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
             >
-              Recent Patient Records(<span id="recordCount">0</span>
-              total)
-            </h2>
+              <h2
+                class="text-lg sm:text-xl font-semibold"
+                style="color: var(--text-primary)"
+              >
+                Recent Patient Records(<span id="recordCount">0</span>
+                total)
+              </h2>
+            </div>
+          </div>
+          <div class="table-container">
+            <table class="nurse-table w-full text-sm sm:text-base">
+              <thead
+                class="sticky top-0 z-10"
+                style="background-color: var(--bg-table-header)"
+              >
+                <tr style="color: var(--text-primary)">
+                  <th class="p-3 sm:p-4 text-left font-semibold">UHID</th>
+                  <th class="p-3 sm:p-4 text-left font-semibold">Name</th>
+                  <th class="p-3 sm:p-4 text-left font-semibold">Age/Sex</th>
+                  <th class="p-3 sm:p-4 text-left font-semibold">Ward</th>
+                  <th class="p-3 sm:p-4 text-left font-semibold">Surgeon</th>
+                  <th class="p-3 sm:p-4 text-left font-semibold">
+                    Surgery Date
+                  </th>
+                  <th class="p-3 sm:p-4 text-left font-semibold">Status</th>
+                  <th class="p-3 sm:p-4 text-left font-semibold"></th>
+                </tr>
+              </thead>
+              <tbody id="patientTableBody">
+                <!-- Loading message - will be replaced by JavaScript -->
+                <tr>
+                  <td
+                    colspan="8"
+                    style="
+                      text-align: center;
+                      padding: 2rem;
+                      color: var(--text-secondary);
+                    "
+                  >
+                    <i
+                      class="fas fa-spinner fa-spin"
+                      style="margin-right: 8px; font-size: 24px"
+                    ></i>
+                    Loading patient data...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
-        <div class="table-container">
-          <table class="nurse-table w-full text-sm sm:text-base">
-            <thead
-              class="sticky top-0 z-10"
-              style="background-color: var(--bg-table-header)"
-            >
-              <tr style="color: var(--text-primary)">
-                <th class="p-3 sm:p-4 text-left font-semibold">UHID</th>
-                <th class="p-3 sm:p-4 text-left font-semibold">Name</th>
-                <th class="p-3 sm:p-4 text-left font-semibold">Age/Sex</th>
-                <th class="p-3 sm:p-4 text-left font-semibold">Ward</th>
-                <th class="p-3 sm:p-4 text-left font-semibold">Surgeon</th>
-                <th class="p-3 sm:p-4 text-left font-semibold">Surgery Date</th>
-                <th class="p-3 sm:p-4 text-left font-semibold">Status</th>
-                <th class="p-3 sm:p-4 text-left font-semibold"></th>
-              </tr>
-            </thead>
-            <tbody id="patientTableBody">
-              <!-- Loading message - will be replaced by JavaScript -->
-              <tr>
-                <td
-                  colspan="8"
-                  style="
-                    text-align: center;
-                    padding: 2rem;
-                    color: var(--text-secondary);
-                  "
-                >
-                  <i
-                    class="fas fa-spinner fa-spin"
-                    style="margin-right: 8px; font-size: 24px"
-                  ></i>
-                  Loading patient data...
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </main>
+      </main>
 
-    <!-- Mobile Bottom Navigation -->
-    <nav
-      id="mobileNav"
-      class="mobile-bottom-nav sm:hidden fixed bottom-0 left-0 right-0 border-t shadow-lg z-30"
-      style="
-        background-color: var(--bg-card);
-        border-color: var(--border-secondary);
-        padding-bottom: max(env(safe-area-inset-bottom), 8px);
-      "
-    >
-      <div class="grid grid-cols-4 items-stretch justify-items-center">
-        <button id="navHome" class="nav-item">
-          <i class="fas fa-home"></i>
-          <span>Home</span>
-        </button>
-        <a id="navSearch" href="../forms/search.php" class="nav-item">
-          <i class="fas fa-search"></i>
-          <span>Search</span>
-        </a>
-        <a
-          id="navAdd"
-          href="../forms/form.php"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="nav-item"
-        >
-          <i class="fas fa-plus-circle"></i>
-          <span>New</span>
-        </a>
-
-        <button id="navLogout" class="nav-item">
-          <i class="fas fa-sign-out-alt"></i>
-          <span>Logout</span>
-        </button>
-      </div>
-    </nav>
-
-    <!-- Custom Logout Popup -->
-    <div id="logoutPopup" class="logout-popup-overlay">
-      <div class="logout-popup">
-        <div class="logout-popup-icon">
-          <i class="fas fa-sign-out-alt"></i>
-        </div>
-        <div class="logout-popup-title">Confirm Logout</div>
-        <div class="logout-popup-message">
-          Are you sure you want to logout? You will be redirected to the login
-          page.
-        </div>
-        <div class="logout-popup-buttons">
-          <button
-            class="logout-popup-btn logout-popup-btn-cancel"
-            onclick="hideLogoutPopup()"
-          >
-            Cancel
+      <!-- Mobile Bottom Navigation -->
+      <nav
+        id="mobileNav"
+        class="mobile-bottom-nav sm:hidden fixed bottom-0 left-0 right-0 border-t shadow-lg z-30"
+        style="
+          background-color: var(--bg-card);
+          border-color: var(--border-secondary);
+          padding-bottom: max(env(safe-area-inset-bottom), 8px);
+        "
+      >
+        <div class="grid grid-cols-4 items-stretch justify-items-center">
+          <button id="navHome" class="nav-item">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
           </button>
-          <button
-            class="logout-popup-btn logout-popup-btn-confirm"
-            onclick="performLogout()"
+          <a id="navSearch" href="../forms/search.php" class="nav-item">
+            <i class="fas fa-search"></i>
+            <span>Search</span>
+          </a>
+          <a
+            id="navAdd"
+            href="../forms/form.php"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="nav-item"
           >
-            Logout
+            <i class="fas fa-plus-circle"></i>
+            <span>New</span>
+          </a>
+
+          <!-- Mobile Logout Button -->
+          <button id="navLogout" onclick="showLogoutPopup()" class="nav-item">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Logout</span>
           </button>
+        </div>
+      </nav>
+
+      <!-- Logout Confirmation Popup -->
+      <div
+        id="logoutPopup"
+        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden"
+      >
+        <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+          <div class="p-6">
+            <div class="flex items-center mb-4">
+              <div class="flex-shrink-0">
+                <i
+                  class="fas fa-exclamation-triangle text-yellow-500 text-2xl"
+                ></i>
+              </div>
+              <div class="ml-3">
+                <h3 class="text-lg font-medium text-gray-900">
+                  Confirm Logout
+                </h3>
+              </div>
+            </div>
+            <div class="mb-6">
+              <p class="text-sm text-gray-500">
+                Are you sure you want to logout? You will need to login again to
+                access the system.
+              </p>
+            </div>
+            <div class="flex justify-end space-x-3">
+              <button
+                onclick="hideLogoutPopup()"
+                class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors duration-200"
+              >
+                Cancel
+              </button>
+              <button
+                onclick="performLogout()"
+                class="px-4 py-2 text-sm font-medium text-white bg-red-500 hover:bg-red-600 rounded-md transition-colors duration-200"
+              >
+                Logout
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -900,9 +885,14 @@
       navHome.addEventListener("click", () =>
         window.scrollTo({ top: 0, behavior: "smooth" })
       );
-      document.getElementById("navLogout").addEventListener("click", () => {
-        showLogoutPopup();
-      });
+      // Mobile logout functionality
+      const navLogout = document.getElementById("navLogout");
+      if (navLogout) {
+        navLogout.addEventListener("click", (e) => {
+          e.preventDefault();
+          showLogoutPopup();
+        });
+      }
 
       // Date range selection removed from this page
 
@@ -1135,116 +1125,46 @@
         });
       }
 
-      // Session management variables
-      let sessionCheckInterval;
-      let sessionTimeout;
-      const SESSION_TIMEOUT_MINUTES = 60;
-      const SESSION_CHECK_INTERVAL = 60000; // Check every minute
-
-      // Function to check session status
-      async function checkSessionStatus() {
-        try {
-          const response = await fetch("../security/check_nurse_session.php");
-          const data = await response.json();
-
-          if (!data.success || !data.logged_in) {
-            // Session expired, redirect to login
-            clearSessionTimers();
-            // Directly redirect without showing alert
-            window.location.href = "../auth/login.html?msg=session_expired";
-            return false;
-          }
-
-          // Update session activity
-          updateSessionActivity();
-          return true;
-        } catch (error) {
-          console.error("Session check failed:", error);
-          return false;
-        }
-      }
-
-      // Function to update session activity
-      async function updateSessionActivity() {
-        try {
-          await fetch("../security/update_session_activity.php");
-        } catch (error) {
-          console.error("Failed to update session activity:", error);
-        }
-      }
-
-      // Function to start session timers
-      function startSessionTimers() {
-        // Check session every minute
-        sessionCheckInterval = setInterval(
-          checkSessionStatus,
-          SESSION_CHECK_INTERVAL
-        );
-
-        // Set timeout for 60 minutes
-        sessionTimeout = setTimeout(() => {
-          clearSessionTimers();
-          // Directly redirect without showing alert
-          window.location.href = "../auth/login.html?msg=session_expired";
-        }, SESSION_TIMEOUT_MINUTES * 60 * 1000);
-      }
-
-      // Function to clear session timers
-      function clearSessionTimers() {
-        if (sessionCheckInterval) {
-          clearInterval(sessionCheckInterval);
-        }
-        if (sessionTimeout) {
-          clearTimeout(sessionTimeout);
-        }
-      }
-
-      // Function to reset session timeout on user activity
-      function resetSessionTimeout() {
-        clearSessionTimers();
-        startSessionTimers();
-      }
+      // Session management removed - no authentication required
 
       // Function to load and display nurse ID
-      function loadNurseInfo() {
+      async function loadNurseInfo() {
         try {
-          // Get nurse info from session storage
-          const nurseInfo = sessionStorage.getItem("nurseInfo");
-          if (nurseInfo) {
-            const nurse = JSON.parse(nurseInfo);
+          // Fetch session information
+          const response = await fetch("../auth/session_check.php");
+          const sessionData = await response.json();
 
-            // Desktop nurse ID display
-            const nurseIdValue = document.getElementById("nurseIdValue");
-            const nurseIdDisplay = document.getElementById("nurseIdDisplay");
+          // Desktop nurse ID display
+          const nurseIdValue = document.getElementById("nurseIdValue");
+          const nurseIdDisplay = document.getElementById("nurseIdDisplay");
 
-            // Mobile nurse ID display
-            const mobileNurseIdValue =
-              document.getElementById("mobileNurseIdValue");
-            const mobileNurseIdDisplay = document.getElementById(
-              "mobileNurseIdDisplay"
-            );
+          // Mobile nurse ID display
+          const mobileNurseIdValue =
+            document.getElementById("mobileNurseIdValue");
+          const mobileNurseIdDisplay = document.getElementById(
+            "mobileNurseIdDisplay"
+          );
+
+          if (sessionData.logged_in && sessionData.user) {
+            const user = sessionData.user;
 
             if (nurseIdValue && nurseIdDisplay) {
               // Display nurse ID on desktop
-              nurseIdValue.textContent = nurse.nurse_id || "Unknown";
+              nurseIdValue.textContent = user.username || user.id || "Unknown";
               nurseIdDisplay.style.display = "flex";
             }
 
             if (mobileNurseIdValue && mobileNurseIdDisplay) {
               // Display nurse ID on mobile
-              mobileNurseIdValue.textContent = nurse.nurse_id || "Unknown";
+              mobileNurseIdValue.textContent =
+                user.username || user.id || "Unknown";
               mobileNurseIdDisplay.style.display = "flex";
             }
 
-            console.log("Nurse ID displayed:", nurse.nurse_id);
+            console.log("Nurse ID displayed:", user.username || user.id);
           } else {
-            console.log("No nurse info found in session storage");
-            // Hide the nurse ID displays if no info available
-            const nurseIdDisplay = document.getElementById("nurseIdDisplay");
-            const mobileNurseIdDisplay = document.getElementById(
-              "mobileNurseIdDisplay"
-            );
-
+            console.log("No session data available");
+            // Hide the nurse ID displays if not logged in
             if (nurseIdDisplay) {
               nurseIdDisplay.style.display = "none";
             }
@@ -1270,76 +1190,128 @@
       }
 
       // Logout functionality
-      document
-        .getElementById("logoutBtn")
-        .addEventListener("click", function () {
-          showLogoutPopup();
-        });
-
-      // Show logout popup
       function showLogoutPopup() {
         const popup = document.getElementById("logoutPopup");
-        popup.classList.add("show");
-        setTimeout(() => {
-          popup.querySelector(".logout-popup").classList.add("show");
-        }, 10);
+        popup.classList.remove("hidden");
+        // Prevent body scroll when popup is open
+        document.body.style.overflow = "hidden";
       }
 
-      // Hide logout popup
       function hideLogoutPopup() {
         const popup = document.getElementById("logoutPopup");
-        popup.querySelector(".logout-popup").classList.remove("show");
-        setTimeout(() => {
-          popup.classList.remove("show");
-        }, 300);
+        popup.classList.add("hidden");
+        // Restore body scroll
+        document.body.style.overflow = "auto";
       }
 
-      // Perform actual logout
       async function performLogout() {
         try {
+          // Show loading state
+          const logoutBtn = document.querySelector(
+            '#logoutPopup button[onclick="performLogout()"]'
+          );
+          const originalText = logoutBtn.innerHTML;
+          logoutBtn.innerHTML =
+            '<i class="fas fa-spinner fa-spin"></i> Logging out...';
+          logoutBtn.disabled = true;
+
           // Call logout endpoint
-          await fetch("../auth/nurse_logout.php");
+          const response = await fetch("../auth/logout.php", {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+
+          if (response.ok) {
+            // Success - redirect to login page
+            window.location.href =
+              "../auth/login.html?msg=" +
+              encodeURIComponent("Logged out successfully");
+          } else {
+            // Error - show message and restore button
+            alert("Logout failed. Please try again.");
+            logoutBtn.innerHTML = originalText;
+            logoutBtn.disabled = false;
+          }
         } catch (error) {
           console.error("Logout error:", error);
+          alert("Logout failed. Please try again.");
+          // Restore button state
+          const logoutBtn = document.querySelector(
+            '#logoutPopup button[onclick="performLogout()"]'
+          );
+          logoutBtn.innerHTML = "Logout";
+          logoutBtn.disabled = false;
         }
+      }
 
-        // Clear any stored session data
-        sessionStorage.removeItem("nurseInfo");
-        localStorage.removeItem("nurseInfo");
-        clearSessionTimers();
+      // Close popup when clicking outside
+      document.addEventListener("click", function (event) {
+        const popup = document.getElementById("logoutPopup");
+        if (event.target === popup) {
+          hideLogoutPopup();
+        }
+      });
 
-        // Redirect to login page
-        window.location.href = "../auth/login.html";
+      // Close popup with Escape key
+      document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape") {
+          hideLogoutPopup();
+        }
+      });
+
+      // Check session and redirect if not logged in
+      async function checkSessionAndRedirect() {
+        try {
+          const response = await fetch("../auth/session_check.php");
+          const sessionData = await response.json();
+
+          if (!sessionData.logged_in) {
+            // Not logged in - redirect to login page
+            window.location.href =
+              "../auth/login.html?msg=" +
+              encodeURIComponent("Please log in to access the nurse portal");
+            return false;
+          }
+          return true;
+        } catch (error) {
+          console.error("Session check error:", error);
+          // On error, redirect to login page for security
+          window.location.href =
+            "../auth/login.html?msg=" +
+            encodeURIComponent("Session check failed. Please log in again.");
+          return false;
+        }
+      }
+
+      // Hide loading screen and show main content
+      function hideLoadingScreen() {
+        const loadingScreen = document.getElementById("loadingScreen");
+        if (loadingScreen) {
+          loadingScreen.style.display = "none";
+        }
+        // Add session-verified class to show main content
+        document.body.classList.add("session-verified");
       }
 
       // Load patient data when page loads
-      document.addEventListener("DOMContentLoaded", function () {
-        // Load nurse info first (this will work regardless of session status)
-        loadNurseInfo();
+      document.addEventListener("DOMContentLoaded", async function () {
+        // Check session first - redirect if not logged in
+        const isLoggedIn = await checkSessionAndRedirect();
 
-        // Check session status first
-        checkSessionStatus().then((sessionValid) => {
-          if (sessionValid) {
-            // Start session timers
-            startSessionTimers();
+        if (isLoggedIn) {
+          // Hide loading screen
+          hideLoadingScreen();
 
-            // Load patient data
-            loadPatientData();
+          // Load nurse info and patient data only if logged in
+          loadNurseInfo();
+          loadPatientData();
 
-            // Add activity listeners to reset timeout
-            const activityEvents = [
-              "mousedown",
-              "mousemove",
-              "keypress",
-              "scroll",
-              "touchstart",
-              "click",
-            ];
-            activityEvents.forEach((event) => {
-              document.addEventListener(event, resetSessionTimeout, true);
-            });
-          }
-        });
+          // Refresh nurse info every 30 seconds to keep it updated
+          setInterval(loadNurseInfo, 30000);
+        }
+        // If not logged in, the redirect will happen and loading screen will be replaced
       });
     </script>
   </body>

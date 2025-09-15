@@ -8,6 +8,29 @@ ini_set('display_errors', 0);
 
 require_once '../database/config.php';
 
+// Multi-role session authentication (Nurse + Admin)
+$hasValidSession = false;
+
+// Check nurse session first
+require_once '../auth/session_config.php';
+if (isLoggedIn()) {
+    $hasValidSession = true;
+}
+
+// If no nurse session, check admin session
+if (!$hasValidSession) {
+    require_once '../auth/admin_session_config.php';
+    if (isAdminLoggedIn()) {
+        $hasValidSession = true;
+    }
+}
+
+if (!$hasValidSession) {
+    http_response_code(401);
+    echo json_encode(['success' => false, 'message' => 'Authentication required']);
+    exit;
+}
+
 // Clear any output that might have been generated
 ob_clean();
 

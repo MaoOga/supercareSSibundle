@@ -1,7 +1,7 @@
 <?php
 require_once '../database/config.php';
-require_once 'session_config.php';
 require_once '../audit/audit_logger.php';
+require_once 'session_config.php';
 
 header('Content-Type: application/json');
 
@@ -54,18 +54,21 @@ try {
     $auditLogger = new AuditLogger($pdo);
     $auditLogger->logNurseLogin('system', $nurse['id'], $nurse['nurse_id'], $nurse['name'], $nurse, 'Nurse login successful');
 
-    // Store nurse info in session with proper session management
-    $_SESSION['nurse_id'] = $nurse['id'];
-    $_SESSION['nurse_info'] = $nurse;
+    // Create session for logged in nurse
+    $_SESSION['user_id'] = $nurse['id'];
     $_SESSION['user_type'] = 'nurse';
+    $_SESSION['username'] = $nurse['nurse_id'];
+    $_SESSION['name'] = $nurse['name'];
+    $_SESSION['email'] = $nurse['email'] ?? '';
     $_SESSION['logged_in'] = true;
-    $_SESSION['last_activity'] = time();
     $_SESSION['login_time'] = time();
+    $_SESSION['last_activity'] = time();
 
     echo json_encode([
         'success' => true,
         'message' => 'Login successful',
-        'nurse' => $nurse
+        'nurse' => $nurse,
+        'redirect_url' => '../pages/index.php'
     ]);
 
 } catch (PDOException $e) {

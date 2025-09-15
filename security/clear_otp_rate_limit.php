@@ -113,6 +113,6 @@ echo "</div>";
 
 echo "<h3>Quick Links:</h3>";
 echo "<p><a href='../auth/super_admin_login.html' style='color: #007bff;'>→ Super Admin Login</a></p>";
-echo "<p><a href='../super_admin/create_test_super_admin.php' style='color: #007bff;'>→ Create Super Admin Account</a></p>";
+echo "<p><a href='../auth/create_test_super_admin.php' style='color: #007bff;'>→ Create Super Admin Account</a></p>";
 ?>
 

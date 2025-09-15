@@ -7,7 +7,6 @@ error_reporting(0);
 ini_set('display_errors', 0);
 
 require_once '../database/config.php';
-require_once '../auth/session_config.php';
 require_once '../audit/audit_logger.php';
 
 // Clear any output that might have been generated
@@ -23,11 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 try {
     // Check if nurse is logged in
-    if (!isNurseLoggedIn()) {
-        http_response_code(401);
-        echo json_encode(['success' => false, 'message' => 'Session expired. Please log in again.']);
-        exit;
-    }
+    // Session management removed - no authentication required
 
     $pdo->beginTransaction();
     
@@ -40,10 +35,9 @@ try {
         throw new Exception('Missing required parameters: patient_id, table_type, or row_number');
     }
     
-    // Get nurse information from session for audit logging
-    $nurseInfo = getNurseInfo();
-    $nurseIdCode = $nurseInfo['nurse_id'] ?? 'UNKNOWN';
-    $nurseName = $nurseInfo['name'] ?? 'Unknown Nurse';
+    // Session management removed - using default nurse info for audit logging
+    $nurseIdCode = 'SYSTEM';
+    $nurseName = 'System User';
     
     error_log("Deleting row - Patient ID: $patientId, Table: $tableType, Row: $rowNumber");
     error_log("Nurse ID: $nurseIdCode, Nurse Name: $nurseName");

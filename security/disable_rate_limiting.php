@@ -10,17 +10,17 @@ ini_set('display_errors', 1);
 
 echo "<h2>Rate Limiting Control</h2>";
 
-// Check if admin_login.php exists
-if (!file_exists('admin_login.php')) {
-    echo "<p style='color: red;'>❌ admin_login.php file not found!</p>";
+// Check if admin_login_new_simple.php exists
+if (!file_exists('../auth/admin_login_new_simple.php')) {
+    echo "<p style='color: red;'>❌ admin_login_new_simple.php file not found!</p>";
     exit;
 }
 
-// Read the current admin_login.php file
-$content = file_get_contents('../auth/admin_login.php');
+// Read the current admin_login_new_simple.php file
+$content = file_get_contents('../auth/admin_login_new_simple.php');
 
 if ($content === false) {
-    echo "<p style='color: red;'>❌ Could not read admin_login.php file!</p>";
+    echo "<p style='color: red;'>❌ Could not read admin_login_new_simple.php file!</p>";
     exit;
 }
 
@@ -58,11 +58,11 @@ if (isset($_GET['action'])) {
         );
         
         // Write back to file
-        if (file_put_contents('../auth/admin_login.php', $content)) {
+        if (file_put_contents('../auth/admin_login_new_simple.php', $content)) {
             echo "<p style='color: green;'>✅ Rate limiting has been DISABLED.</p>";
             echo "<p>You can now try logging in without restrictions.</p>";
         } else {
-            echo "<p style='color: red;'>❌ Failed to write to admin_login.php file!</p>";
+            echo "<p style='color: red;'>❌ Failed to write to admin_login_new_simple.php file!</p>";
         }
         
     } elseif ($action === 'enable') {
@@ -89,17 +89,17 @@ if (isset($_GET['action'])) {
         );
         
         // Write back to file
-        if (file_put_contents('../auth/admin_login.php', $content)) {
+        if (file_put_contents('../auth/admin_login_new_simple.php', $content)) {
             echo "<p style='color: green;'>✅ Rate limiting has been ENABLED.</p>";
             echo "<p>Rate limiting is now active again.</p>";
         } else {
-            echo "<p style='color: red;'>❌ Failed to write to admin_login.php file!</p>";
+            echo "<p style='color: red;'>❌ Failed to write to admin_login_new_simple.php file!</p>";
         }
     }
 }
 
 // Show current status again
-$content = file_get_contents('../auth/admin_login.php');
+$content = file_get_contents('../auth/admin_login_new_simple.php');
 $isRateLimited = strpos($content, '// Check rate limiting') !== false && 
                  strpos($content, 'if ($rateLimiter->isRateLimited($clientIP))') !== false;
 

@@ -81,19 +81,24 @@ document.addEventListener("change", function (e) {
 });
 
 $(function () {
-  $(".datepicker").datepicker({
-    changeMonth: true,
-    changeYear: true,
-    dateFormat: "dd/mm/yy",
-    showButtonPanel: true,
-  });
+  // Initialize datepickers for existing date fields (excluding antibiotic and post-operative)
+  $(".datepicker")
+    .not("input[name*='antibiotic_usage'], input[name*='post-operative']")
+    .datepicker({
+      changeMonth: true,
+      changeYear: true,
+      dateFormat: "dd/mm/yy",
+      showButtonPanel: true,
+    });
   // Disable browser autofill suggestions on date inputs
-  $(".datepicker").attr({
-    autocomplete: "off",
-    autocorrect: "off",
-    autocapitalize: "off",
-    spellcheck: "false",
-  });
+  $(".datepicker")
+    .not("input[name*='antibiotic_usage'], input[name*='post-operative']")
+    .attr({
+      autocomplete: "off",
+      autocorrect: "off",
+      autocapitalize: "off",
+      spellcheck: "false",
+    });
 });
 
 function printForm() {
@@ -143,7 +148,7 @@ function showMessage(message, type) {
   }, 4000);
 }
 
-function addAntibioticRow() {
+function addAntibioticRowJS() {
   const table = $("#antibiotic-table tbody");
   const rowCount = table.find(".antibiotic-row").length + 1;
   const newRow = `
@@ -151,30 +156,16 @@ function addAntibioticRow() {
                     <td class="tg-k2l0">${rowCount}</td>
                     <td class="tg-1wig"><textarea name="drug-name_${rowCount}" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea></td>
                     <td class="tg-1wig"><textarea name="dosage_${rowCount}" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2;"></textarea></td>
-                    <td class="tg-1wig"><input type="text" name="antibiotic_usage[startedon]_${rowCount}" class="datepicker" placeholder="dd/mm/yyyy" style="width: 100px;" value=""></td>
-                    <td class="tg-1wig"><input type="text" name="antibiotic_usage[stoppeon]_${rowCount}" class="datepicker" placeholder="dd/mm/yyyy" style="width: 100px;" value=""></td>
+                    <td class="tg-1wig"><textarea name="started-on_${rowCount}" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2; width: 100px;" placeholder="Date"></textarea></td>
+                    <td class="tg-1wig"><textarea name="stopped-on_${rowCount}" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2; width: 100px;" placeholder="Date"></textarea></td>
                 </tr>
             `;
   table.append(newRow);
-  table
-    .find(".datepicker")
-    .datepicker({
-      dateFormat: "dd/mm/yy",
-      changeMonth: true,
-      changeYear: true,
-      showButtonPanel: true,
-    })
-    .attr({
-      autocomplete: "off",
-      autocorrect: "off",
-      autocapitalize: "off",
-      spellcheck: "false",
-    });
   updateAntibioticRowNumbers();
   addAudit("create", "antibiotic_row", { after: { count: rowCount } });
 }
 
-function removeAntibioticRow() {
+function removeAntibioticRowJS() {
   const table = $("#antibiotic-table tbody");
   const rows = table.find(".antibiotic-row");
   if (rows.length > 1) {
@@ -198,7 +189,11 @@ function updateAntibioticRowNumbers() {
       .find("textarea, input")
       .each(function () {
         const name = $(this).attr("name");
-        const newName = name.replace(/_\d+$/, `_${index + 1}`);
+        // Handle both underscore and hyphen patterns: drug-name_1, started-on_1, etc.
+        const newName = name.replace(/[-_]\d+$/, (match) => {
+          const separator = match.charAt(0); // Get the separator (- or _)
+          return separator + (index + 1);
+        });
         $(this).attr("name", newName);
       });
   });
@@ -251,13 +246,13 @@ function updateDrainRowNumbers() {
   });
 }
 
-function addPostOperativeRow() {
+function addPostOperativeRowJS() {
   const table = $("#post-operative-table tbody");
   const rowCount = table.find(".post-operative-row").length + 1;
   const newRow = `
                 <tr class="post-operative-row">
                     <td class="tg-k2l0">${rowCount}</td>
-                    <td class="tg-0lax"><input type="text" name="post-operative[date]_${rowCount}" class="datepicker" placeholder="dd/mm/yyyy" style="width: 100px;" value=""></td>
+                    <td class="tg-0lax"><textarea name="postop-date_${rowCount}" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2; width: 100px;" placeholder="Date"></textarea></td>
                     <td class="tg-0lax"><textarea name="post-dosage_${rowCount}" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2; text-align:center;"></textarea></td>
                     <td class="tg-0lax"><textarea name="type-ofdischarge_${rowCount}" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2; text-align:center;"></textarea></td>
                     <td class="tg-0lax"><textarea name="tenderness-pain_${rowCount}" class="input-overlay input-full" rows="1" oninput="autoGrow(this)" style="min-height:28px; line-height:1.2; text-align:center;"></textarea></td>
@@ -266,20 +261,6 @@ function addPostOperativeRow() {
                 </tr>
             `;
   table.append(newRow);
-  table
-    .find(".datepicker")
-    .datepicker({
-      dateFormat: "dd/mm/yy",
-      changeMonth: true,
-      changeYear: true,
-      showButtonPanel: true,
-    })
-    .attr({
-      autocomplete: "off",
-      autocorrect: "off",
-      autocapitalize: "off",
-      spellcheck: "false",
-    });
   table
     .find("textarea")
     .off("input")
@@ -290,7 +271,7 @@ function addPostOperativeRow() {
   addAudit("create", "post_op_row", { after: { count: rowCount } });
 }
 
-function removePostOperativeRow() {
+function removePostOperativeRowJS() {
   const table = $("#post-operative-table tbody");
   const rows = table.find(".post-operative-row");
   if (rows.length > 1) {

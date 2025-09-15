@@ -19,18 +19,6 @@ try {
 
 header('Content-Type: application/json');
 
-// Check if super admin is logged in
-session_name('SUPER_ADMIN_SESSION');
-session_start();
-if (!isset($_SESSION['super_admin_logged_in']) || $_SESSION['super_admin_logged_in'] !== true) {
-    http_response_code(401);
-    echo json_encode([
-        'success' => false, 
-        'message' => 'Unauthorized access - Please log in as super admin',
-        'session_data' => $_SESSION
-    ]);
-    exit;
-}
 
 function formatBytes($bytes, $precision = 2) {
     $units = array('B', 'KB', 'MB', 'GB', 'TB');

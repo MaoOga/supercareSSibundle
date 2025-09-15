@@ -3,19 +3,6 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// Start session for super admin
-session_name('SUPER_ADMIN_SESSION');
-session_start();
-
-// Check if super admin is logged in
-if (!isset($_SESSION['super_admin_logged_in']) || $_SESSION['super_admin_logged_in'] !== true) {
-    http_response_code(401);
-    echo json_encode([
-        'success' => false, 
-        'message' => 'Unauthorized access - Please log in as super admin'
-    ]);
-    exit;
-}
 
 header('Content-Type: application/json');
 

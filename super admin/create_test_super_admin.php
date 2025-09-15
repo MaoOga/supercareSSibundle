@@ -50,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             echo "<div style='background: #fff3cd; border: 1px solid #ffc107; padding: 15px; border-radius: 5px; margin: 20px 0;'>";
             echo "<h3>🚀 Next Steps:</h3>";
             echo "<p><a href='../auth/super_admin_login.html' style='color: #007bff; font-weight: bold;'>→ Test Login Now</a></p>";
-            echo "<p><a href='../debug/test_new_super_admin_system.php' style='color: #007bff;'>→ Run Full System Test</a></p>";
+            echo "<p><a href='../debug/fix_super_admin_tables.php' style='color: #007bff;'>→ Run Full System Test</a></p>";
             echo "</div>";
             
         } catch (PDOException $e) {
@@ -98,6 +98,6 @@ echo "</form>";
 
 echo "<h3>Quick Links:</h3>";
 echo "<p><a href='../auth/super_admin_login.html' style='color: #007bff;'>→ Test Super Admin Login</a></p>";
-echo "<p><a href='../debug/test_new_super_admin_system.php' style='color: #007bff;'>→ Run System Test</a></p>";
+echo "<p><a href='../debug/fix_super_admin_tables.php' style='color: #007bff;'>→ Run System Test</a></p>";
 echo "<p><a href='generate_super_admin_password.php' style='color: #007bff;'>→ Generate Password Hash</a></p>";
 ?>

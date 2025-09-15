@@ -81,14 +81,14 @@ echo "4. <strong>Check your bookmarks</strong> for incorrect case<br>";
 
 // Test links with correct case
 echo "<h3>Test Links (Correct Case)</h3>";
-echo "<a href='/supercareSSibundle/admin_login_new.html' target='_blank'>Login Page (Correct)</a><br>";
-echo "<a href='/supercareSSibundle/admin.php' target='_blank'>Admin Panel (Correct)</a><br>";
-echo "<a href='/supercareSSibundle/test_admin_access.php' target='_blank'>Test Admin Access</a><br>";
+echo "<a href='/supercareSSibundle/admin/admin_login_new.html' target='_blank'>Login Page (Correct)</a><br>";
+echo "<a href='/supercareSSibundle/admin/admin.php' target='_blank'>Admin Panel (Correct)</a><br>";
+echo "<a href='/supercareSSibundle/admin/admin.php' target='_blank'>Test Admin Access</a><br>";
 
 // Test links with incorrect case
 echo "<h3>Test Links (Incorrect Case - Should Not Work)</h3>";
-echo "<a href='/SUPERCARESSIBUNDLE/admin_login_new.html' target='_blank'>Login Page (Incorrect)</a><br>";
-echo "<a href='/SUPERCARESSIBUNDLE/admin.php' target='_blank'>Admin Panel (Incorrect)</a><br>";
+echo "<a href='/SUPERCARESSIBUNDLE/admin/admin_login_new.html' target='_blank'>Login Page (Incorrect)</a><br>";
+echo "<a href='/SUPERCARESSIBUNDLE/admin/admin.php' target='_blank'>Admin Panel (Incorrect)</a><br>";
 
 echo "<h3>Next Steps</h3>";
 echo "1. Use only the correct case URL: <strong>supercareSSibundle</strong><br>";

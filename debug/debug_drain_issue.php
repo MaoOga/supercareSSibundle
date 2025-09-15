@@ -131,10 +131,9 @@ echo "</ol>";
 
 echo "<h3>6. Current Files Status</h3>";
 $files = [
-    'submit_form.php',
-    'submit_form_working.php', 
-    'submit_form_backup.php',
-    'form_template.html'
+    '../forms/submit_form_working.php', 
+    '../forms/submit_form_backup.php',
+    '../forms/form_template.html'
 ];
 
 foreach ($files as $file) {

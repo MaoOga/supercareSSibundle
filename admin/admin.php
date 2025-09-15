@@ -1,25 +1,24 @@
 <?php
-// Admin Panel with Proper Session Validation
-require_once '../auth/admin_session_manager.php';
+/**
+ * Admin Panel - Protected Page
+ * Serves admin.html with session protection
+ */
+
+require_once '../auth/admin_session_config.php';
+
+// Protect this page - only logged in admins can access
+if (!isAdminLoggedIn()) {
+    header('Location: ../admin/admin_login_new.html?msg=' . urlencode('Please log in to access the admin panel'));
+    exit;
+}
+
+// Get current admin info for potential use in the HTML
+$admin = getCurrentAdmin();
 
 // Prevent caching
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
-
-// Validate admin session
-if (!$adminSession->validateSession()) {
-    // Redirect to login if session is invalid
-    header('Location: admin_login_new.html?msg=session_expired');
-    exit();
-}
-
-// Get admin user info from session
-$adminUser = $adminSession->getAdminInfo();
-if (!$adminUser) {
-    header('Location: admin_login_new.html?msg=invalid_session');
-    exit();
-}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -554,58 +553,7 @@ if (!$adminUser) {
         );
       }
 
-             // Session activity tracking
-       let activityTimeout;
-       let lastActivityTime = Date.now();
-
-       // Function to update session activity
-       function updateSessionActivity() {
-         fetch('../security/update_session_activity.php', {
-           method: 'POST',
-           headers: {
-             'Content-Type': 'application/json',
-           },
-           body: JSON.stringify({ timestamp: Date.now() })
-         })
-         .then(response => response.json())
-         .then(data => {
-           if (!data.success) {
-             // Session expired, redirect to login
-             window.location.href = 'admin_login_new.html?msg=session_expired';
-           }
-         })
-         .catch(error => {
-           console.error('Error updating session activity:', error);
-         });
-       }
-
-       // Function to reset activity timer
-       function resetActivityTimer() {
-         lastActivityTime = Date.now();
-         clearTimeout(activityTimeout);
-         
-         // Update session activity every 5 minutes
-         activityTimeout = setTimeout(() => {
-           updateSessionActivity();
-         }, 5 * 60 * 1000); // 5 minutes
-       }
-
-       // Track user activity
-       function trackActivity() {
-         const now = Date.now();
-         // Only update if more than 1 minute has passed since last activity
-         if (now - lastActivityTime > 60000) {
-           resetActivityTimer();
-         }
-       }
-
-       // Add activity listeners
-       function addActivityListeners() {
-         const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
-         events.forEach(event => {
-           document.addEventListener(event, trackActivity, true);
-         });
-       }
+       // Session activity tracking removed - no authentication required
 
        window.addEventListener("DOMContentLoaded", () => {
          document
@@ -617,30 +565,9 @@ if (!$adminUser) {
          renderNurses();
          renderSurgeons();
          
-         // Initialize activity tracking
-         addActivityListeners();
-         resetActivityTimer();
+         // Activity tracking removed - no session authentication required
          
-                   // Logout function
-                     function logout() {
-             showConfirmPopup("Are you sure you want to logout?", function() {
-               fetch("../auth/admin_logout_new.php")
-                          .then(() => {
-           window.location.href = "admin_login_new.html";
-         })
-         .catch((error) => {
-           console.error("Logout error:", error);
-           window.location.href = "admin_login_new.html";
-         });
-             });
-           }
-
-         document
-           .getElementById("adminLogoutBtn")
-           ?.addEventListener("click", logout);
-         document
-           .getElementById("adminNavLogout")
-           ?.addEventListener("click", logout);
+         // Logout functionality removed - no session authentication required
        });
     </script>
   </head>
@@ -678,7 +605,7 @@ if (!$adminUser) {
                 style="color: var(--text-icon)"
               >
                 <i class="fas fa-user-shield mr-1"></i>
-                Logged in as: <span id="adminUsername"><?php echo htmlspecialchars($adminUser['admin_username']); ?></span>
+                Logged in as: <span id="adminUsername">Loading...</span>
               </p>
             </div>
           </div>
@@ -707,14 +634,8 @@ if (!$adminUser) {
                <span>Audit Log</span>
              </a>
 
-             <button
-               id="adminLogoutBtn"
-               class="px-4 py-2 rounded-lg flex items-center justify-center gap-2 text-sm font-medium border min-w-[120px] hover:bg-gray-50 transition-colors"
-               style="
-                 border-color: var(--border-secondary);
-                 color: var(--text-primary);
-               "
-             >
+             <!-- Logout button -->
+             <button onclick="showLogoutPopup()" class="px-4 py-2 rounded-lg flex items-center justify-center gap-2 text-sm font-medium hover:bg-red-700 min-w-[120px] bg-red-600 text-white">
                <i class="fas fa-sign-out-alt"></i>
                <span>Logout</span>
              </button>
@@ -1124,25 +1045,317 @@ if (!$adminUser) {
          padding-bottom: max(env(safe-area-inset-bottom), 8px);
        "
      >
-       <div class="grid grid-cols-4 items-stretch">
+       <div class="flex items-center justify-around">
+         <!-- Admin -->
          <a href="#" class="nav-item is-active">
            <i class="fas fa-shield-halved"></i>
            <span>Admin</span>
          </a>
+         
+         <!-- Patients -->
          <a href="admin_patient_records.php" class="nav-item">
            <i class="fas fa-user-injured"></i>
            <span>Patients</span>
          </a>
+         
+         <!-- Audit -->
          <a href="audit_log.php" class="nav-item">
            <i class="fas fa-chart-line"></i>
            <span>Audit</span>
          </a>
-
-         <button id="adminNavLogout" class="nav-item">
+         
+         <!-- Logout -->
+         <a href="#" class="nav-item logout-btn text-red-600 hover:text-red-700" onclick="showLogoutPopup(); return false;">
            <i class="fas fa-sign-out-alt"></i>
            <span>Logout</span>
-         </button>
+         </a>
        </div>
      </nav>
+
+
+     <!-- Loading Screen -->
+     <div id="loadingScreen" class="fixed inset-0 bg-white flex items-center justify-center z-50" style="display: none;">
+       <div class="text-center">
+         <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500 mx-auto mb-4"></div>
+         <p class="text-gray-600">Checking session...</p>
+       </div>
+     </div>
+
+     <!-- Logout Confirmation Popup -->
+     <div id="logoutPopup" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden" style="backdrop-filter: blur(4px);">
+       <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4" style="animation: popupSlideIn 0.3s ease-out;">
+         <div class="p-6">
+           <div class="text-center">
+             <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
+               <i class="fas fa-sign-out-alt text-red-600 text-xl"></i>
+             </div>
+             <h3 class="text-lg font-medium text-gray-900 mb-2">Confirm Logout</h3>
+             <div class="mb-6">
+               <p class="text-sm text-gray-500">
+                 Are you sure you want to logout? You will need to login again to access the admin panel.
+               </p>
+             </div>
+             <div class="flex space-x-3">
+               <button id="cancelLogout" class="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-md text-sm font-medium hover:bg-gray-400 transition-colors duration-200">
+                 Cancel
+               </button>
+               <button id="confirmLogout" class="flex-1 bg-red-600 text-white py-2 px-4 rounded-md text-sm font-medium hover:bg-red-700 transition-colors duration-200">
+                 Logout
+               </button>
+             </div>
+           </div>
+         </div>
+       </div>
+     </div>
+
+     <script>
+       // Session monitoring and admin display
+       async function loadAdminInfo() {
+         try {
+           const response = await fetch("../auth/admin_session_check.php", {
+             method: 'POST',
+             headers: {
+               'Content-Type': 'application/json',
+             }
+           });
+           const sessionData = await response.json();
+
+           if (sessionData.logged_in && sessionData.admin) {
+             const admin = sessionData.admin;
+             
+             // Display admin ID
+             const adminIdValue = document.getElementById("adminIdValue");
+             const adminIdDisplay = document.getElementById("adminIdDisplay");
+             
+             if (adminIdValue && adminIdDisplay) {
+               adminIdValue.textContent = admin.username || "Admin";
+               adminIdDisplay.style.display = "flex";
+             }
+
+             // Update admin username in header
+             const adminUsername = document.getElementById("adminUsername");
+             if (adminUsername) {
+               adminUsername.textContent = admin.username || "Admin";
+             }
+
+
+             console.log("Admin session active:", admin.username || "Unknown");
+           } else {
+             console.log("Session expired, redirecting to login");
+             window.location.href = "../admin/admin_login_new.html?msg=" + encodeURIComponent("Session expired. Please log in again.");
+           }
+         } catch (error) {
+           console.error("Error loading admin info:", error);
+           window.location.href = "../admin/admin_login_new.html?msg=" + encodeURIComponent("Session check failed. Please log in again.");
+         }
+       }
+
+
+       // Show logout popup
+       function showLogoutPopup() {
+         const popup = document.getElementById("logoutPopup");
+         popup.classList.remove("hidden");
+         // Prevent body scroll when popup is open
+         document.body.style.overflow = "hidden";
+       }
+
+       // Hide logout popup
+       function hideLogoutPopup() {
+         const popup = document.getElementById("logoutPopup");
+         popup.classList.add("hidden");
+         // Restore body scroll
+         document.body.style.overflow = "auto";
+       }
+
+       // Handle logout with loading state
+       async function handleLogout() {
+         try {
+           // Show loading state
+           const logoutBtn = document.getElementById("confirmLogout");
+           const originalText = logoutBtn.innerHTML;
+           logoutBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging out...';
+           logoutBtn.disabled = true;
+
+           // Call logout endpoint
+           const response = await fetch("../auth/admin_logout_new.php", {
+             method: "GET",
+             headers: {
+               "Content-Type": "application/json",
+             }
+           });
+
+           if (response.ok) {
+             // Success - redirect to login page
+             window.location.href = "../admin/admin_login_new.html?msg=" + encodeURIComponent("You have been logged out successfully");
+           } else {
+             // Error - show message and restore button
+             alert("Logout failed. Please try again.");
+             logoutBtn.innerHTML = originalText;
+             logoutBtn.disabled = false;
+           }
+         } catch (error) {
+           console.error("Logout error:", error);
+           alert("Logout failed. Please try again.");
+           // Restore button state
+           const logoutBtn = document.getElementById("confirmLogout");
+           logoutBtn.innerHTML = "Logout";
+           logoutBtn.disabled = false;
+         }
+       }
+
+       // Initialize activity monitoring
+       function initializeActivityMonitoring() {
+         const events = [
+           'mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 
+           'touchmove', 'click', 'keydown', 'wheel', 'resize'
+         ];
+         
+         let activityTimeout;
+         
+         function resetActivityTimer() {
+           if (activityTimeout) {
+             clearTimeout(activityTimeout);
+           }
+           
+           activityTimeout = setTimeout(() => {
+             loadAdminInfo();
+           }, 1000);
+         }
+         
+         events.forEach(event => {
+           document.addEventListener(event, resetActivityTimer, true);
+         });
+         
+         window.addEventListener('focus', resetActivityTimer);
+         window.addEventListener('blur', resetActivityTimer);
+         
+         console.log('Admin activity monitoring initialized');
+       }
+
+       // Initialize when page loads
+       document.addEventListener("DOMContentLoaded", function() {
+         loadAdminInfo();
+         initializeActivityMonitoring();
+         
+         // Refresh admin info every 30 seconds
+         setInterval(loadAdminInfo, 30000);
+
+         // Logout popup event listeners
+         document.getElementById("cancelLogout").addEventListener("click", hideLogoutPopup);
+         document.getElementById("confirmLogout").addEventListener("click", handleLogout);
+
+         // Close popup when clicking outside
+         document.getElementById("logoutPopup").addEventListener("click", function(e) {
+           if (e.target === this) {
+             hideLogoutPopup();
+           }
+         });
+
+         // Close popup with Escape key
+         document.addEventListener("keydown", function(e) {
+           if (e.key === "Escape") {
+             hideLogoutPopup();
+           }
+         });
+       });
+     </script>
+
+     <style>
+       /* Navigation styles */
+       .nav-item {
+         display: flex;
+         flex-direction: column;
+         align-items: center;
+         padding: 8px 12px;
+         border-radius: 8px;
+         transition: all 0.2s ease;
+         color: var(--text-primary);
+         text-decoration: none;
+         min-width: 60px;
+       }
+
+       .nav-item:hover {
+         background-color: rgba(0, 0, 0, 0.05);
+       }
+
+       .nav-item.is-active {
+         color: var(--button-bg);
+         background-color: rgba(220, 38, 38, 0.1);
+       }
+
+       .nav-item i {
+         font-size: 18px;
+         margin-bottom: 4px;
+       }
+
+       .nav-item span {
+         font-size: 12px;
+         font-weight: 500;
+       }
+
+       /* Logout popup animations */
+       @keyframes popupSlideIn {
+         from {
+           opacity: 0;
+           transform: translateY(-20px) scale(0.95);
+         }
+         to {
+           opacity: 1;
+           transform: translateY(0) scale(1);
+         }
+       }
+
+       /* Mobile responsive adjustments */
+       @media (max-width: 640px) {
+         #logoutPopup .max-w-md {
+           max-width: calc(100vw - 2rem);
+           margin: 1rem;
+         }
+         
+         .nav-item {
+           min-width: 60px;
+           padding: 8px 4px;
+           flex: 1;
+           display: flex;
+           flex-direction: column;
+           align-items: center;
+           justify-content: center;
+         }
+         
+         .nav-item i {
+           font-size: 18px;
+           margin-bottom: 2px;
+         }
+         
+         .nav-item span {
+           font-size: 11px;
+           font-weight: 500;
+         }
+         
+         /* Mobile bottom nav specific */
+         .mobile-bottom-nav {
+           padding: 8px 0;
+         }
+         
+         .mobile-bottom-nav .nav-item {
+           border-radius: 8px;
+           transition: all 0.2s ease;
+         }
+         
+         .mobile-bottom-nav .nav-item:hover {
+           background-color: rgba(0, 0, 0, 0.05);
+         }
+         
+         .mobile-bottom-nav .nav-item.is-active {
+           color: #dc2626; /* Red color for active state */
+           background-color: transparent !important; /* Remove any background */
+         }
+         
+         .mobile-bottom-nav .nav-item.is-active i {
+           color: #dc2626; /* Red color for active icon */
+         }
+       }
+     </style>
+
   </body>
 </html>

@@ -12,12 +12,12 @@ try {
     
     // Show current admin accounts
     echo "Current Admin Accounts:\n";
-    $stmt = $pdo->query("SELECT id, admin_username, name, email, status, created_at FROM admin_users ORDER BY id");
+    $stmt = $pdo->query("SELECT id, admin_username, email, status, created_at FROM admin_users ORDER BY id");
     $count = 0;
     
     while($row = $stmt->fetch()) {
         $count++;
-        echo "$count. {$row['name']} ({$row['email']}) - {$row['status']}\n";
+        echo "$count. {$row['admin_username']} ({$row['email']}) - {$row['status']}\n";
     }
     
     if($count == 0) {

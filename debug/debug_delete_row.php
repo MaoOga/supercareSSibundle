@@ -3,7 +3,7 @@
 echo "=== DEBUGGING DELETE_ROW.PHP ===\n\n";
 
 // Test if required files exist
-$requiredFiles = ['config.php', 'session_config.php', 'audit_logger.php'];
+$requiredFiles = ['../database/config.php', '../audit/audit_logger.php'];
 foreach ($requiredFiles as $file) {
     if (file_exists($file)) {
         echo "✓ $file exists\n";
@@ -26,7 +26,7 @@ ob_start();
 
 // Include the delete_row.php file
 try {
-    include 'delete_row.php';
+    include '../forms/delete_row.php';
     $output = ob_get_contents();
     ob_end_clean();
     

@@ -21,7 +21,7 @@ try {
     $pdo = new PDO("mysql:host=localhost;dbname=supercare_ssi;charset=utf8", "root", "");
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     
-    $stmt = $pdo->prepare("SELECT id, admin_username, name, email, status FROM admin_users WHERE status = 'active' LIMIT 1");
+    $stmt = $pdo->prepare("SELECT id, admin_username, email, status FROM admin_users WHERE status = 'active' LIMIT 1");
     $stmt->execute();
     $admin = $stmt->fetch();
     

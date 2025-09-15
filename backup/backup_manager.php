@@ -231,16 +231,7 @@ function formatBytes($bytes, $precision = 2) {
                         <i class="fas fa-plus"></i>
                         <span>Create Backup</span>
                     </button>
-                    <button
-                        class="px-3 sm:px-4 py-2 rounded-lg flex items-center justify-center gap-2 text-sm sm:text-base border"
-                        style="
-                            border-color: var(--border-secondary);
-                            color: var(--text-primary);
-                        "
-                    >
-                        <i class="fas fa-sign-out-alt"></i>
-                        <span>Logout</span>
-                    </button>
+                    <!-- Logout button removed - no authentication required -->
                 </div>
             </div>
         </div>
@@ -543,10 +534,7 @@ function formatBytes($bytes, $precision = 2) {
                 <i class="fas fa-chart-line"></i>
                 <span>Audit</span>
             </a>
-                            <a href="../auth/admin_logout_new.php" class="nav-item">
-                <i class="fas fa-sign-out-alt"></i>
-                <span>Logout</span>
-            </a>
+                            <!-- Logout link removed - no authentication required -->
         </div>
     </nav>
 </body>

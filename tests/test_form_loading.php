@@ -62,7 +62,7 @@ try {
     echo "<p><strong>Patient Signature:</strong> " . ($patientData['signature'] ? "✓ Found: " . $patientData['signature'] : "❌ No signature") . "</p>";
     
     echo "<h3>Form Test:</h3>";
-    echo "<p><a href='../forms/form.html'>Go to form and test View/Edit</a></p>";
+    echo "<p><a href='../forms/form.php'>Go to form and test View/Edit</a></p>";
     
 } catch (Exception $e) {
     echo "<h3>❌ Error occurred:</h3>";

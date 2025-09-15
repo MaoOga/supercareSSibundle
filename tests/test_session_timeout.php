@@ -74,7 +74,7 @@ header('Content-Type: text/html; charset=UTF-8');
         // Test function to simulate timeout (for testing purposes only)
         function testTimeout() {
             console.log('Session timeout test - redirecting to login...');
-            window.location.href = 'login.html?msg=session_expired';
+            window.location.href = '../auth/login.html?msg=session_expired';
         }
         
         // Uncomment the line below to test timeout (will redirect immediately)

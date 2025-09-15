@@ -2,15 +2,14 @@
 // Set content type at the very beginning
 header('Content-Type: application/json');
 
-// Start session for super admin
-session_name('SUPER_ADMIN_SESSION');
-session_start();
+// Super Admin session authentication required
+require_once '../auth/super_admin_session_config.php';
 
 // Check if super admin is logged in
-if (!isset($_SESSION['super_admin_logged_in']) || $_SESSION['super_admin_logged_in'] !== true) {
+if (!isSuperAdminLoggedIn()) {
     http_response_code(401);
-    echo json_encode(['success' => false, 'message' => 'Unauthorized access']);
-    exit();
+    echo json_encode(['success' => false, 'message' => 'Super admin access required']);
+    exit;
 }
 
 // Check if it's a POST request

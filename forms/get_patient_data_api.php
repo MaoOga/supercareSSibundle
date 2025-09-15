@@ -16,6 +16,29 @@ try {
     // Include config
     require_once '../database/config.php';
     
+    // Multi-role session authentication (Nurse + Admin)
+    $hasValidSession = false;
+    
+    // Check nurse session first
+    require_once '../auth/session_config.php';
+    if (isLoggedIn()) {
+        $hasValidSession = true;
+    }
+    
+    // If no nurse session, check admin session
+    if (!$hasValidSession) {
+        require_once '../auth/admin_session_config.php';
+        if (isAdminLoggedIn()) {
+            $hasValidSession = true;
+        }
+    }
+    
+    if (!$hasValidSession) {
+        http_response_code(401);
+        echo json_encode(['success' => false, 'message' => 'Authentication required']);
+        exit;
+    }
+    
     // Check request method
     if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
         http_response_code(405);

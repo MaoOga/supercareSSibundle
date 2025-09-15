@@ -2,6 +2,16 @@
 require_once '../database/config.php';
 require_once '../audit/audit_logger.php';
 
+// Admin session authentication required
+require_once '../auth/admin_session_config.php';
+
+// Check if admin is logged in
+if (!isAdminLoggedIn()) {
+    http_response_code(401);
+    echo json_encode(['success' => false, 'message' => 'Admin access required']);
+    exit;
+}
+
 header('Content-Type: application/json');
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {

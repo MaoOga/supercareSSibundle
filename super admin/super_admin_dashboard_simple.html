@@ -1,3 +1,12 @@
+<?php
+// Super Admin Dashboard - Session Authentication Required
+require_once '../auth/super_admin_session_config.php';
+
+// Check if super admin is logged in
+if (!isSuperAdminLoggedIn()) {
+    redirectToSuperAdminLogin('Please log in to access the super admin dashboard');
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -36,36 +45,18 @@
         }
       }
 
-      .session-warning {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background: white;
-        border: 2px solid #f59e0b;
-        border-radius: 8px;
-        padding: 20px;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-        z-index: 1001;
-        display: none;
-        max-width: 400px;
-        text-align: center;
-      }
+      /* Session warning and timeout styles removed - no authentication required */
 
-      .session-timeout {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background: white;
-        border: 2px solid #ef4444;
-        border-radius: 8px;
-        padding: 20px;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-        z-index: 1001;
-        display: none;
-        max-width: 400px;
-        text-align: center;
+      /* Logout popup animation */
+      @keyframes popupSlideIn {
+        from {
+          opacity: 0;
+          transform: scale(0.9) translateY(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1) translateY(0);
+        }
       }
 
       /* Password toggle button styling */
@@ -95,7 +86,7 @@
   </head>
   <body class="bg-gray-100 min-h-screen">
     <!-- Navigation -->
-    <nav class="bg-white shadow-sm border-b">
+    <nav class="fixed top-0 left-0 right-0 bg-white shadow-sm border-b z-50">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-14 sm:h-16">
           <div class="flex items-center">
@@ -109,50 +100,25 @@
             </h1>
           </div>
           <div class="flex items-center space-x-2 sm:space-x-4">
-            <span class="text-xs sm:text-sm text-gray-600 hidden sm:block"
-              >Welcome, Super Admin</span
-            >
-
+            <!-- Logout button -->
             <button
-              id="superAdminNavLogout"
-              class="bg-red-600 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-md hover:bg-red-700 transition-colors text-xs sm:text-sm"
+              onclick="showLogoutPopup()"
+              class="bg-red-600 text-white px-3 py-1.5 rounded-md hover:bg-red-700 transition-colors text-xs sm:text-sm flex items-center"
             >
-              <i class="fas fa-sign-out-alt mr-1 sm:mr-2"></i>Logout
+              <i class="fas fa-sign-out-alt mr-1"></i>
+              <span>Logout</span>
             </button>
           </div>
         </div>
       </div>
     </nav>
 
-    <div id="sessionWarning" class="session-warning">
-      <i class="fas fa-exclamation-triangle text-3xl text-yellow-500 mb-3"></i>
-      <h3 class="text-lg font-semibold mb-2">Session Expiring Soon</h3>
-      <p class="text-gray-600 mb-4">
-        Your session will expire in
-        <span id="warningTimeLeft">5:00</span> minutes due to inactivity.
-      </p>
-      <button
-        id="extendSessionBtn"
-        class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
-      >
-        <i class="fas fa-refresh mr-1"></i>Extend Session
-      </button>
-    </div>
-
-    <div id="sessionTimeout" class="session-timeout">
-      <i class="fas fa-times-circle text-3xl text-red-500 mb-3"></i>
-      <h3 class="text-lg font-semibold mb-2">Session Expired</h3>
-      <p class="text-gray-600 mb-4">
-        Your session has expired due to inactivity. You will be redirected to
-        the login page.
-      </p>
-      <div class="text-sm text-gray-500">
-        Redirecting in <span id="redirectCountdown">5</span> seconds...
-      </div>
-    </div>
+    <!-- Session warning and timeout dialogs removed - no authentication required -->
 
     <!-- Main Content -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
+    <div
+      class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8 mt-14 sm:mt-16"
+    >
       <!-- Stats Cards -->
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
         <div class="bg-red-600 rounded-lg shadow-lg p-4 sm:p-6">
@@ -209,38 +175,6 @@
         </div>
       </div>
 
-      <!-- Backup Management Section -->
-      <div class="bg-white rounded-lg shadow mb-6">
-        <div class="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200">
-          <div class="flex justify-between items-center">
-            <div>
-              <h2 class="text-base sm:text-lg font-medium text-gray-900">
-                Database Backup Management
-              </h2>
-              <p class="text-xs sm:text-sm text-gray-600 mt-1">
-                Create and manage database backups
-              </p>
-            </div>
-            <button
-              onclick="createBackup()"
-              id="createBackupBtn"
-              class="bg-green-600 text-white px-2 sm:px-4 py-1.5 sm:py-2 rounded-md hover:bg-green-700 transition-colors text-xs sm:text-sm"
-            >
-              <i class="fas fa-plus mr-1 sm:mr-2"></i>Create Backup
-            </button>
-          </div>
-        </div>
-
-        <div class="p-4 sm:p-6">
-          <div id="backupFilesContainer">
-            <div class="text-center py-8">
-              <i class="fas fa-spinner fa-spin text-2xl text-gray-400 mb-2"></i>
-              <p class="text-gray-500">Loading backup files...</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <!-- Admin Management Section -->
       <div class="bg-white rounded-lg shadow">
         <div class="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200">
@@ -256,7 +190,7 @@
         <div class="p-4 sm:p-6 border-b border-gray-200">
           <form
             id="adminForm"
-            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4"
+            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4"
           >
             <div>
               <label
@@ -271,21 +205,6 @@
                 required
                 class="w-full px-2 sm:px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
                 placeholder="Enter username"
-              />
-            </div>
-            <div>
-              <label
-                for="adminName"
-                class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2"
-                >Full Name</label
-              >
-              <input
-                type="text"
-                id="adminName"
-                name="adminName"
-                required
-                class="w-full px-2 sm:px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                placeholder="Enter full name"
               />
             </div>
             <div>
@@ -335,7 +254,7 @@
               </div>
               <div id="passwordValidation" class="text-xs mt-1 hidden"></div>
             </div>
-            <div class="sm:col-span-2 lg:col-span-4">
+            <div class="sm:col-span-2 lg:col-span-3">
               <button
                 type="submit"
                 id="adminSubmit"
@@ -380,11 +299,6 @@
                   <th
                     class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
-                    Name
-                  </th>
-                  <th
-                    class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  >
                     Email
                   </th>
                   <th
@@ -409,6 +323,38 @@
           </div>
         </div>
       </div>
+
+      <!-- Backup Management Section -->
+      <div class="bg-white rounded-lg shadow mt-6">
+        <div class="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200">
+          <div class="flex justify-between items-center">
+            <div>
+              <h2 class="text-base sm:text-lg font-medium text-gray-900">
+                Database Backup Management
+              </h2>
+              <p class="text-xs sm:text-sm text-gray-600 mt-1">
+                Create and manage database backups
+              </p>
+            </div>
+            <button
+              onclick="createBackup()"
+              id="createBackupBtn"
+              class="bg-green-600 text-white px-2 sm:px-4 py-1.5 sm:py-2 rounded-md hover:bg-green-700 transition-colors text-xs sm:text-sm"
+            >
+              <i class="fas fa-plus mr-1 sm:mr-2"></i>Create Backup
+            </button>
+          </div>
+        </div>
+
+        <div class="p-4 sm:p-6">
+          <div id="backupFilesContainer">
+            <div class="text-center py-8">
+              <i class="fas fa-spinner fa-spin text-2xl text-gray-400 mb-2"></i>
+              <p class="text-gray-500">Loading backup files...</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Centered Message Display -->
@@ -423,148 +369,84 @@
     </div>
 
     <script>
-      // Session timeout variables
-      let sessionTimeout;
-      let warningTimeout;
-      let sessionTimer;
-      let warningTimer;
-      let redirectTimer;
-      const SESSION_DURATION = 30 * 60 * 1000; // 30 minutes in milliseconds
-      const WARNING_TIME = 5 * 60 * 1000; // 5 minutes warning
-      const REDIRECT_DELAY = 5; // 5 seconds to redirect after timeout
+      // Super Admin Session Management
+      let sessionCheckInterval;
+      let activityTimeout;
 
-      // Session management functions
-      function initializeSessionTimeout() {
-        // Reset timers on any user activity
-        resetSessionTimers();
-
-        // Set up activity listeners
-        document.addEventListener("mousemove", resetSessionTimers);
-        document.addEventListener("keypress", resetSessionTimers);
-        document.addEventListener("click", resetSessionTimers);
-        document.addEventListener("scroll", resetSessionTimers);
-
-        // Start the session timer
-        startSessionTimer();
-      }
-
-      function resetSessionTimers() {
-        // Clear existing timers
-        clearTimeout(sessionTimeout);
-        clearTimeout(warningTimeout);
-        clearInterval(sessionTimer);
-        clearInterval(warningTimer);
-
-        // Hide warning and timeout dialogs
-        document.getElementById("sessionWarning").style.display = "none";
-        document.getElementById("sessionTimeout").style.display = "none";
-
-        // Restart timers
-        startSessionTimer();
-      }
-
-      function startSessionTimer() {
-        const startTime = Date.now();
-        const endTime = startTime + SESSION_DURATION;
-        const warningTime = endTime - WARNING_TIME;
-
-        // Set warning timeout
-        warningTimeout = setTimeout(() => {
-          showSessionWarning();
-        }, SESSION_DURATION - WARNING_TIME);
-
-        // Set session timeout
-        sessionTimeout = setTimeout(() => {
-          handleSessionTimeout();
-        }, SESSION_DURATION);
-      }
-
-      function showSessionWarning() {
-        const warningElement = document.getElementById("sessionWarning");
-        const timeLeftElement = document.getElementById("warningTimeLeft");
-
-        // Update warning time display
-        let warningTimeLeft = WARNING_TIME / 1000 / 60; // Convert to minutes
-        timeLeftElement.textContent = `${warningTimeLeft}:00`;
-
-        warningElement.style.display = "block";
-
-        // Update warning countdown
-        warningTimer = setInterval(() => {
-          warningTimeLeft -= 1 / 60; // Decrease by 1 second
-          if (warningTimeLeft > 0) {
-            const minutes = Math.floor(warningTimeLeft);
-            const seconds = Math.floor((warningTimeLeft - minutes) * 60);
-            timeLeftElement.textContent = `${minutes}:${seconds
-              .toString()
-              .padStart(2, "0")}`;
-          }
-        }, 1000);
-      }
-
-      function handleSessionTimeout() {
-        // Clear all timers
-        clearTimeout(sessionTimeout);
-        clearTimeout(warningTimeout);
-        clearInterval(sessionTimer);
-        clearInterval(warningTimer);
-
-        // Hide warning dialog
-        document.getElementById("sessionWarning").style.display = "none";
-
-        // Show timeout dialog
-        const timeoutElement = document.getElementById("sessionTimeout");
-        const countdownElement = document.getElementById("redirectCountdown");
-        timeoutElement.style.display = "block";
-
-        // Start redirect countdown
-        let countdown = REDIRECT_DELAY;
-        countdownElement.textContent = countdown;
-
-        redirectTimer = setInterval(() => {
-          countdown--;
-          countdownElement.textContent = countdown;
-
-          if (countdown <= 0) {
-            clearInterval(redirectTimer);
-            logout();
-          }
-        }, 1000);
-      }
-
-      function extendSession() {
-        // Call server to extend session
-        fetch("../security/update_session_activity.php", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ action: "extend_session" }),
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            if (data.success) {
-              // Hide warning dialog
-              document.getElementById("sessionWarning").style.display = "none";
-              // Reset timers
-              resetSessionTimers();
-              showMessage("Session extended successfully!", "success");
-            } else {
-              showMessage(
-                "Failed to extend session. Please login again.",
-                "error"
-              );
-              setTimeout(() => logout(), 2000);
+      // Check super admin session status
+      async function checkSuperAdminSession() {
+        try {
+          const response = await fetch(
+            "../auth/super_admin_session_check.php",
+            {
+              method: "GET",
+              credentials: "same-origin",
             }
-          })
-          .catch((error) => {
-            console.error("Error extending session:", error);
-            showMessage(
-              "Error extending session. Please login again.",
-              "error"
-            );
-            setTimeout(() => logout(), 2000);
-          });
+          );
+
+          const data = await response.json();
+
+          if (data.logged_in) {
+            // Super admin is logged in
+          } else {
+            // Session expired or invalid
+            window.location.href =
+              "../auth/super_admin_login.html?msg=" +
+              encodeURIComponent("Session expired. Please login again.");
+          }
+        } catch (error) {
+          console.error("Session check failed:", error);
+          // On error, redirect to login
+          window.location.href =
+            "../auth/super_admin_login.html?msg=" +
+            encodeURIComponent("Session error. Please login again.");
+        }
+      }
+
+      // Initialize activity monitoring
+      function initializeActivityMonitoring() {
+        const events = [
+          "mousedown",
+          "mousemove",
+          "keypress",
+          "scroll",
+          "touchstart",
+          "touchmove",
+          "click",
+          "keydown",
+          "wheel",
+          "resize",
+          "focus",
+          "blur",
+        ];
+
+        events.forEach((event) => {
+          document.addEventListener(event, resetActivityTimeout, true);
+        });
+
+        resetActivityTimeout();
+      }
+
+      // Reset activity timeout
+      function resetActivityTimeout() {
+        clearTimeout(activityTimeout);
+        activityTimeout = setTimeout(() => {
+          // Session will be checked on next interval
+        }, 30000); // 30 seconds
+      }
+
+      // Logout functionality
+      function showLogoutPopup() {
+        document.getElementById("logoutPopup").classList.remove("hidden");
+      }
+
+      function hideLogoutPopup() {
+        document.getElementById("logoutPopup").classList.add("hidden");
+      }
+
+      function handleLogout() {
+        // Redirect to logout handler
+        window.location.href = "../auth/super_admin_logout.php";
       }
 
       // Validation functions
@@ -653,9 +535,6 @@
                                        admin.admin_username
                                      }</td>
                                      <td class="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900">${
-                                       admin.name || "—"
-                                     }</td>
-                                     <td class="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900">${
                                        admin.email
                                      }</td>
                                      <td class="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500">${
@@ -699,12 +578,6 @@
                                    </div>
                                    <div class="space-y-2 text-sm">
                                      <div class="flex justify-between">
-                                       <span class="text-gray-500">Name:</span>
-                                       <span class="text-gray-900">${
-                                         admin.name || "—"
-                                       }</span>
-                                     </div>
-                                     <div class="flex justify-between">
                                        <span class="text-gray-500">Email:</span>
                                        <span class="text-gray-900 break-all">${
                                          admin.email
@@ -727,19 +600,19 @@
                   .join("");
               } else {
                 tbody.innerHTML =
-                  '<tr><td colspan="6" class="px-3 sm:px-6 py-4 text-center text-sm text-gray-500">No admin accounts found</td></tr>';
+                  '<tr><td colspan="5" class="px-3 sm:px-6 py-4 text-center text-sm text-gray-500">No admin accounts found</td></tr>';
                 mobileCards.innerHTML =
                   '<div class="text-center text-sm text-gray-500 py-8">No admin accounts found</div>';
               }
             } else {
-              tbody.innerHTML = `<tr><td colspan="6" class="px-3 sm:px-6 py-4 text-center text-sm text-red-600">Error loading admins: ${data.message}</td></tr>`;
+              tbody.innerHTML = `<tr><td colspan="5" class="px-3 sm:px-6 py-4 text-center text-sm text-red-600">Error loading admins: ${data.message}</td></tr>`;
               mobileCards.innerHTML = `<div class="text-center text-sm text-red-600 py-8">Error loading admins: ${data.message}</div>`;
             }
           })
           .catch((error) => {
             console.error("Error:", error);
             tbody.innerHTML =
-              '<tr><td colspan="6" class="px-3 sm:px-6 py-4 text-center text-sm text-red-600">Network error occurred</td></tr>';
+              '<tr><td colspan="5" class="px-3 sm:px-6 py-4 text-center text-sm text-red-600">Network error occurred</td></tr>';
             mobileCards.innerHTML =
               '<div class="text-center text-sm text-red-600 py-8">Network error occurred</div>';
           });
@@ -751,12 +624,11 @@
         const form = e.target;
 
         const username = form.adminUsername.value.trim();
-        const name = form.adminName.value.trim();
         const email = form.adminEmail.value.trim();
         const password = form.adminPassword.value;
 
         // Validation
-        if (!username || !name || !email || !password) {
+        if (!username || !email || !password) {
           showMessage("All fields are required", "error");
           return;
         }
@@ -778,7 +650,6 @@
 
         const formData = new FormData();
         formData.append("username", username);
-        formData.append("name", name);
         formData.append("email", email);
         formData.append("password", password);
 
@@ -912,29 +783,7 @@
           });
       }
 
-      // Logout function
-      function logout() {
-        // Show custom logout confirmation popup
-        showLogoutConfirmPopup();
-      }
-
-      // Show logout confirmation popup
-      function showLogoutConfirmPopup() {
-        const popup = document.getElementById("logoutConfirmPopup");
-        popup.classList.remove("hidden");
-      }
-
-      // Hide logout confirmation popup
-      function hideLogoutConfirmPopup() {
-        const popup = document.getElementById("logoutConfirmPopup");
-        popup.classList.add("hidden");
-      }
-
-      // Confirm logout
-      function confirmLogout() {
-        hideLogoutConfirmPopup();
-        window.location.href = "../auth/super_admin_logout.php";
-      }
+      // Logout functionality removed - no authentication required
 
       // Real-time validation functions
       function validateEmailField(field) {
@@ -1169,20 +1018,73 @@
       }
 
       function downloadBackup(filename) {
-        window.open(
-          `download_backup_simple.php?file=${encodeURIComponent(filename)}`,
-          "_blank"
-        );
+        try {
+          const downloadUrl = `../backup/download_backup_simple.php?file=${encodeURIComponent(
+            filename
+          )}`;
+          console.log("Downloading backup:", filename);
+          console.log("Download URL:", downloadUrl);
+
+          // Test if the URL is accessible first
+          fetch(downloadUrl, { method: "HEAD" })
+            .then((response) => {
+              console.log("Download response status:", response.status);
+              if (response.ok) {
+                // Create a temporary link element for download
+                const link = document.createElement("a");
+                link.href = downloadUrl;
+                link.download = filename;
+                link.target = "_blank";
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                showMessage("Download started successfully.", "success");
+              } else {
+                console.error("Download failed with status:", response.status);
+                showMessage(
+                  "Failed to download backup file. File may not exist.",
+                  "error"
+                );
+              }
+            })
+            .catch((error) => {
+              console.error("Download error:", error);
+              showMessage(
+                "Failed to download backup file. Please check your connection.",
+                "error"
+              );
+            });
+        } catch (error) {
+          console.error("Download error:", error);
+          showMessage(
+            "Failed to download backup file. Please try again.",
+            "error"
+          );
+        }
       }
 
       function deleteBackup(filename) {
-        if (
-          !confirm(
-            "Are you sure you want to delete this backup file? This action cannot be undone."
-          )
-        ) {
-          return;
-        }
+        showBackupDeleteConfirmPopup(filename);
+      }
+
+      // Show backup delete confirmation popup
+      function showBackupDeleteConfirmPopup(filename) {
+        const popup = document.getElementById("backupDeleteConfirmPopup");
+        const filenameInput = document.getElementById("deleteBackupFilename");
+        filenameInput.value = filename;
+        popup.classList.remove("hidden");
+      }
+
+      // Hide backup delete confirmation popup
+      function hideBackupDeleteConfirmPopup() {
+        const popup = document.getElementById("backupDeleteConfirmPopup");
+        popup.classList.add("hidden");
+      }
+
+      // Confirm delete backup
+      function confirmDeleteBackup() {
+        const filename = document.getElementById("deleteBackupFilename").value;
+        hideBackupDeleteConfirmPopup();
 
         const formData = new FormData();
         formData.append("filename", filename);
@@ -1212,31 +1114,11 @@
           });
       }
 
-      // Check session status first
-      function checkSessionStatus() {
-        fetch("check_super_admin_session.php")
-          .then((response) => response.json())
-          .then((data) => {
-            console.log("Session status:", data);
-            if (data.success && data.is_super_admin) {
-              // Session is valid, load data
-              renderAdmins();
-              updateStats();
-              loadBackupFiles();
-            } else {
-              // Session is invalid, redirect to login
-              console.error("Invalid session, redirecting to login");
-              console.log("Session data:", data);
-              window.location.href = "../auth/super_admin_login.html";
-            }
-          })
-          .catch((error) => {
-            console.error("Error checking session:", error);
-            // On error, try to load data anyway
-            renderAdmins();
-            updateStats();
-            loadBackupFiles();
-          });
+      // Session check removed - load data directly
+      function loadDashboardData() {
+        renderAdmins();
+        updateStats();
+        loadBackupFiles();
       }
 
       // Event listeners
@@ -1244,22 +1126,40 @@
         document
           .getElementById("adminForm")
           .addEventListener("submit", handleAdminSubmit);
+
+        // Session management event listeners
         document
-          .getElementById("superAdminNavLogout")
-          ?.addEventListener("click", logout);
-
-        // Add extend session button event listener
+          .getElementById("cancelLogout")
+          .addEventListener("click", hideLogoutPopup);
         document
-          .getElementById("extendSessionBtn")
-          ?.addEventListener("click", extendSession);
+          .getElementById("confirmLogout")
+          .addEventListener("click", handleLogout);
 
-        // Check session before loading data
-        checkSessionStatus();
+        // Close popup when clicking outside
+        document
+          .getElementById("logoutPopup")
+          .addEventListener("click", function (e) {
+            if (e.target === this) {
+              hideLogoutPopup();
+            }
+          });
 
-        // Initialize session timeout after session check
-        setTimeout(() => {
-          initializeSessionTimeout();
-        }, 1000);
+        // Close popup with Escape key
+        document.addEventListener("keydown", function (e) {
+          if (e.key === "Escape") {
+            hideLogoutPopup();
+          }
+        });
+
+        // Initialize session management
+        checkSuperAdminSession();
+        initializeActivityMonitoring();
+
+        // Start session checking interval (every 30 seconds)
+        sessionCheckInterval = setInterval(checkSuperAdminSession, 30000);
+
+        // Load dashboard data
+        loadDashboardData();
       });
     </script>
 
@@ -1312,45 +1212,95 @@
       </div>
     </div>
 
-    <!-- Logout Confirmation Popup -->
+    <!-- Backup Delete Confirmation Popup -->
     <div
-      id="logoutConfirmPopup"
+      id="backupDeleteConfirmPopup"
       class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden"
     >
       <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
         <div class="p-6">
           <div class="flex items-center mb-4">
             <div class="flex-shrink-0">
-              <i class="fas fa-sign-out-alt text-3xl text-red-500"></i>
+              <i class="fas fa-exclamation-triangle text-3xl text-red-500"></i>
             </div>
             <div class="ml-3">
-              <h3 class="text-lg font-medium text-gray-900">Confirm Logout</h3>
+              <h3 class="text-lg font-medium text-gray-900">
+                Delete Backup File
+              </h3>
             </div>
           </div>
 
           <div class="mb-6">
             <p class="text-sm text-gray-600">
-              Are you sure you want to logout? You will be redirected to the
-              login page.
+              Are you sure you want to delete this backup file? This action
+              cannot be undone and will permanently remove the backup from the
+              system.
             </p>
           </div>
+
+          <input type="hidden" id="deleteBackupFilename" value="" />
 
           <div class="flex justify-end space-x-3">
             <button
               type="button"
-              onclick="hideLogoutConfirmPopup()"
+              onclick="hideBackupDeleteConfirmPopup()"
               class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors"
             >
               Cancel
             </button>
             <button
               type="button"
-              onclick="confirmLogout()"
+              onclick="confirmDeleteBackup()"
               class="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
             >
-              <i class="fas fa-sign-out-alt mr-2"></i>
-              Logout
+              <i class="fas fa-trash mr-2"></i>
+              Delete Backup
             </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Logout Confirmation Popup -->
+    <div
+      id="logoutPopup"
+      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden"
+      style="backdrop-filter: blur(4px)"
+    >
+      <div
+        class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4"
+        style="animation: popupSlideIn 0.3s ease-out"
+      >
+        <div class="p-6">
+          <div class="text-center">
+            <div
+              class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4"
+            >
+              <i class="fas fa-sign-out-alt text-red-600 text-xl"></i>
+            </div>
+            <h3 class="text-lg font-medium text-gray-900 mb-2">
+              Confirm Logout
+            </h3>
+            <div class="mb-6">
+              <p class="text-sm text-gray-500">
+                Are you sure you want to logout? You will need to login again to
+                access the super admin dashboard.
+              </p>
+            </div>
+            <div class="flex space-x-3">
+              <button
+                id="cancelLogout"
+                class="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-md text-sm font-medium hover:bg-gray-400 transition-colors duration-200"
+              >
+                Cancel
+              </button>
+              <button
+                id="confirmLogout"
+                class="flex-1 bg-red-600 text-white py-2 px-4 rounded-md text-sm font-medium hover:bg-red-700 transition-colors duration-200"
+              >
+                Logout
+              </button>
+            </div>
           </div>
         </div>
       </div>

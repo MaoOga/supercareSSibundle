@@ -6,6 +6,13 @@ ob_start();
 error_reporting(0);
 ini_set('display_errors', 0);
 
+// Session management removed - no authentication required
+$is_authorized = true;
+
+// Session checking code removed - no authentication required
+
+// Authorization check removed - no authentication required
+
 require_once '../database/config.php';
 
 // Clear any output that might have been generated

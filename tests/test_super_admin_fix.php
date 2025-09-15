@@ -63,7 +63,7 @@ foreach ($files as $file) {
 // Test 4: Test admin users query
 echo "<h3>4. Admin Users Query Test:</h3>";
 try {
-    $stmt = $pdo->prepare("SELECT id, admin_username, name, email, created_at, last_login, status FROM admin_users ORDER BY created_at DESC");
+    $stmt = $pdo->prepare("SELECT id, admin_username, email, created_at, last_login, status FROM admin_users ORDER BY created_at DESC");
     $stmt->execute();
     $admins = $stmt->fetchAll();
     

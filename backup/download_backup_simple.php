@@ -3,25 +3,14 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// Simple database connection
-$host = 'localhost';
-$dbname = 'supercare_ssi';
-$username = 'root';
-$password = '';
-
-try {
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $username, $password);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
-    die('Database connection failed');
-}
+// Super Admin session authentication required
+require_once '../auth/super_admin_session_config.php';
 
 // Check if super admin is logged in
-session_name('SUPER_ADMIN_SESSION');
-session_start();
-if (!isset($_SESSION['super_admin_logged_in']) || $_SESSION['super_admin_logged_in'] !== true) {
+if (!isSuperAdminLoggedIn()) {
     http_response_code(401);
-    die('Unauthorized access');
+    header('Content-Type: text/plain');
+    die('Super admin access required');
 }
 
 // Handle file download
@@ -29,18 +18,35 @@ if (isset($_GET['file']) && !empty($_GET['file'])) {
     $filename = basename($_GET['file']); // Sanitize filename
     $filepath = __DIR__ . '/backups/' . $filename;
     
+    // Debug information
+    error_log("Download request for file: " . $filename);
+    error_log("Full file path: " . $filepath);
+    error_log("File exists: " . (file_exists($filepath) ? 'Yes' : 'No'));
+    
     if (file_exists($filepath) && strpos($filename, 'ssi_bundle_') === 0) {
+        // Clear any previous output
+        if (ob_get_level()) {
+            ob_end_clean();
+        }
+        
+        // Set headers for file download
         header('Content-Type: application/octet-stream');
         header('Content-Disposition: attachment; filename="' . $filename . '"');
         header('Content-Length: ' . filesize($filepath));
+        header('Cache-Control: no-cache, must-revalidate');
+        header('Pragma: no-cache');
+        
+        // Output the file
         readfile($filepath);
         exit;
     } else {
         http_response_code(404);
-        die('File not found');
+        header('Content-Type: text/plain');
+        die('File not found: ' . $filename);
     }
 } else {
     http_response_code(400);
+    header('Content-Type: text/plain');
     die('No file specified');
 }
 ?>

@@ -7,8 +7,7 @@ error_reporting(0);
 ini_set('display_errors', 0);
 
 require_once '../database/config.php';
-// Temporarily comment out session requirements for debugging
-// require_once '../auth/session_config.php';
+// Session management removed - no authentication required
 // require_once '../audit/audit_logger.php';
 
 // Clear any output that might have been generated
@@ -62,6 +61,12 @@ try {
 
     // Handle patients table
     if ($isUpdate) {
+        // Convert date_completed from DD/MM/YYYY to YYYY-MM-DD format
+        $dateCompleted = null;
+        if (!empty($formData['date_completed'])) {
+            $dateCompleted = date('Y-m-d', strtotime(str_replace('/', '-', $formData['date_completed'])));
+        }
+        
         $patientStmt = $pdo->prepare("UPDATE patients SET name = ?, age = ?, sex = ?, uhid = ?, phone = ?, bed_ward = ?, address = ?, primary_diagnosis = ?, surgical_procedure = ?, date_completed = ? WHERE patient_id = ?");
         $patientStmt->execute([
             $formData['name'],
@@ -73,10 +78,16 @@ try {
             $formData['address'],
             $formData['diagnosis'],
             $formData['surgical_procedure'],
-            date('Y-m-d'),
+            $dateCompleted,
             $patientId
         ]);
     } else {
+        // Convert date_completed from DD/MM/YYYY to YYYY-MM-DD format
+        $dateCompleted = null;
+        if (!empty($formData['date_completed'])) {
+            $dateCompleted = date('Y-m-d', strtotime(str_replace('/', '-', $formData['date_completed'])));
+        }
+        
         $patientStmt = $pdo->prepare("INSERT INTO patients (name, age, sex, uhid, phone, bed_ward, address, primary_diagnosis, surgical_procedure, date_completed) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         $patientStmt->execute([
             $formData['name'],
@@ -88,7 +99,7 @@ try {
             $formData['address'],
             $formData['diagnosis'],
             $formData['surgical_procedure'],
-            date('Y-m-d')
+            $dateCompleted
         ]);
         $patientId = $pdo->lastInsertId();
     }
@@ -390,15 +401,9 @@ try {
         $formData['reviewother'] ?? null // Fixed field name
     ]);
 
-    // Temporarily comment out session and audit logging for debugging
-    /*
-    // Get nurse information from session
-    $nurseName = $_SESSION['nurse_info']['name'] ?? 'Unknown Nurse';
-    $nurseId = $_SESSION['nurse_info']['nurse_id'] ?? 'Unknown';
-    
-    // Debug: Log session information
-    error_log("Session data: " . print_r($_SESSION, true));
-    error_log("Nurse ID: " . $nurseId . ", Nurse Name: " . $nurseName);
+    // Session management removed - using default nurse info for audit logging
+    $nurseName = 'System User';
+    $nurseId = 'SYSTEM';
     
     // Log the audit event
     $auditLogger = new AuditLogger($pdo);
@@ -419,7 +424,7 @@ try {
         $result = $auditLogger->logPatientCreate($nurseId, $patientId, $formData['name'], $patientData);
         error_log("Patient create audit log result: " . ($result ? 'SUCCESS' : 'FAILED'));
     }
-    */
+    
 
     $pdo->commit();
     

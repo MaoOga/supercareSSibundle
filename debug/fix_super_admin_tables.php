@@ -108,7 +108,7 @@ echo "<h3>🎯 Next Steps:</h3>";
 echo "<div style='background: #e8f5e8; border: 1px solid #4caf50; padding: 15px; border-radius: 5px; margin: 20px 0;'>";
 echo "<p><strong>1. Generate Password Hash:</strong> <a href='../super_admin/generate_super_admin_password.php' style='color: #007bff;'>Click here</a></p>";
 echo "<p><strong>2. Test the System:</strong> <a href='../auth/super_admin_login.html' style='color: #007bff;'>Click here</a></p>";
-echo "<p><strong>3. Run Full Test:</strong> <a href='../super_admin/test_new_super_admin_system.php' style='color: #007bff;'>Click here</a></p>";
+echo "<p><strong>3. Create Test Super Admin:</strong> <a href='../super_admin/create_test_super_admin.php' style='color: #007bff;'>Click here</a></p>";
 echo "</div>";
 
 echo "<p style='color: green;'>🎉 <strong>Tables are now fixed and ready to use!</strong></p>";

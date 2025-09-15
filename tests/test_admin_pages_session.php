@@ -11,7 +11,7 @@ if (file_exists('admin_session_manager.php')) {
     echo "✅ admin_session_manager.php exists<br>";
     
     // Include session manager
-    require_once 'admin_session_manager.php';
+    require_once '../auth/admin_session_manager.php';
     
     if (isset($adminSession)) {
         echo "✅ Session manager loaded successfully<br>";
@@ -29,9 +29,9 @@ if (file_exists('admin_session_manager.php')) {
 echo "<h3>Test 2: Admin Pages Integration</h3>";
 
 $admin_pages = [
-    'admin.php' => 'Admin Panel',
-    'audit_log.php' => 'Audit Log',
-    'admin_patient_records.php' => 'Patient Records'
+    '../admin/admin.php' => 'Admin Panel',
+    '../admin/audit_log.php' => 'Audit Log',
+    '../admin/admin_patient_records.php' => 'Patient Records'
 ];
 
 foreach ($admin_pages as $file => $name) {
@@ -40,7 +40,7 @@ foreach ($admin_pages as $file => $name) {
         
         // Check if it includes the session manager
         $content = file_get_contents($file);
-        if (strpos($content, "require_once 'admin_session_manager.php'") !== false) {
+        if (strpos($content, "require_once '../auth/admin_session_manager.php'") !== false) {
             echo "✅ $name includes session manager<br>";
         } else {
             echo "❌ $name does NOT include session manager<br>";
@@ -66,11 +66,11 @@ foreach ($admin_pages as $file => $name) {
 
 // Test 3: Check logout handler
 echo "<h3>Test 3: Logout Handler</h3>";
-if (file_exists('admin_logout_new.php')) {
+if (file_exists('../auth/admin_logout_new.php')) {
     echo "✅ admin_logout_new.php exists<br>";
     
-    $content = file_get_contents('admin_logout_new.php');
-    if (strpos($content, "require_once 'admin_session_manager.php'") !== false) {
+    $content = file_get_contents('../auth/admin_logout_new.php');
+    if (strpos($content, "require_once '../auth/admin_session_manager.php'") !== false) {
         echo "✅ Logout handler includes session manager<br>";
     } else {
         echo "❌ Logout handler does NOT include session manager<br>";
@@ -87,11 +87,11 @@ if (file_exists('admin_logout_new.php')) {
 
 // Test 4: Check session activity API
 echo "<h3>Test 4: Session Activity API</h3>";
-if (file_exists('update_session_activity.php')) {
+if (file_exists('../security/update_session_activity.php')) {
     echo "✅ update_session_activity.php exists<br>";
     
-    $content = file_get_contents('update_session_activity.php');
-    if (strpos($content, "require_once 'admin_session_manager.php'") !== false) {
+    $content = file_get_contents('../security/update_session_activity.php');
+    if (strpos($content, "require_once '../auth/admin_session_manager.php'") !== false) {
         echo "✅ Session activity API includes session manager<br>";
     } else {
         echo "❌ Session activity API does NOT include session manager<br>";

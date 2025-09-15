@@ -1,13 +1,13 @@
 <?php
 /**
- * Admin Login Handler with Proper Session Management
+ * Admin Login Handler with Session Management
  */
 
 // Set content type to JSON
 header('Content-Type: application/json');
 
-// Include session manager
-require_once 'admin_session_manager.php';
+// Include admin session configuration
+require_once 'admin_session_config.php';
 
 // Database configuration
 function getDBConnection() {
@@ -43,7 +43,7 @@ function validateAdmin($email, $password) {
     
     try {
         $stmt = $pdo->prepare("
-            SELECT id, admin_username, name, email, password, status 
+            SELECT id, admin_username, email, password, status 
             FROM admin_users 
             WHERE email = ? AND status = 'active'
         ");
@@ -123,31 +123,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Log successful login
         logLoginAttempt($email, 'success', 'Login successful');
         
-        // Create proper session
-        if ($adminSession->createSession($admin)) {
-            // Update last login time
-            $pdo = getDBConnection();
-            if ($pdo) {
-                try {
-                    $stmt = $pdo->prepare("UPDATE admin_users SET last_login = NOW() WHERE id = ?");
-                    $stmt->execute([$admin['id']]);
-                } catch (PDOException $e) {
-                    error_log("Failed to update last login: " . $e->getMessage());
-                }
+        // Update last login time
+        $pdo = getDBConnection();
+        if ($pdo) {
+            try {
+                $stmt = $pdo->prepare("UPDATE admin_users SET last_login = NOW() WHERE id = ?");
+                $stmt->execute([$admin['id']]);
+            } catch (PDOException $e) {
+                error_log("Failed to update last login: " . $e->getMessage());
             }
-            
-            echo json_encode([
-                'success' => true,
-                'message' => 'Login successful!',
-                'admin_name' => $admin['name'],
-                'session_id' => session_id()
-            ]);
-        } else {
-            echo json_encode([
-                'success' => false,
-                'message' => 'Failed to create session. Please try again.'
-            ]);
         }
+        
+        // Set admin session data
+        setAdminSession([
+            'id' => $admin['id'],
+            'type' => 'admin',
+            'username' => $admin['admin_username'],
+            'email' => $admin['email']
+        ]);
+        
+        echo json_encode([
+            'success' => true,
+            'message' => 'Login successful!',
+            'admin_username' => $admin['admin_username']
+        ]);
         
     } else {
         // Log failed login

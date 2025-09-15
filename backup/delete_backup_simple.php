@@ -3,6 +3,17 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
+// Super Admin session authentication required
+require_once '../auth/super_admin_session_config.php';
+
+// Check if super admin is logged in
+if (!isSuperAdminLoggedIn()) {
+    http_response_code(401);
+    header('Content-Type: application/json');
+    echo json_encode(['success' => false, 'message' => 'Super admin access required']);
+    exit;
+}
+
 // Simple database connection
 $host = 'localhost';
 $dbname = 'supercare_ssi';
@@ -19,14 +30,6 @@ try {
 
 header('Content-Type: application/json');
 
-// Check if super admin is logged in
-session_name('SUPER_ADMIN_SESSION');
-session_start();
-if (!isset($_SESSION['super_admin_logged_in']) || $_SESSION['super_admin_logged_in'] !== true) {
-    http_response_code(401);
-    echo json_encode(['success' => false, 'message' => 'Unauthorized access']);
-    exit;
-}
 
 // Check if it's a POST request
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {

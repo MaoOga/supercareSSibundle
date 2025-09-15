@@ -1,15 +1,15 @@
 <?php
 /**
- * Admin Logout Handler with Proper Session Management
+ * Admin Logout Handler with Session Management
  */
 
-// Include session manager
-require_once 'admin_session_manager.php';
+// Include admin session configuration
+require_once 'admin_session_config.php';
 
-// Destroy the session (this will also log the logout)
-$adminSession->destroySession();
+// Clear admin session
+clearAdminSession();
 
-// Redirect to login page
-header('Location: admin_login_new.html?msg=logout_success');
+// Redirect to admin login page
+header('Location: ../admin/admin_login_new.html?msg=' . urlencode('You have been logged out successfully'));
 exit();
 ?>

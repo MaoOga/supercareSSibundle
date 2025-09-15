@@ -9,7 +9,7 @@ echo "<h2>Admin Patient Records View Details Test</h2>";
 // Test 1: Check if admin_patient_records.php exists and has the correct function
 echo "<h3>1. Checking admin_patient_records.php</h3>";
 
-$adminPatientRecordsContent = file_get_contents('admin_patient_records.php');
+$adminPatientRecordsContent = file_get_contents('../admin/admin_patient_records.php');
 
 if (strpos($adminPatientRecordsContent, 'form.php?patient_id=') !== false) {
     echo "✅ admin_patient_records.php correctly uses form.php<br>";
@@ -26,10 +26,10 @@ if (strpos($adminPatientRecordsContent, 'readonly=true') !== false) {
 // Test 2: Check if form.php exists and handles readonly parameter
 echo "<h3>2. Checking form.php</h3>";
 
-if (file_exists('form.php')) {
+if (file_exists('../forms/form.php')) {
     echo "✅ form.php exists<br>";
     
-    $formContent = file_get_contents('form.php');
+    $formContent = file_get_contents('../forms/form.php');
     if (strpos($formContent, 'form_template.html') !== false) {
         echo "✅ form.php includes form_template.html<br>";
     } else {
@@ -42,7 +42,7 @@ if (file_exists('form.php')) {
 // Test 3: Check if form_template.html has read-only functionality
 echo "<h3>3. Checking form_template.html read-only functionality</h3>";
 
-$formTemplateContent = file_get_contents('form_template.html');
+$formTemplateContent = file_get_contents('../forms/form_template.html');
 
 if (strpos($formTemplateContent, 'makeFormReadOnly()') !== false) {
     echo "✅ form_template.html has makeFormReadOnly() function<br>";

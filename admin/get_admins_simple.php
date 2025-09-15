@@ -1,14 +1,4 @@
 <?php
-// Start session for super admin
-session_name('SUPER_ADMIN_SESSION');
-session_start();
-
-// Check if super admin is logged in
-if (!isset($_SESSION['super_admin_logged_in']) || $_SESSION['super_admin_logged_in'] !== true) {
-    http_response_code(401);
-    echo json_encode(['success' => false, 'message' => 'Unauthorized access']);
-    exit();
-}
 
 // Include database configuration
 require_once '../database/config.php';
@@ -19,7 +9,7 @@ try {
     $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
     
     // Get all admin users
-    $stmt = $pdo->prepare("SELECT id, admin_username, name, email, created_at FROM admin_users WHERE status = 'active' ORDER BY created_at DESC");
+    $stmt = $pdo->prepare("SELECT id, admin_username, email, created_at FROM admin_users WHERE status = 'active' ORDER BY created_at DESC");
     $stmt->execute();
     $admins = $stmt->fetchAll();
     

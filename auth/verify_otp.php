@@ -2,6 +2,9 @@
 // OTP Verification and Super Admin Login
 header('Content-Type: application/json');
 
+// Include session configuration
+require_once 'super_admin_session_config.php';
+
 // Database connection
 try {
     $pdo = new PDO("mysql:host=localhost;dbname=supercare_ssi;charset=utf8", "root", "");
@@ -71,16 +74,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         }
         
-        // OTP is valid - start session and clear OTP
-        session_name('SUPER_ADMIN_SESSION');
-        session_start();
-        $_SESSION['super_admin_logged_in'] = true;
-        $_SESSION['super_admin_id'] = $user['id'];
-        $_SESSION['super_admin_username'] = $user['name'];
-        $_SESSION['super_admin_email'] = $user['email'];
-        $_SESSION['user_type'] = 'super_admin'; // For backward compatibility
-        $_SESSION['login_time'] = time();
-        $_SESSION['last_activity'] = time();
+        // OTP is valid - set super admin session
+        setSuperAdminSession([
+            'id' => $user['id'],
+            'type' => 'super_admin',
+            'username' => $user['email'], // Using email as username
+            'name' => $user['name'],
+            'email' => $user['email']
+        ]);
         
         // Update last login time
         $stmt = $pdo->prepare("UPDATE super_admin_users SET last_login = NOW() WHERE id = ?");

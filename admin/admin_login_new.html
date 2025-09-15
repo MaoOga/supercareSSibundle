@@ -329,7 +329,7 @@
             showMessage("Login successful! Redirecting...", "success");
             setTimeout(() => {
               window.location.href = "admin.php";
-            }, 1000); // Reduced delay since no session validation needed
+            }, 1000);
           } else {
             showMessage(
               result.message || "Login failed. Please check your credentials.",
@@ -346,16 +346,10 @@
         }
       });
 
-      // Check for URL parameters
-      const urlParams = new URLSearchParams(window.location.search);
-      const msg = urlParams.get("msg");
-
-      if (msg === "logout_success") {
-        showMessage("You have been successfully logged out.", "success");
-      }
-
       // Focus on email field when page loads
-      document.getElementById("email").focus();
+      document.addEventListener("DOMContentLoaded", function () {
+        document.getElementById("email").focus();
+      });
     </script>
   </body>
 </html>

@@ -77,7 +77,7 @@ echo "<h3>🎯 Next Steps:</h3>";
 echo "<div style='background: #e8f5e8; border: 1px solid #4caf50; padding: 15px; border-radius: 5px; margin: 20px 0;'>";
 echo "<p><strong>1. Generate Password Hash:</strong> <a href='generate_super_admin_password.php' style='color: #007bff;'>Click here</a></p>";
 echo "<p><strong>2. Test the System:</strong> <a href='../auth/super_admin_login.html' style='color: #007bff;'>Click here</a></p>";
-echo "<p><strong>3. Run Full Test:</strong> <a href='../debug/test_new_super_admin_system.php' style='color: #007bff;'>Click here</a></p>";
+echo "<p><strong>3. Run Full Test:</strong> <a href='../debug/fix_super_admin_tables.php' style='color: #007bff;'>Click here</a></p>";
 echo "</div>";
 
 echo "<h3>📋 What was created:</h3>";

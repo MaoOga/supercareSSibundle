@@ -5,17 +5,7 @@ date_default_timezone_set('UTC');
 // Check if this is an AJAX request from super admin dashboard
 $isAjaxRequest = isset($_GET['ajax']) && $_GET['ajax'] === '1';
 
-if ($isAjaxRequest) {
-    // For AJAX requests, check super admin session
-    session_name('SUPER_ADMIN_SESSION');
-    session_start();
-    
-    if (!isset($_SESSION['super_admin_logged_in']) || $_SESSION['super_admin_logged_in'] !== true) {
-        header('Content-Type: application/json');
-        echo json_encode(['success' => false, 'message' => 'Unauthorized access - Please log in as super admin']);
-        exit;
-    }
-}
+// Session management removed - no authentication required
 
 // Load PHPMailer classes
 use PHPMailer\PHPMailer\PHPMailer;

@@ -1,20 +1,11 @@
 <?php
-// Enable error reporting for debugging
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+// Super Admin Logout Handler
+require_once 'super_admin_session_config.php';
 
-// Start session
-session_start();
+// Clear super admin session data
+clearSuperAdminSession();
 
-// Log the logout
-$username = $_SESSION['username'] ?? 'unknown';
-$logEntry = date('Y-m-d H:i:s') . " - Super Admin Logout: $username\n";
-file_put_contents('super_admin_access.log', $logEntry, FILE_APPEND | LOCK_EX);
-
-// Destroy session
-session_destroy();
-
-// Redirect to real email-based login page
-header('Location: super_admin_login.html');
-exit;
+// Redirect to super admin login page
+header('Location: ../super admin/super_admin_login_test.html?msg=' . urlencode('You have been logged out successfully'));
+exit();
 ?>

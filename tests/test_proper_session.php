@@ -37,7 +37,7 @@ if (isset($adminSession)) {
             echo "✅ Admin info retrieved:<br>";
             echo "- Admin ID: " . $adminInfo['admin_id'] . "<br>";
             echo "- Username: " . $adminInfo['admin_username'] . "<br>";
-            echo "- Name: " . $adminInfo['admin_name'] . "<br>";
+            echo "- Username: " . $adminInfo['username'] . "<br>";
             echo "- Email: " . $adminInfo['admin_email'] . "<br>";
         } else {
             echo "❌ Could not get admin info<br>";

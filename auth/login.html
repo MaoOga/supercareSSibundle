@@ -161,21 +161,7 @@
     </div>
 
     <script>
-      // Check for session expired message on page load
-      document.addEventListener("DOMContentLoaded", function () {
-        const urlParams = new URLSearchParams(window.location.search);
-        const msg = urlParams.get('msg');
-        
-        if (msg === 'session_expired') {
-          // Show session expired message
-          const messageDiv = document.createElement('div');
-          messageDiv.className = 'bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded mb-4';
-          messageDiv.innerHTML = '<i class="fas fa-exclamation-triangle mr-2"></i>Your session has expired. Please log in again.';
-          
-          const loginCard = document.querySelector('.login-card');
-          loginCard.insertBefore(messageDiv, loginCard.firstChild);
-        }
-      });
+      // Session expired message handling removed - no session authentication required
       
       // Password toggle functionality
       const passwordToggle = document.getElementById('passwordToggle');
