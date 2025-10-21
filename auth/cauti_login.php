@@ -1,7 +1,6 @@
 <?php
 require_once '../database/config.php';
 require_once '../audit/audit_logger.php';
-require_once 'session_config.php';
 
 header('Content-Type: application/json');
 
@@ -27,7 +26,7 @@ try {
         throw new Exception('Password is required');
     }
 
-    // Find nurse by nurse_id
+    // Find nurse by nurse_id - including form_access
     $stmt = $pdo->prepare("SELECT id, nurse_id, name, email, password, role, form_access FROM nurses WHERE nurse_id = ?");
     $stmt->execute([$nurseId]);
     $nurse = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -35,7 +34,7 @@ try {
     if (!$nurse) {
         // Log failed login attempt - nurse not found
         $auditLogger = new AuditLogger($pdo);
-        $auditLogger->logNurseLogin('system', null, $nurseId, 'NURSE_NOT_FOUND', null, 'Nurse ID not found in system');
+        $auditLogger->logNurseLogin('system', null, $nurseId, 'NURSE_NOT_FOUND', null, 'Nurse ID not found in system (CAUTI login)');
         throw new Exception('NURSE_NOT_FOUND');
     }
 
@@ -43,17 +42,17 @@ try {
     if (!password_verify($password, $nurse['password'])) {
         // Log failed login attempt - invalid password
         $auditLogger = new AuditLogger($pdo);
-        $auditLogger->logNurseLogin('system', $nurse['id'], $nurse['nurse_id'], $nurse['name'], null, 'Invalid password provided');
+        $auditLogger->logNurseLogin('system', $nurse['id'], $nurse['nurse_id'], $nurse['name'], null, 'Invalid password provided (CAUTI login)');
         throw new Exception('INVALID_PASSWORD');
     }
 
-    // Check form access - this is SSI login page
+    // Check form access - this is CAUTI login page
     $formAccess = $nurse['form_access'] ?? 'ssi';
-    if ($formAccess !== 'ssi') {
+    if ($formAccess !== 'cauti') {
         // Log access denied
         $auditLogger = new AuditLogger($pdo);
-        $auditLogger->logNurseLogin('system', $nurse['id'], $nurse['nurse_id'], $nurse['name'], null, 'Access denied: No SSI form access (has: ' . $formAccess . ')');
-        throw new Exception('You do not have access to the SSI form. Please contact your administrator.');
+        $auditLogger->logNurseLogin('system', $nurse['id'], $nurse['nurse_id'], $nurse['name'], null, 'Access denied: No CAUTI form access (has: ' . $formAccess . ')');
+        throw new Exception('You do not have access to the CAUTI form. Please contact your administrator.');
     }
 
     // Remove password from response for security
@@ -61,23 +60,13 @@ try {
 
     // Log successful login
     $auditLogger = new AuditLogger($pdo);
-    $auditLogger->logNurseLogin('system', $nurse['id'], $nurse['nurse_id'], $nurse['name'], $nurse, 'Nurse login successful');
-
-    // Create session for logged in nurse
-    $_SESSION['user_id'] = $nurse['id'];
-    $_SESSION['user_type'] = 'nurse';
-    $_SESSION['username'] = $nurse['nurse_id'];
-    $_SESSION['name'] = $nurse['name'];
-    $_SESSION['email'] = $nurse['email'] ?? '';
-    $_SESSION['logged_in'] = true;
-    $_SESSION['login_time'] = time();
-    $_SESSION['last_activity'] = time();
+    $auditLogger->logNurseLogin('system', $nurse['id'], $nurse['nurse_id'], $nurse['name'], $nurse, 'CAUTI nurse login successful');
 
     echo json_encode([
         'success' => true,
         'message' => 'Login successful',
         'nurse' => $nurse,
-        'redirect_url' => '../pages/index.php'
+        'redirect_url' => 'cauti_panel.php'
     ]);
 
 } catch (PDOException $e) {
@@ -89,3 +78,4 @@ try {
     echo json_encode(['success' => false, 'message' => $e->getMessage()]);
 }
 ?>
+

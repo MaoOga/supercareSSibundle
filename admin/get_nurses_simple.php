@@ -24,8 +24,8 @@ try {
         exit;
     }
 
-    // Get all nurses - using only basic columns that should exist
-    $stmt = $pdo->prepare("SELECT id, nurse_id, name, email, created_at FROM nurses ORDER BY created_at DESC");
+    // Get all nurses - including form_access
+    $stmt = $pdo->prepare("SELECT id, nurse_id, name, email, form_access, created_at FROM nurses ORDER BY created_at DESC");
     $stmt->execute();
     $nurses = $stmt->fetchAll();
 

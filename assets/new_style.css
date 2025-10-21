@@ -1,0 +1,352 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 20px;
+  color: #000;
+  overflow-y: auto;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-bottom: 2rem;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.header img {
+  height: 80px;
+}
+
+.header .title-main {
+  font-size: 2em;
+  font-weight: 700;
+  text-align: center;
+  text-decoration: underline;
+}
+
+.header .title-sub {
+  font-size: 1.5em;
+  font-weight: 700;
+  text-align: right;
+}
+
+/* Table styling */
+.tg {
+  border-collapse: collapse;
+  border-spacing: 0;
+  width: 100%;
+}
+
+.tg td {
+  border-color: black;
+  border-style: solid;
+  border-width: 1px;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  overflow: hidden;
+  padding: 10px 5px;
+  word-break: normal;
+  vertical-align: top;
+}
+
+.tg th {
+  border-color: black;
+  border-style: solid;
+  border-width: 1px;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  font-weight: normal;
+  overflow: hidden;
+  padding: 10px 5px;
+  word-break: normal;
+  vertical-align: top;
+}
+
+.tg .tg-0lax {
+  text-align: left;
+  vertical-align: top;
+}
+
+/* Form field styling */
+.form-field {
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+  min-height: 30px;
+  position: relative;
+}
+
+.form-label {
+  display: inline-block;
+  margin-right: 8px;
+  font-weight: 700;
+  white-space: nowrap;
+  flex-shrink: 0;
+  align-self: flex-start;
+  margin-top: 2px;
+}
+
+.form-input {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  resize: none;
+  overflow: hidden;
+  min-height: 20px;
+  height: auto;
+  line-height: 1.4;
+  padding: 2px 0;
+  margin: 0;
+  flex: 1;
+  align-self: flex-start;
+  min-width: 300px;
+  position: relative;
+  z-index: 1;
+  max-height: none;
+  overflow: visible;
+}
+
+/* Remove borders from all input elements in forms */
+input[type="text"],
+input[type="date"],
+input[type="time"],
+input[type="datetime-local"],
+textarea {
+  border: none !important;
+  outline: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+input[type="text"]:focus,
+input[type="date"]:focus,
+input[type="time"]:focus,
+input[type="datetime-local"]:focus,
+textarea:focus {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+.form-input.wide {
+  width: 98%;
+  max-width: 800px;
+}
+
+.form-input.medium {
+  width: 95%;
+  max-width: 600px;
+}
+
+.form-input.narrow {
+  width: 90%;
+  max-width: 400px;
+}
+
+/* Table cell styling */
+.tg th,
+.tg td {
+  height: 40px !important;
+  min-height: 40px;
+  vertical-align: top !important;
+  position: relative;
+  overflow: visible;
+  max-height: 40px !important;
+}
+
+.tg th .form-field {
+  width: 100%;
+}
+
+.tg tr {
+  height: auto !important;
+}
+
+/* Specific field width styling */
+.tg th:first-child .form-input.wide {
+  width: 98% !important;
+  max-width: 800px !important;
+}
+
+.tg th:nth-child(2) .form-input.narrow {
+  width: 90% !important;
+  max-width: 400px !important;
+}
+
+.tg th:nth-child(3) .form-input.narrow {
+  width: 90% !important;
+  max-width: 400px !important;
+}
+
+.tg td[colspan="3"] .form-input {
+  width: 98% !important;
+  max-width: 1000px !important;
+}
+
+.tg td[colspan="3"] .form-input.wide {
+  width: 98% !important;
+  max-width: 1200px !important;
+}
+
+/* Scrollbar hiding */
+::-webkit-scrollbar {
+  display: none;
+}
+
+html {
+  scrollbar-width: none;
+}
+
+* {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+*::-webkit-scrollbar {
+  display: none;
+}
+
+/* Table width */
+.tg {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Ventilator table column widths */
+.ventilator-table td:first-child {
+  width: 20% !important;
+  min-width: 150px;
+}
+
+.ventilator-table td:last-child {
+  width: 80% !important;
+}
+
+/* Symptomatic table column widths - moved to HTML for better control */
+
+/* Action button styling */
+.action-button {
+  background: transparent;
+  border: 1px solid #000;
+  border-radius: 4px;
+  width: 30px;
+  height: 30px;
+  font-size: 18px;
+  cursor: pointer;
+  margin-left: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #000;
+}
+
+.action-button:hover {
+  background: #f0f0f0;
+}
+
+/* Datepicker styling */
+input.datepicker {
+  text-align: center;
+}
+
+/* New table classes for updated design */
+.tg .tg-9vaf {
+  background-color: #e6e6e6;
+  border-color: black;
+  font-weight: 700;
+  text-align: center;
+  vertical-align: top;
+}
+
+.tg .tg-9hef {
+  background-color: #c8e0c8;
+  border-color: black;
+  font-weight: 700;
+  text-align: center;
+  vertical-align: top;
+}
+
+.tg .tg-0pky {
+  border-color: black;
+  text-align: left;
+  vertical-align: top;
+}
+
+/* Better spacing for date inputs in ventilator table */
+#ventilator-table input.datepicker {
+  margin: 2px;
+  vertical-align: middle;
+}
+
+/* Ventilator table specific styling - matching standard design */
+.ventilator-table-wrapper {
+  margin-top: 20px;
+  overflow-x: auto;
+  width: 100%;
+}
+
+/* Center the Total Ventilator days column */
+#ventilator-table .tg-0pky:nth-child(3) {
+  text-align: center;
+}
+
+#ventilator-table .tg-0pky:nth-child(3) textarea {
+  text-align: center;
+  margin: 0 auto;
+  display: block;
+}
+
+/* Combined DateTime Picker styling to match form-input appearance */
+#ventilator-table .datetime-pickable {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  resize: none;
+  overflow: hidden;
+  min-height: 20px;
+  height: auto;
+  line-height: 1.4;
+  padding: 2px 0;
+  margin: 0;
+  width: 100%;
+  box-sizing: border-box;
+  color: #000;
+  cursor: pointer;
+  text-align: left;
+}
+
+#ventilator-table .datetime-pickable:hover {
+  background-color: transparent;
+}
+
+#ventilator-table .datetime-pickable:focus {
+  background-color: transparent;
+  outline: none;
+  box-shadow: none;
+}
+
+/* Ensure proper alignment in ventilator table cells */
+#ventilator-table .tg-0pky {
+  padding: 8px;
+  vertical-align: middle;
+}
+
+#ventilator-table .tg-0pky:first-child,
+#ventilator-table .tg-0pky:nth-child(2) {
+  text-align: left;
+}
+
+#ventilator-table .tg-0pky:nth-child(3) {
+  text-align: center;
+}

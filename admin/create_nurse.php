@@ -30,6 +30,7 @@ try {
     $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
     $role = $_POST['role'] ?? 'nurse';
+    $formAccess = $_POST['formAccess'] ?? 'ssi';
 
     // Validation
     if (empty($nurseId)) {
@@ -72,11 +73,11 @@ try {
 
     // Insert new nurse
     $stmt = $pdo->prepare("
-        INSERT INTO nurses (nurse_id, name, email, password, role, created_at) 
-        VALUES (?, ?, ?, ?, ?, NOW())
+        INSERT INTO nurses (nurse_id, name, email, password, role, form_access, created_at) 
+        VALUES (?, ?, ?, ?, ?, ?, NOW())
     ");
     
-    $stmt->execute([$nurseId, $name, $email, $hashedPassword, $role]);
+    $stmt->execute([$nurseId, $name, $email, $hashedPassword, $role, $formAccess]);
 
     $insertedId = $pdo->lastInsertId();
 
@@ -87,7 +88,8 @@ try {
         'nurse_id' => $nurseId,
         'name' => $name,
         'email' => $email,
-        'role' => $role
+        'role' => $role,
+        'form_access' => $formAccess
     ];
     $auditLogger->logNurseCreate('admin', $nurseData);
 

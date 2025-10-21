@@ -31,6 +31,7 @@ try {
     $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
     $role = $_POST['role'] ?? 'nurse';
+    $formAccess = $_POST['formAccess'] ?? 'ssi';
 
     // Validation
     if (empty($id)) {
@@ -94,6 +95,9 @@ try {
     
     $updateFields[] = "role = ?";
     $params[] = $role;
+    
+    $updateFields[] = "form_access = ?";
+    $params[] = $formAccess;
 
     // Add password update if provided
     if (!empty($password)) {
@@ -118,7 +122,8 @@ try {
         'nurse_id' => $nurseId,
         'name' => $name,
         'email' => $email,
-        'role' => $role
+        'role' => $role,
+        'form_access' => $formAccess
     ];
 
     // Log the audit event

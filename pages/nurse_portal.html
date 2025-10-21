@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SuperCare Hospital - Nurse Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+      }
+      .professional-gradient {
+        background: linear-gradient(
+          135deg,
+          #f8fafc 0%,
+          #e2e8f0 50%,
+          #cbd5e1 100%
+        );
+      }
+      .card-shadow {
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+          0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .card-shadow:hover {
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+          0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        transform: translateY(-2px);
+      }
+      .btn-professional {
+        background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+        transition: all 0.2s ease;
+      }
+      .btn-professional:hover {
+        background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
+        transform: translateY(-1px);
+      }
+      .icon-container {
+        background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+      }
+      .divider-line {
+        background: linear-gradient(
+          90deg,
+          transparent 0%,
+          #e2e8f0 50%,
+          transparent 100%
+        );
+      }
+      .hospital-logo {
+        width: 48px;
+        height: 48px;
+        object-fit: contain;
+      }
+      @media (max-width: 768px) {
+        .hospital-logo {
+          width: 32px;
+          height: 32px;
+        }
+      }
+    </style>
+  </head>
+  <body class="min-h-screen professional-gradient">
+    <!-- Navigation Header -->
+    <nav
+      class="bg-white border-b border-gray-200 shadow-sm fixed top-0 left-0 right-0 z-50"
+    >
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16 sm:h-20 lg:h-24">
+          <div class="flex items-center space-x-4">
+            <div class="flex items-center space-x-3">
+              <img
+                src="../assets/supercare-hospital_logo.png"
+                alt="SuperCare Hospital"
+                class="hospital-logo w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 object-contain"
+              />
+              <div>
+                <h1 class="text-lg sm:text-xl font-semibold text-gray-900">
+                  SuperCare Hospital
+                </h1>
+                <p class="text-xs text-gray-500">
+                  Nurse Portal - Healthcare Quality Forms
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="flex items-center space-x-4">
+            <button
+              onclick="goBackToMainPortal()"
+              class="text-gray-600 hover:text-gray-900 text-sm font-medium"
+            >
+              ← Back to Main Portal
+            </button>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main
+      class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pt-20 sm:pt-24 lg:pt-28"
+    >
+      <!-- Header Section -->
+      <div class="text-center mb-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-2">
+          Nurse Portal - Healthcare Quality Forms
+        </h2>
+        <p class="text-sm text-gray-600 max-w-2xl mx-auto leading-relaxed">
+          Select the specific form you need to access for patient care and
+          quality monitoring. Each form is designed for different aspects of
+          healthcare quality and infection prevention.
+        </p>
+        <div class="divider-line h-px w-16 mx-auto mt-4"></div>
+      </div>
+
+      <!-- Form Selection Cards -->
+      <div class="grid lg:grid-cols-4 gap-6">
+        <!-- SSI Bundle Form -->
+        <div
+          class="bg-white rounded-xl card-shadow overflow-hidden flex flex-col"
+        >
+          <div class="p-6 flex-1">
+            <div
+              class="icon-container w-12 h-12 rounded-lg flex items-center justify-center mb-4"
+            >
+              <i class="fas fa-hospital text-xl text-blue-600"></i>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">SSI Bundle</h3>
+            <p class="text-gray-600 mb-4 text-xs leading-relaxed">
+              Surgical Site Infection prevention monitoring, pre/post operative
+              forms, and bundle compliance tracking.
+            </p>
+            <div class="space-y-1 mb-4">
+              <div class="flex items-center text-xs text-gray-500">
+                <i class="fas fa-check text-blue-500 mr-2"></i>
+                Patient Risk Assessment
+              </div>
+              <div class="flex items-center text-xs text-gray-500">
+                <i class="fas fa-check text-blue-500 mr-2"></i>
+                Bundle Compliance
+              </div>
+            </div>
+          </div>
+          <div class="p-6 pt-0">
+            <button
+              onclick="accessSSIBundle()"
+              class="w-full btn-professional text-white font-medium py-3 px-4 rounded-lg text-sm"
+            >
+              Access SSI Bundle
+            </button>
+          </div>
+        </div>
+
+        <!-- CAUTI Form -->
+        <div
+          class="bg-white rounded-xl card-shadow overflow-hidden flex flex-col"
+        >
+          <div class="p-6 flex-1">
+            <div
+              class="icon-container w-12 h-12 rounded-lg flex items-center justify-center mb-4"
+            >
+              <i class="fas fa-procedures text-xl text-green-600"></i>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">CAUTI Form</h3>
+            <p class="text-gray-600 mb-4 text-xs leading-relaxed">
+              Catheter-Associated Urinary Tract Infection monitoring, urinary
+              catheter tracking, and infection prevention.
+            </p>
+            <div class="space-y-1 mb-4">
+              <div class="flex items-center text-xs text-gray-500">
+                <i class="fas fa-check text-green-500 mr-2"></i>
+                Catheter Tracking
+              </div>
+              <div class="flex items-center text-xs text-gray-500">
+                <i class="fas fa-check text-green-500 mr-2"></i>
+                Infection Prevention
+              </div>
+            </div>
+          </div>
+          <div class="p-6 pt-0">
+            <button
+              onclick="accessCAUTI()"
+              class="w-full btn-professional text-white font-medium py-3 px-4 rounded-lg text-sm"
+            >
+              Access CAUTI Form
+            </button>
+          </div>
+        </div>
+
+        <!-- VAP Form -->
+        <div
+          class="bg-white rounded-xl card-shadow overflow-hidden flex flex-col"
+        >
+          <div class="p-6 flex-1">
+            <div
+              class="icon-container w-12 h-12 rounded-lg flex items-center justify-center mb-4"
+            >
+              <i class="fas fa-lungs text-xl text-purple-600"></i>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">VAP Form</h3>
+            <p class="text-gray-600 mb-4 text-xs leading-relaxed">
+              Ventilator-Associated Pneumonia tracking, ICU patient monitoring,
+              and respiratory care compliance.
+            </p>
+            <div class="space-y-1 mb-4">
+              <div class="flex items-center text-xs text-gray-500">
+                <i class="fas fa-check text-purple-500 mr-2"></i>
+                ICU Monitoring
+              </div>
+              <div class="flex items-center text-xs text-gray-500">
+                <i class="fas fa-check text-purple-500 mr-2"></i>
+                Respiratory Care
+              </div>
+            </div>
+          </div>
+          <div class="p-6 pt-0">
+            <button
+              onclick="accessVAP()"
+              class="w-full btn-professional text-white font-medium py-3 px-4 rounded-lg text-sm"
+            >
+              Access VAP Form
+            </button>
+          </div>
+        </div>
+
+        <!-- CLABSI Form -->
+        <div
+          class="bg-white rounded-xl card-shadow overflow-hidden flex flex-col"
+        >
+          <div class="p-6 flex-1">
+            <div
+              class="icon-container w-12 h-12 rounded-lg flex items-center justify-center mb-4"
+            >
+              <i class="fas fa-vial text-xl text-red-600"></i>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">
+              CLABSI Form
+            </h3>
+            <p class="text-gray-600 mb-4 text-xs leading-relaxed">
+              Central Line-Associated Bloodstream Infection monitoring, central
+              line tracking, and infection control.
+            </p>
+            <div class="space-y-1 mb-4">
+              <div class="flex items-center text-xs text-gray-500">
+                <i class="fas fa-check text-red-500 mr-2"></i>
+                Central Line Tracking
+              </div>
+              <div class="flex items-center text-xs text-gray-500">
+                <i class="fas fa-check text-red-500 mr-2"></i>
+                Infection Control
+              </div>
+            </div>
+          </div>
+          <div class="p-6 pt-0">
+            <button
+              onclick="accessCLABSI()"
+              class="w-full btn-professional text-white font-medium py-3 px-4 rounded-lg text-sm"
+            >
+              Access CLABSI Form
+            </button>
+          </div>
+        </div>
+
+        <!-- Hand Hygiene Compliance -->
+        <div
+          class="bg-white rounded-xl card-shadow overflow-hidden flex flex-col"
+        >
+          <div class="p-6 flex-1">
+            <div
+              class="icon-container w-12 h-12 rounded-lg flex items-center justify-center mb-4"
+            >
+              <i class="fas fa-hands-wash text-xl text-teal-600"></i>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">
+              Hand Hygiene Compliance
+            </h3>
+            <p class="text-gray-600 mb-4 text-xs leading-relaxed">
+              Hand hygiene compliance auditing, staff training tracking, and
+              quality assurance reporting.
+            </p>
+            <div class="space-y-1 mb-4">
+              <div class="flex items-center text-xs text-gray-500">
+                <i class="fas fa-check text-teal-500 mr-2"></i>
+                Compliance Auditing
+              </div>
+              <div class="flex items-center text-xs text-gray-500">
+                <i class="fas fa-check text-teal-500 mr-2"></i>
+                Staff Training
+              </div>
+            </div>
+          </div>
+          <div class="p-6 pt-0">
+            <button
+              onclick="accessHandHygiene()"
+              class="w-full btn-professional text-white font-medium py-3 px-4 rounded-lg text-sm"
+            >
+              Access Hand Hygiene
+            </button>
+          </div>
+        </div>
+
+        <!-- NSI Sample Form -->
+        <div
+          class="bg-white rounded-xl card-shadow overflow-hidden flex flex-col"
+        >
+          <div class="p-6 flex-1">
+            <div
+              class="icon-container w-12 h-12 rounded-lg flex items-center justify-center mb-4"
+            >
+              <i
+                class="fas fa-exclamation-triangle text-xl text-orange-600"
+              ></i>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">
+              NSI Sample Form
+            </h3>
+            <p class="text-gray-600 mb-4 text-xs leading-relaxed">
+              Needlestick Injury reporting, occupational safety tracking, and
+              incident management.
+            </p>
+            <div class="space-y-1 mb-4">
+              <div class="flex items-center text-xs text-gray-500">
+                <i class="fas fa-check text-orange-500 mr-2"></i>
+                Injury Reporting
+              </div>
+              <div class="flex items-center text-xs text-gray-500">
+                <i class="fas fa-check text-orange-500 mr-2"></i>
+                Safety Tracking
+              </div>
+            </div>
+          </div>
+          <div class="p-6 pt-0">
+            <button
+              onclick="accessNSI()"
+              class="w-full btn-professional text-white font-medium py-3 px-4 rounded-lg text-sm"
+            >
+              Access NSI Form
+            </button>
+          </div>
+        </div>
+
+        <!-- SVADAT Form -->
+        <div
+          class="bg-white rounded-xl card-shadow overflow-hidden flex flex-col"
+        >
+          <div class="p-6 flex-1">
+            <div
+              class="icon-container w-12 h-12 rounded-lg flex items-center justify-center mb-4"
+            >
+              <i class="fas fa-clipboard-list text-xl text-indigo-600"></i>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">
+              SVADAT Form
+            </h3>
+            <p class="text-gray-600 mb-4 text-xs leading-relaxed">
+              Specialized form for specific healthcare quality monitoring and
+              compliance tracking.
+            </p>
+            <div class="space-y-1 mb-4">
+              <div class="flex items-center text-xs text-gray-500">
+                <i class="fas fa-check text-indigo-500 mr-2"></i>
+                Quality Monitoring
+              </div>
+              <div class="flex items-center text-xs text-gray-500">
+                <i class="fas fa-check text-indigo-500 mr-2"></i>
+                Compliance Tracking
+              </div>
+            </div>
+          </div>
+          <div class="p-6 pt-0">
+            <button
+              onclick="accessSVADAT()"
+              class="w-full btn-professional text-white font-medium py-3 px-4 rounded-lg text-sm"
+            >
+              Access SVADAT Form
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      // Navigation functions
+      function goBackToMainPortal() {
+        window.location.href = "portal_access.html";
+      }
+
+      // Form access functions
+      function accessSSIBundle() {
+        // Redirect to existing SSI login page
+        window.location.href = "../auth/login.html";
+      }
+
+      function accessCAUTI() {
+        // Redirect to CAUTI form login
+        window.location.href = "../Cauti_form/cauti_login.html";
+      }
+
+      function accessVAP() {
+        // Redirect to VAP form login
+        window.location.href = "../New_form_login/vap_login.html";
+      }
+
+      function accessCLABSI() {
+        // Redirect to CLABSI form login
+        window.location.href = "../New_form_login/clabsi_login.html";
+      }
+
+      function accessHandHygiene() {
+        // Redirect to Hand Hygiene form login
+        window.location.href = "../New_form_login/hand_hygiene_login.html";
+      }
+
+      function accessNSI() {
+        // Redirect to NSI form login
+        window.location.href = "../New_form_login/nsi_login.html";
+      }
+
+      function accessSVADAT() {
+        // Redirect to SVADAT form login
+        window.location.href = "../New_form_login/svadat_login.html";
+      }
+
+      // Enhanced animations and interactions
+      document.addEventListener("DOMContentLoaded", function () {
+        // Staggered card animations
+        const cards = document.querySelectorAll(".card-shadow");
+        cards.forEach((card, index) => {
+          card.style.opacity = "0";
+          card.style.transform = "translateY(20px)";
+
+          setTimeout(() => {
+            card.style.transition = "all 0.6s cubic-bezier(0.4, 0, 0.2, 1)";
+            card.style.opacity = "1";
+            card.style.transform = "translateY(0)";
+          }, index * 100);
+        });
+
+        // Add subtle hover effects to buttons
+        const buttons = document.querySelectorAll("button");
+        buttons.forEach((button) => {
+          button.addEventListener("mouseenter", function () {
+            this.style.transform = "translateY(-1px)";
+          });
+
+          button.addEventListener("mouseleave", function () {
+            this.style.transform = "translateY(0)";
+          });
+        });
+
+        // Check if hospital logo exists, if not show fallback
+        const logoImg = document.querySelector(".hospital-logo");
+        if (logoImg) {
+          logoImg.onerror = function () {
+            this.style.display = "none";
+            this.parentElement.innerHTML = `
+                        <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-8 14H9v-2h2v2zm0-4H9V9h2v4zm4 4h-2v-2h2v2zm0-4h-2V9h2v4z"/>
+                        </svg>
+                    `;
+          };
+        }
+      });
+    </script>
+  </body>
+</html>

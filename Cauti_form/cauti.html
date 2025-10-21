@@ -1,0 +1,3813 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CAUTI Form</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://code.jquery.com/ui/1.14.1/themes/base/jquery-ui.css"
+    />
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    <script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
+    <link rel="stylesheet" type="text/css" href="../assets/new_style.css" />
+    <style>
+      /* Time picker and datetime picker styles from VAP */
+      .time-picker {
+        position: absolute;
+        display: inline-block;
+        padding: 10px;
+        background: #eeeeee;
+        border-radius: 6px;
+        z-index: 1000;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .time-picker__select {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        outline: none;
+        text-align: center;
+        border: 1px solid #dddddd;
+        border-radius: 6px;
+        padding: 6px 10px;
+        background: #ffffff;
+        cursor: pointer;
+        font-family: Arial, sans-serif;
+        margin: 0 2px;
+      }
+
+      .time-pickable {
+        border: none;
+        border-radius: 0;
+        padding: 8px;
+        background: transparent;
+        cursor: pointer;
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        width: 100%;
+        box-sizing: border-box;
+      }
+
+      .time-pickable:focus {
+        outline: none;
+        border: none;
+        box-shadow: none;
+        background: transparent;
+      }
+
+      .datetime-pickable {
+        border: none;
+        outline: none;
+        background: transparent;
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        resize: none;
+        overflow: hidden;
+        min-height: 20px;
+        height: auto;
+        line-height: 1.4;
+        padding: 2px 0;
+        margin: 0;
+        width: 100%;
+        box-sizing: border-box;
+        color: #000;
+        cursor: pointer;
+        text-align: left;
+      }
+
+      .datetime-pickable:focus {
+        outline: none;
+        border: none;
+        box-shadow: none;
+        background: transparent;
+      }
+
+      .datetime-picker {
+        position: absolute;
+        display: inline-block;
+        padding: 15px;
+        background: #ffffff;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        z-index: 1000;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        min-width: 300px;
+      }
+
+      .datetime-picker__section {
+        margin-bottom: 10px;
+      }
+
+      .datetime-picker__label {
+        font-weight: 700;
+        margin-bottom: 5px;
+        display: block;
+        font-size: 12px;
+        color: #666;
+      }
+
+      .datetime-picker__date {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+        margin-bottom: 10px;
+        cursor: pointer;
+        background-color: #fff;
+        transition: border-color 0.2s ease;
+      }
+
+      .datetime-picker__date:hover {
+        border-color: #007bff;
+      }
+
+      .datetime-picker__date:focus {
+        border-color: #007bff;
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+      }
+
+      .datetime-picker__time {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+
+      .datetime-picker__select {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        outline: none;
+        text-align: center;
+        border: 1px solid #dddddd;
+        border-radius: 4px;
+        padding: 6px 8px;
+        background: #ffffff;
+        cursor: pointer;
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+      }
+
+      .datetime-picker__separator {
+        font-weight: 700;
+        color: #666;
+      }
+
+      /* Symptomatic table styling */
+      .tg .tg-5yq0 {
+        background-color: #c8e0c8;
+        border-color: black;
+        font-weight: 700;
+        text-align: center;
+        vertical-align: top;
+      }
+
+      .tg .tg-c3ow {
+        border-color: black;
+        text-align: center;
+        vertical-align: top;
+      }
+
+      /* Hide autocomplete suggestions for all inputs */
+      input::-webkit-autofill,
+      input::-webkit-autofill:hover,
+      input::-webkit-autofill:focus,
+      input::-webkit-autofill:active {
+        -webkit-box-shadow: 0 0 0 30px transparent inset !important;
+        -webkit-text-fill-color: #000 !important;
+        background-color: transparent !important;
+        background-clip: content-box !important;
+      }
+
+      /* Disable autocomplete suggestions */
+      input:-webkit-autofill {
+        -webkit-box-shadow: 0 0 0 30px transparent inset !important;
+        -webkit-text-fill-color: #000 !important;
+        background-color: transparent !important;
+      }
+
+      /* Hide browser autocomplete dropdown */
+      input::-webkit-calendar-picker-indicator {
+        display: none !important;
+      }
+
+      /* Disable autocomplete for all form inputs */
+      input,
+      textarea,
+      select {
+        -autocomplete: off;
+        -webkit-autocomplete: off;
+        -moz-autocomplete: off;
+        -ms-autocomplete: off;
+      }
+
+      /* Patient Info table - Set table layout and width */
+      #patient-info-table {
+        width: 100% !important;
+        max-width: 100% !important;
+        table-layout: fixed !important;
+      }
+
+      /* Patient Info table column widths */
+      #patient-info-table th:first-child,
+      #patient-info-table td:first-child {
+        width: 33.33% !important;
+      }
+
+      #patient-info-table th:nth-child(2),
+      #patient-info-table td:nth-child(2) {
+        width: 33.33% !important;
+      }
+
+      #patient-info-table th:nth-child(3),
+      #patient-info-table td:nth-child(3) {
+        width: 33.33% !important;
+      }
+
+      /* Override form-input min-width for patient info table */
+      #patient-info-table .form-input {
+        min-width: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+      }
+
+      /* CATETHER Table - Column width adjustments */
+      #catheter-table {
+        width: 100% !important;
+        max-width: 100% !important;
+        table-layout: fixed !important;
+      }
+
+      /* Force width changes with higher specificity for catheter table */
+      .catheter-table-wrapper #catheter-table td:first-child {
+        width: 12% !important;
+        min-width: 90px !important;
+        max-width: 120px !important;
+      }
+
+      .catheter-table-wrapper #catheter-table td:nth-child(2) {
+        width: 12% !important;
+        min-width: 90px !important;
+        max-width: 120px !important;
+      }
+
+      .catheter-table-wrapper #catheter-table td:nth-child(3) {
+        width: 18% !important;
+        min-width: 120px !important;
+      }
+
+      .catheter-table-wrapper #catheter-table td:nth-child(4) {
+        width: 18% !important;
+        min-width: 120px !important;
+      }
+
+      .catheter-table-wrapper #catheter-table td:nth-child(5) {
+        width: 25% !important;
+        min-width: 160px !important;
+      }
+
+      .catheter-table-wrapper #catheter-table td:nth-child(6) {
+        width: 15% !important;
+        min-width: 100px !important;
+      }
+
+      #catheter-table td:first-child {
+        width: 12% !important;
+        min-width: 90px;
+      }
+
+      #catheter-table td:nth-child(2) {
+        width: 12% !important;
+        min-width: 90px;
+      }
+
+      #catheter-table td:nth-child(3) {
+        width: 18% !important;
+        min-width: 120px;
+      }
+
+      #catheter-table td:nth-child(4) {
+        width: 18% !important;
+        min-width: 120px;
+      }
+
+      #catheter-table td:nth-child(5) {
+        width: 25% !important;
+        min-width: 160px;
+      }
+
+      #catheter-table td:nth-child(6) {
+        width: 15% !important;
+        min-width: 100px;
+      }
+
+      /* Make catheter table cells more compact */
+      #catheter-table td {
+        padding: 5px 2px !important;
+        font-size: 14px;
+        overflow: visible;
+        word-break: break-word;
+        vertical-align: top;
+        height: 40px !important;
+        min-height: 40px !important;
+      }
+
+      #catheter-table th {
+        padding: 8px 2px !important;
+        font-size: 14px;
+        overflow: visible;
+        word-break: break-word;
+      }
+
+      /* Compact form inputs for catheter table */
+      #catheter-table .form-input {
+        font-size: 14px;
+        padding: 1px 2px;
+        overflow: visible;
+        word-break: break-word;
+        width: 100%;
+        box-sizing: border-box;
+        max-width: 100%;
+        resize: none;
+        height: auto;
+        min-height: 20px;
+        min-width: 0 !important;
+      }
+
+      /* Additional text containment for catheter table */
+      #catheter-table td,
+      #catheter-table th {
+        white-space: normal;
+        hyphens: auto;
+      }
+
+      /* Ensure textareas don't overflow their containers */
+      #catheter-table textarea {
+        max-width: 100%;
+        overflow-wrap: break-word;
+        word-wrap: break-word;
+      }
+
+      /* Ensure inputs fit within their cells */
+      #catheter-table input[type="text"] {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        box-sizing: border-box;
+        padding: 2px 4px;
+        font-size: 12px;
+      }
+
+      /* Make date and time inputs more compact */
+      #catheter-table .datepicker,
+      #catheter-table .time-pickable {
+        font-size: 11px;
+        padding: 1px 2px;
+        min-width: 0 !important;
+        max-width: 100% !important;
+      }
+
+      /* Fix date input styling in catheter table to match form-input */
+      #catheter-table input.datepicker {
+        border: none;
+        outline: none;
+        background: transparent;
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        font-weight: normal;
+        padding: 2px 0;
+        margin: 0;
+        min-height: 20px;
+        line-height: 1.4;
+        text-align: center;
+        width: 100px;
+      }
+
+      #catheter-table input.datepicker:focus {
+        border: none;
+        outline: none;
+        background: transparent;
+        box-shadow: none;
+      }
+
+      /* Center the table cells containing catheter inputs */
+      #catheter-table td:first-child,
+      #catheter-table td:nth-child(2) {
+        text-align: center;
+      }
+
+      /* Center the Total Catheter Days column */
+      #catheter-table td:nth-child(6) {
+        text-align: center;
+      }
+
+      /* Center the text inside the Total Catheter Days textarea input */
+      #catheter-table td:nth-child(6) textarea {
+        text-align: center;
+      }
+
+      /* PROBLEM Table - Column width adjustments */
+      #problem-table {
+        width: 100% !important;
+        max-width: 100% !important;
+        table-layout: fixed !important;
+      }
+
+      /* Force width changes with higher specificity for problem table */
+      .problem-table-wrapper #problem-table td:first-child {
+        width: 12% !important;
+        min-width: 90px !important;
+        max-width: 120px !important;
+      }
+
+      .problem-table-wrapper #problem-table td:nth-child(2) {
+        width: 12% !important;
+        min-width: 90px !important;
+        max-width: 120px !important;
+      }
+
+      .problem-table-wrapper #problem-table td:nth-child(3) {
+        width: 40% !important;
+        min-width: 200px !important;
+      }
+
+      .problem-table-wrapper #problem-table td:nth-child(4) {
+        width: 18% !important;
+        min-width: 120px !important;
+      }
+
+      .problem-table-wrapper #problem-table td:nth-child(5) {
+        width: 18% !important;
+        min-width: 120px !important;
+      }
+
+      #problem-table td:first-child {
+        width: 12% !important;
+        min-width: 90px;
+      }
+
+      #problem-table td:nth-child(2) {
+        width: 12% !important;
+        min-width: 90px;
+      }
+
+      #problem-table td:nth-child(3) {
+        width: 40% !important;
+        min-width: 200px;
+      }
+
+      #problem-table td:nth-child(4) {
+        width: 18% !important;
+        min-width: 120px;
+      }
+
+      #problem-table td:nth-child(5) {
+        width: 18% !important;
+        min-width: 120px;
+      }
+
+      /* Make problem table cells more compact */
+      #problem-table td {
+        padding: 5px 2px !important;
+        font-size: 14px;
+        overflow: visible;
+        word-break: break-word;
+        vertical-align: top;
+        height: 40px !important;
+        min-height: 40px !important;
+      }
+
+      #problem-table th {
+        padding: 8px 2px !important;
+        font-size: 14px;
+        overflow: visible;
+        word-break: break-word;
+      }
+
+      /* Compact form inputs for problem table */
+      #problem-table .form-input {
+        font-size: 14px;
+        padding: 1px 2px;
+        overflow: visible;
+        word-break: break-word;
+        width: 100%;
+        box-sizing: border-box;
+        max-width: 100%;
+        resize: none;
+        height: auto;
+        min-height: 20px;
+        min-width: 0 !important;
+      }
+
+      /* Ensure problem table cells can expand */
+      #problem-table {
+        table-layout: fixed;
+      }
+
+      /* Additional text containment for problem table */
+      #problem-table td,
+      #problem-table th {
+        white-space: normal;
+        hyphens: auto;
+      }
+
+      /* Ensure textareas don't overflow their containers */
+      #problem-table textarea {
+        max-width: 100%;
+        overflow-wrap: break-word;
+        word-wrap: break-word;
+      }
+
+      /* Ensure inputs fit within their cells */
+      #problem-table input[type="text"] {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        box-sizing: border-box;
+        padding: 2px 4px;
+        font-size: 12px;
+      }
+
+      /* Fix date input styling in problem table to match form-input */
+      #problem-table input.datepicker {
+        border: none;
+        outline: none;
+        background: transparent;
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        font-weight: normal;
+        padding: 2px 0;
+        margin: 0;
+        min-height: 20px;
+        line-height: 1.4;
+        text-align: center;
+        width: 100px;
+      }
+
+      #problem-table input.datepicker:focus {
+        border: none;
+        outline: none;
+        background: transparent;
+        box-shadow: none;
+      }
+
+      /* Center the table cells containing problem inputs */
+      #problem-table td:first-child,
+      #problem-table td:nth-child(2) {
+        text-align: center;
+      }
+
+      /* Structured time input styling for problem table */
+      #problem-table .structured-time-input {
+        display: flex;
+        align-items: center;
+        gap: -2px;
+        justify-content: center;
+        font-size: 14px;
+        font-family: Arial, sans-serif;
+        width: 100%;
+        min-width: 120px;
+      }
+
+      /* Make time inputs much closer to colon for problem table */
+      #problem-table .structured-time-input input[type="number"] {
+        border: none;
+        outline: none;
+        background: transparent;
+        padding: 2px 0;
+        font-size: 14px;
+        font-family: Arial, sans-serif;
+        font-weight: normal;
+        text-align: center;
+        width: 25px;
+        min-height: 20px;
+        line-height: 1.4;
+        margin: 0;
+        /* Hide number input spinners */
+        -moz-appearance: textfield;
+        appearance: textfield;
+      }
+
+      #problem-table
+        .structured-time-input
+        input[type="number"]::-webkit-outer-spin-button,
+      #problem-table
+        .structured-time-input
+        input[type="number"]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+
+      #problem-table .structured-time-input select {
+        border: none;
+        outline: none;
+        background: transparent;
+        padding: 2px 0;
+        font-size: 14px;
+        font-family: Arial, sans-serif;
+        font-weight: normal;
+        width: 50px;
+        min-height: 20px;
+        line-height: 1.4;
+        margin: 0;
+      }
+
+      #problem-table .structured-time-input span {
+        font-weight: normal;
+        color: #000;
+        margin: 0;
+        font-size: 14px;
+        font-family: Arial, sans-serif;
+        padding: 0;
+        width: 8px;
+        text-align: center;
+      }
+
+      /* Simple Fever Input Styling */
+      #problem-table .fever-input-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        min-height: 20px;
+      }
+
+      /* Fever Temperature Input Styling */
+      #problem-table .fever-temperature-input {
+        border: none;
+        outline: none;
+        background: transparent;
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        font-weight: normal;
+        padding: 2px 4px;
+        width: 50px;
+        min-height: 18px;
+        line-height: 1.2;
+        margin: 0;
+        text-align: center;
+        /* Hide number input spinners */
+        -moz-appearance: textfield;
+        appearance: textfield;
+      }
+
+      #problem-table .fever-temperature-input::-webkit-outer-spin-button,
+      #problem-table .fever-temperature-input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+
+      #problem-table .fever-temperature-input:focus {
+        background: rgba(0, 123, 255, 0.1);
+        border-radius: 2px;
+      }
+
+      /* Degree Symbol Styling */
+      #problem-table .degree-symbol {
+        font-size: 14px;
+        font-family: Arial, sans-serif;
+        margin: 0 1px;
+        color: #000;
+      }
+
+      /* General time meridiem select styling */
+      .time-meridiem {
+        border: none;
+        outline: none;
+        background: transparent;
+        padding: 2px 0;
+        font-size: 14px;
+        font-family: Arial, sans-serif;
+        font-weight: normal;
+        width: 50px !important;
+        min-height: 20px;
+        line-height: 1.4;
+        margin: 0;
+      }
+
+      /* URINE RE Table - Column width adjustments */
+      #urine-re-table {
+        width: 100% !important;
+        max-width: 100% !important;
+        table-layout: auto !important;
+      }
+
+      /* Force width changes with higher specificity for urine re table - 4 columns */
+      .urine-re-table-wrapper #urine-re-table th:first-child,
+      .urine-re-table-wrapper #urine-re-table td:first-child {
+        width: 20% !important;
+        min-width: 120px !important;
+      }
+
+      .urine-re-table-wrapper #urine-re-table th:nth-child(2),
+      .urine-re-table-wrapper #urine-re-table td:nth-child(2) {
+        width: 20% !important;
+        min-width: 120px !important;
+      }
+
+      .urine-re-table-wrapper #urine-re-table th:nth-child(3),
+      .urine-re-table-wrapper #urine-re-table td:nth-child(3) {
+        width: 35% !important;
+        min-width: 180px !important;
+      }
+
+      .urine-re-table-wrapper #urine-re-table th:nth-child(4),
+      .urine-re-table-wrapper #urine-re-table td:nth-child(4) {
+        width: 25% !important;
+        min-width: 150px !important;
+      }
+
+      #urine-re-table th:first-child,
+      #urine-re-table td:first-child {
+        width: 20% !important;
+        min-width: 120px;
+      }
+
+      #urine-re-table th:nth-child(2),
+      #urine-re-table td:nth-child(2) {
+        width: 20% !important;
+        min-width: 120px;
+      }
+
+      #urine-re-table th:nth-child(3),
+      #urine-re-table td:nth-child(3) {
+        width: 35% !important;
+        min-width: 180px;
+      }
+
+      #urine-re-table th:nth-child(4),
+      #urine-re-table td:nth-child(4) {
+        width: 25% !important;
+        min-width: 150px;
+      }
+
+      /* Make urine re table cells more compact */
+      #urine-re-table td {
+        padding: 5px 2px !important;
+        font-size: 14px;
+        overflow: visible;
+        word-break: break-word;
+        vertical-align: top;
+        height: 40px !important;
+        min-height: 40px !important;
+      }
+
+      #urine-re-table th {
+        padding: 8px 2px !important;
+        font-size: 14px;
+        overflow: visible;
+        word-break: break-word;
+      }
+
+      /* Compact form inputs for urine re table */
+      #urine-re-table .form-input {
+        font-size: 14px;
+        padding: 1px 2px;
+        overflow: visible;
+        word-break: break-word;
+        width: 100%;
+        box-sizing: border-box;
+        max-width: 100%;
+        resize: none;
+        height: auto;
+        min-height: 20px;
+        min-width: 0 !important;
+      }
+
+      /* Ensure urine re table cells can expand */
+
+      /* Additional text containment for urine re table */
+      #urine-re-table td,
+      #urine-re-table th {
+        white-space: normal;
+        hyphens: auto;
+      }
+
+      /* Ensure textareas don't overflow their containers */
+      #urine-re-table textarea {
+        max-width: 100%;
+        overflow-wrap: break-word;
+        word-wrap: break-word;
+      }
+
+      /* Ensure inputs fit within their cells */
+      #urine-re-table input[type="text"] {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        box-sizing: border-box;
+        padding: 2px 4px;
+        font-size: 12px;
+      }
+
+      /* Fix date input styling in urine re table to match form-input */
+      #urine-re-table input.datepicker {
+        border: none;
+        outline: none;
+        background: transparent;
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        font-weight: normal;
+        padding: 2px 0;
+        margin: 0;
+        min-height: 20px;
+        line-height: 1.4;
+        text-align: center;
+        width: 100px;
+      }
+
+      #urine-re-table input.datepicker:focus {
+        border: none;
+        outline: none;
+        background: transparent;
+        box-shadow: none;
+      }
+
+      /* Center the table cells containing urine re inputs */
+      #urine-re-table td:first-child,
+      #urine-re-table td:nth-child(2) {
+        text-align: center;
+      }
+
+      /* URINE RE PUS CELLS Table - Column width adjustments */
+      #urine-re-pus-table {
+        width: 100% !important;
+        max-width: 100% !important;
+        table-layout: auto !important;
+      }
+
+      /* Force width changes with higher specificity for urine re pus table - 3 columns */
+      .urine-re-pus-table-wrapper #urine-re-pus-table th:first-child,
+      .urine-re-pus-table-wrapper #urine-re-pus-table td:first-child {
+        width: 20% !important;
+        min-width: 120px !important;
+      }
+
+      .urine-re-pus-table-wrapper #urine-re-pus-table th:nth-child(2),
+      .urine-re-pus-table-wrapper #urine-re-pus-table td:nth-child(2) {
+        width: 20% !important;
+        min-width: 120px !important;
+      }
+
+      .urine-re-pus-table-wrapper #urine-re-pus-table th:nth-child(3),
+      .urine-re-pus-table-wrapper #urine-re-pus-table td:nth-child(3) {
+        width: 60% !important;
+        min-width: 300px !important;
+      }
+
+      #urine-re-pus-table th:first-child,
+      #urine-re-pus-table td:first-child {
+        width: 20% !important;
+        min-width: 120px;
+      }
+
+      #urine-re-pus-table th:nth-child(2),
+      #urine-re-pus-table td:nth-child(2) {
+        width: 20% !important;
+        min-width: 120px;
+      }
+
+      #urine-re-pus-table th:nth-child(3),
+      #urine-re-pus-table td:nth-child(3) {
+        width: 60% !important;
+        min-width: 300px;
+      }
+
+      /* Make urine re pus table cells more compact */
+      #urine-re-pus-table td {
+        padding: 5px 2px !important;
+        font-size: 14px;
+        overflow: visible;
+        word-break: break-word;
+        vertical-align: top;
+        height: 40px !important;
+        min-height: 40px !important;
+      }
+
+      #urine-re-pus-table th {
+        padding: 8px 2px !important;
+        font-size: 14px;
+        overflow: visible;
+        word-break: break-word;
+      }
+
+      /* Compact form inputs for urine re pus table */
+      #urine-re-pus-table .form-input {
+        font-size: 14px;
+        padding: 1px 2px;
+        overflow: visible;
+        word-break: break-word;
+        width: 100%;
+        box-sizing: border-box;
+        max-width: 100%;
+        resize: none;
+        height: auto;
+        min-height: 20px;
+        min-width: 0 !important;
+      }
+
+      /* Ensure urine re pus table cells can expand */
+
+      /* Additional text containment for urine re pus table */
+      #urine-re-pus-table td,
+      #urine-re-pus-table th {
+        white-space: normal;
+        hyphens: auto;
+      }
+
+      /* Ensure textareas don't overflow their containers */
+      #urine-re-pus-table textarea {
+        max-width: 100%;
+        overflow-wrap: break-word;
+        word-wrap: break-word;
+      }
+
+      /* Ensure inputs fit within their cells */
+      #urine-re-pus-table input[type="text"] {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        box-sizing: border-box;
+        padding: 2px 4px;
+        font-size: 12px;
+      }
+
+      /* Fix date input styling in urine re pus table to match form-input */
+      #urine-re-pus-table input.datepicker {
+        border: none;
+        outline: none;
+        background: transparent;
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        font-weight: normal;
+        padding: 2px 0;
+        margin: 0;
+        min-height: 20px;
+        line-height: 1.4;
+        text-align: center;
+        width: 100px;
+      }
+
+      #urine-re-pus-table input.datepicker:focus {
+        border: none;
+        outline: none;
+        background: transparent;
+        box-shadow: none;
+      }
+
+      /* Center the table cells containing urine re pus inputs */
+      #urine-re-pus-table td:first-child,
+      #urine-re-pus-table td:nth-child(2) {
+        text-align: center;
+      }
+
+      /* Structured time input styling for urine re pus table */
+      #urine-re-pus-table .structured-time-input {
+        display: flex;
+        align-items: center;
+        gap: -2px;
+        justify-content: center;
+        font-size: 14px;
+        font-family: Arial, sans-serif;
+        width: 100%;
+        min-width: 120px;
+      }
+
+      /* Make time inputs much closer to colon for urine re pus table */
+      #urine-re-pus-table .structured-time-input input[type="number"] {
+        border: none;
+        outline: none;
+        background: transparent;
+        padding: 2px 0;
+        font-size: 14px;
+        font-family: Arial, sans-serif;
+        font-weight: normal;
+        text-align: center;
+        width: 25px;
+        min-height: 20px;
+        line-height: 1.4;
+        margin: 0;
+        /* Hide number input spinners */
+        -moz-appearance: textfield;
+        appearance: textfield;
+      }
+
+      #urine-re-pus-table
+        .structured-time-input
+        input[type="number"]::-webkit-outer-spin-button,
+      #urine-re-pus-table
+        .structured-time-input
+        input[type="number"]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        appearance: none;
+        margin: 0;
+      }
+
+      #urine-re-pus-table .structured-time-input select {
+        border: none;
+        outline: none;
+        background: transparent;
+        padding: 2px 0;
+        font-size: 14px;
+        font-family: Arial, sans-serif;
+        font-weight: normal;
+        width: 50px;
+        min-height: 20px;
+        line-height: 1.4;
+        margin: 0;
+      }
+
+      #urine-re-pus-table .structured-time-input span {
+        font-weight: normal;
+        color: #000;
+        margin: 0;
+        font-size: 14px;
+        font-family: Arial, sans-serif;
+        padding: 0;
+        width: 8px;
+        text-align: center;
+      }
+
+      /* URINE OUTPUT Table - Column width adjustments */
+      #urine-output-table {
+        width: 100% !important;
+        max-width: 100% !important;
+        table-layout: auto !important;
+      }
+
+      /* Force width changes with higher specificity for urine output table - 3 columns */
+      .urine-output-table-wrapper #urine-output-table th:first-child,
+      .urine-output-table-wrapper #urine-output-table td:first-child {
+        width: 20% !important;
+        min-width: 120px !important;
+      }
+
+      .urine-output-table-wrapper #urine-output-table th:nth-child(2),
+      .urine-output-table-wrapper #urine-output-table td:nth-child(2) {
+        width: 20% !important;
+        min-width: 120px !important;
+      }
+
+      .urine-output-table-wrapper #urine-output-table th:nth-child(3),
+      .urine-output-table-wrapper #urine-output-table td:nth-child(3) {
+        width: 60% !important;
+        min-width: 300px !important;
+      }
+
+      #urine-output-table th:first-child,
+      #urine-output-table td:first-child {
+        width: 20% !important;
+        min-width: 120px;
+      }
+
+      #urine-output-table th:nth-child(2),
+      #urine-output-table td:nth-child(2) {
+        width: 20% !important;
+        min-width: 120px;
+      }
+
+      #urine-output-table th:nth-child(3),
+      #urine-output-table td:nth-child(3) {
+        width: 60% !important;
+        min-width: 300px;
+      }
+
+      /* Make urine output table cells more compact */
+      #urine-output-table td {
+        padding: 5px 2px !important;
+        font-size: 14px;
+        overflow: visible;
+        word-break: break-word;
+        vertical-align: top;
+        height: 40px !important;
+        min-height: 40px !important;
+      }
+
+      #urine-output-table th {
+        padding: 8px 2px !important;
+        font-size: 14px;
+        overflow: visible;
+        word-break: break-word;
+      }
+
+      /* Compact form inputs for urine output table */
+      #urine-output-table .form-input {
+        font-size: 14px;
+        padding: 1px 2px;
+        overflow: visible;
+        word-break: break-word;
+        width: 100%;
+        box-sizing: border-box;
+        max-width: 100%;
+        resize: none;
+        height: auto;
+        min-height: 20px;
+        min-width: 0 !important;
+      }
+
+      /* Ensure urine output table cells can expand */
+
+      /* Additional text containment for urine output table */
+      #urine-output-table td,
+      #urine-output-table th {
+        white-space: normal;
+        hyphens: auto;
+      }
+
+      /* Ensure textareas don't overflow their containers */
+      #urine-output-table textarea {
+        max-width: 100%;
+        overflow-wrap: break-word;
+        word-wrap: break-word;
+      }
+
+      /* Ensure inputs fit within their cells */
+      #urine-output-table input[type="text"] {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        box-sizing: border-box;
+        padding: 2px 4px;
+        font-size: 12px;
+      }
+
+      /* Fix date input styling in urine output table to match form-input */
+      #urine-output-table input.datepicker {
+        border: none;
+        outline: none;
+        background: transparent;
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        font-weight: normal;
+        padding: 2px 0;
+        margin: 0;
+        min-height: 20px;
+        line-height: 1.4;
+        text-align: center;
+        width: 100px;
+      }
+
+      #urine-output-table input.datepicker:focus {
+        border: none;
+        outline: none;
+        background: transparent;
+        box-shadow: none;
+      }
+
+      /* Center the table cells containing urine output inputs */
+      #urine-output-table td:first-child,
+      #urine-output-table td:nth-child(2) {
+        text-align: center;
+      }
+
+      /* Structured time input styling for urine output table */
+      #urine-output-table .structured-time-input {
+        display: flex;
+        align-items: center;
+        gap: -2px;
+        justify-content: center;
+        font-size: 14px;
+        font-family: Arial, sans-serif;
+        width: 100%;
+        min-width: 120px;
+      }
+
+      /* Make time inputs much closer to colon for urine output table */
+      #urine-output-table .structured-time-input input[type="number"] {
+        border: none;
+        outline: none;
+        background: transparent;
+        padding: 2px 0;
+        font-size: 14px;
+        font-family: Arial, sans-serif;
+        font-weight: normal;
+        text-align: center;
+        width: 25px;
+        min-height: 20px;
+        line-height: 1.4;
+        margin: 0;
+        /* Hide number input spinners */
+        -moz-appearance: textfield;
+        appearance: textfield;
+      }
+
+      #urine-output-table
+        .structured-time-input
+        input[type="number"]::-webkit-outer-spin-button,
+      #urine-output-table
+        .structured-time-input
+        input[type="number"]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+
+      #urine-output-table .structured-time-input select {
+        border: none;
+        outline: none;
+        background: transparent;
+        padding: 2px 0;
+        font-size: 14px;
+        font-family: Arial, sans-serif;
+        font-weight: normal;
+        width: 50px;
+        min-height: 20px;
+        line-height: 1.4;
+        margin: 0;
+      }
+
+      #urine-output-table .structured-time-input span {
+        font-weight: normal;
+        color: #000;
+        margin: 0;
+        font-size: 14px;
+        font-family: Arial, sans-serif;
+        padding: 0;
+        width: 8px;
+        text-align: center;
+      }
+
+      /* URINE RESULT Table - Column width adjustments */
+      #urine-result-table {
+        width: 100% !important;
+        max-width: 100% !important;
+        table-layout: auto !important;
+      }
+
+      /* Force width changes with higher specificity for urine result table - 4 columns */
+      .urine-result-table-wrapper #urine-result-table th:first-child,
+      .urine-result-table-wrapper #urine-result-table td:first-child {
+        width: 15% !important;
+        min-width: 100px !important;
+      }
+
+      .urine-result-table-wrapper #urine-result-table th:nth-child(2),
+      .urine-result-table-wrapper #urine-result-table td:nth-child(2) {
+        width: 25% !important;
+        min-width: 150px !important;
+      }
+
+      .urine-result-table-wrapper #urine-result-table th:nth-child(3),
+      .urine-result-table-wrapper #urine-result-table td:nth-child(3) {
+        width: 25% !important;
+        min-width: 150px !important;
+      }
+
+      .urine-result-table-wrapper #urine-result-table th:nth-child(4),
+      .urine-result-table-wrapper #urine-result-table td:nth-child(4) {
+        width: 35% !important;
+        min-width: 200px !important;
+      }
+
+      #urine-result-table th:first-child,
+      #urine-result-table td:first-child {
+        width: 15% !important;
+        min-width: 100px;
+      }
+
+      #urine-result-table th:nth-child(2),
+      #urine-result-table td:nth-child(2) {
+        width: 25% !important;
+        min-width: 150px;
+      }
+
+      #urine-result-table th:nth-child(3),
+      #urine-result-table td:nth-child(3) {
+        width: 25% !important;
+        min-width: 150px;
+      }
+
+      #urine-result-table th:nth-child(4),
+      #urine-result-table td:nth-child(4) {
+        width: 35% !important;
+        min-width: 200px;
+      }
+
+      /* Make urine result table cells more compact */
+      #urine-result-table td {
+        padding: 5px 2px !important;
+        font-size: 14px;
+        overflow: visible;
+        word-break: break-word;
+        vertical-align: top;
+        height: 40px !important;
+        min-height: 40px !important;
+      }
+
+      #urine-result-table th {
+        padding: 8px 2px !important;
+        font-size: 14px;
+        overflow: visible;
+        word-break: break-word;
+      }
+
+      /* Compact form inputs for urine result table */
+      #urine-result-table .form-input {
+        font-size: 14px;
+        padding: 1px 2px;
+        overflow: visible;
+        word-break: break-word;
+        width: 100%;
+        box-sizing: border-box;
+        max-width: 100%;
+        resize: none;
+        height: auto;
+        min-height: 20px;
+        min-width: 0 !important;
+      }
+
+      /* Ensure urine result table cells can expand */
+
+      /* Additional text containment for urine result table */
+      #urine-result-table td,
+      #urine-result-table th {
+        white-space: normal;
+        hyphens: auto;
+      }
+
+      /* Ensure textareas don't overflow their containers */
+      #urine-result-table textarea {
+        max-width: 100%;
+        overflow-wrap: break-word;
+        word-wrap: break-word;
+      }
+
+      /* Ensure inputs fit within their cells */
+      #urine-result-table input[type="text"] {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        box-sizing: border-box;
+        padding: 2px 4px;
+        font-size: 12px;
+      }
+
+      /* Fix date input styling in urine result table to match form-input */
+      #urine-result-table input.datepicker {
+        border: none;
+        outline: none;
+        background: transparent;
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        font-weight: normal;
+        padding: 2px 0;
+        margin: 0;
+        min-height: 20px;
+        line-height: 1.4;
+        text-align: center;
+        width: 100px;
+      }
+
+      #urine-result-table input.datepicker:focus {
+        border: none;
+        outline: none;
+        background: transparent;
+        box-shadow: none;
+      }
+
+      /* Center the table cells containing urine result inputs */
+      #urine-result-table td:first-child {
+        text-align: center;
+      }
+
+      /* IMMUNO SUPPRESSANTS Table - Column width adjustments */
+      #immuno-suppressants-table {
+        width: 100% !important;
+        max-width: 100% !important;
+        table-layout: auto !important;
+      }
+
+      /* Force width changes with higher specificity for immuno suppressants table - 4 columns */
+      .immuno-suppressants-table-wrapper
+        #immuno-suppressants-table
+        th:first-child,
+      .immuno-suppressants-table-wrapper
+        #immuno-suppressants-table
+        td:first-child {
+        width: 20% !important;
+        min-width: 120px !important;
+      }
+
+      .immuno-suppressants-table-wrapper
+        #immuno-suppressants-table
+        th:nth-child(2),
+      .immuno-suppressants-table-wrapper
+        #immuno-suppressants-table
+        td:nth-child(2) {
+        width: 40% !important;
+        min-width: 200px !important;
+      }
+
+      .immuno-suppressants-table-wrapper
+        #immuno-suppressants-table
+        th:nth-child(3),
+      .immuno-suppressants-table-wrapper
+        #immuno-suppressants-table
+        td:nth-child(3) {
+        width: 20% !important;
+        min-width: 120px !important;
+      }
+
+      .immuno-suppressants-table-wrapper
+        #immuno-suppressants-table
+        th:nth-child(4),
+      .immuno-suppressants-table-wrapper
+        #immuno-suppressants-table
+        td:nth-child(4) {
+        width: 20% !important;
+        min-width: 120px !important;
+      }
+
+      /* IMMUNO SUPPRESSANTS Table styling */
+      .immuno-suppressants-table-wrapper #immuno-suppressants-table td {
+        height: 40px !important;
+        padding: 4px !important;
+        text-align: left !important;
+        vertical-align: top !important;
+        font-family: Arial, sans-serif !important;
+        font-size: 14px !important;
+      }
+
+      .immuno-suppressants-table-wrapper #immuno-suppressants-table input,
+      .immuno-suppressants-table-wrapper #immuno-suppressants-table textarea {
+        width: 100% !important;
+        height: 32px !important;
+        border: none !important;
+        outline: none !important;
+        font-family: Arial, sans-serif !important;
+        font-size: 14px !important;
+        padding: 4px !important;
+        box-sizing: border-box !important;
+        background: transparent !important;
+      }
+
+      .immuno-suppressants-table-wrapper #immuno-suppressants-table textarea {
+        min-height: 32px !important;
+        resize: none !important;
+        overflow: hidden !important;
+      }
+
+      .immuno-suppressants-table-wrapper
+        #immuno-suppressants-table
+        input.datepicker {
+        text-align: center !important;
+      }
+
+      .immuno-suppressants-table-wrapper
+        #immuno-suppressants-table
+        td:first-child {
+        text-align: center !important;
+      }
+
+      /* Compact form inputs for immuno suppressants table */
+      #immuno-suppressants-table .form-input {
+        font-size: 14px;
+        padding: 1px 2px;
+        overflow: visible;
+        word-break: break-word;
+        width: 100%;
+        box-sizing: border-box;
+        max-width: 100%;
+        resize: none;
+        height: auto;
+        min-height: 20px;
+        min-width: 0 !important;
+      }
+
+      /* Ensure immuno suppressants table cells can expand */
+      #immuno-suppressants-table td,
+      #immuno-suppressants-table th {
+        white-space: normal;
+        hyphens: auto;
+      }
+
+      /* Ensure textareas don't overflow their containers */
+      #immuno-suppressants-table textarea {
+        max-width: 100%;
+        overflow-wrap: break-word;
+        word-wrap: break-word;
+      }
+
+      /* Ensure inputs fit within their cells */
+      #immuno-suppressants-table input[type="text"] {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        box-sizing: border-box;
+        padding: 2px 4px;
+        font-size: 12px;
+      }
+
+      /* Fix date input styling in immuno suppressants table to match form-input */
+      #immuno-suppressants-table input.datepicker {
+        border: none;
+        outline: none;
+        background: transparent;
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        font-weight: normal;
+        padding: 2px 0;
+        margin: 0;
+        min-height: 20px;
+        line-height: 1.4;
+        text-align: center;
+        width: 100px;
+      }
+
+      #immuno-suppressants-table input.datepicker:focus {
+        border: none;
+        outline: none;
+        background: transparent;
+        box-shadow: none;
+      }
+
+      /* Center the table cells containing immuno suppressants inputs */
+      #immuno-suppressants-table td:first-child {
+        text-align: center;
+      }
+
+      /* Center the Immuno Suppressants headers */
+      #immuno-suppressants-table td:nth-child(2),
+      #immuno-suppressants-table td:nth-child(3),
+      #immuno-suppressants-table td:nth-child(4) {
+        text-align: center !important;
+      }
+
+      /* CREATININE LEVEL Table - Column width adjustments */
+      #creatinine-level-table {
+        width: 100% !important;
+        max-width: 100% !important;
+        table-layout: auto !important;
+      }
+
+      /* Force width changes with higher specificity for creatinine level table - 2 columns */
+      .creatinine-level-table-wrapper #creatinine-level-table th:first-child,
+      .creatinine-level-table-wrapper #creatinine-level-table td:first-child {
+        width: 30% !important;
+        min-width: 150px !important;
+      }
+
+      .creatinine-level-table-wrapper #creatinine-level-table th:nth-child(2),
+      .creatinine-level-table-wrapper #creatinine-level-table td:nth-child(2) {
+        width: 70% !important;
+        min-width: 300px !important;
+      }
+
+      /* CREATININE LEVEL Table styling */
+      .creatinine-level-table-wrapper #creatinine-level-table td {
+        height: 40px !important;
+        padding: 4px !important;
+        text-align: left !important;
+        vertical-align: top !important;
+        font-family: Arial, sans-serif !important;
+        font-size: 14px !important;
+      }
+
+      .creatinine-level-table-wrapper #creatinine-level-table input,
+      .creatinine-level-table-wrapper #creatinine-level-table textarea {
+        width: 100% !important;
+        height: 32px !important;
+        border: none !important;
+        outline: none !important;
+        font-family: Arial, sans-serif !important;
+        font-size: 14px !important;
+        padding: 4px !important;
+        box-sizing: border-box !important;
+        background: transparent !important;
+      }
+
+      .creatinine-level-table-wrapper #creatinine-level-table textarea {
+        min-height: 32px !important;
+        resize: none !important;
+        overflow: hidden !important;
+      }
+
+      .creatinine-level-table-wrapper #creatinine-level-table input.datepicker {
+        text-align: center !important;
+      }
+
+      .creatinine-level-table-wrapper #creatinine-level-table td:first-child {
+        text-align: center !important;
+      }
+
+      /* Compact form inputs for creatinine level table */
+      #creatinine-level-table .form-input {
+        font-size: 14px;
+        padding: 1px 2px;
+        overflow: visible;
+        word-break: break-word;
+        width: 100%;
+        box-sizing: border-box;
+        max-width: 100%;
+        resize: none;
+        height: auto;
+        min-height: 20px;
+        min-width: 0 !important;
+      }
+
+      /* Ensure creatinine level table cells can expand */
+      #creatinine-level-table td,
+      #creatinine-level-table th {
+        white-space: normal;
+        hyphens: auto;
+      }
+
+      /* Ensure textareas don't overflow their containers */
+      #creatinine-level-table textarea {
+        max-width: 100%;
+        overflow-wrap: break-word;
+        word-wrap: break-word;
+      }
+
+      /* Ensure inputs fit within their cells */
+      #creatinine-level-table input[type="text"] {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        box-sizing: border-box;
+        padding: 2px 4px;
+        font-size: 12px;
+      }
+
+      /* Fix date input styling in creatinine level table to match form-input */
+      #creatinine-level-table input.datepicker {
+        border: none;
+        outline: none;
+        background: transparent;
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        font-weight: normal;
+        padding: 2px 0;
+        margin: 0;
+        min-height: 20px;
+        line-height: 1.4;
+        text-align: center;
+        width: 100px;
+      }
+
+      #creatinine-level-table input.datepicker:focus {
+        border: none;
+        outline: none;
+        background: transparent;
+        box-shadow: none;
+      }
+
+      /* Center the table cells containing creatinine level inputs */
+      #creatinine-level-table td:first-child {
+        text-align: center;
+      }
+
+      /* Center the Result header in creatinine level table */
+      #creatinine-level-table td:nth-child(2) {
+        text-align: center !important;
+      }
+
+      /* Structured time input styling for catheter table */
+      #catheter-table .structured-time-input {
+        display: flex;
+        align-items: center;
+        gap: -2px;
+        justify-content: center;
+        font-size: 14px;
+        font-family: Arial, sans-serif;
+        width: 100%;
+        min-width: 120px;
+      }
+
+      /* Make time inputs much closer to colon */
+      #catheter-table .structured-time-input input[type="number"] {
+        border: none;
+        outline: none;
+        background: transparent;
+        padding: 2px 0;
+        font-size: 14px;
+        font-family: Arial, sans-serif;
+        font-weight: normal;
+        text-align: center;
+        width: 25px;
+        min-height: 20px;
+        line-height: 1.4;
+        margin: 0;
+        /* Hide number input spinners */
+        -moz-appearance: textfield;
+        appearance: textfield;
+      }
+
+      #catheter-table
+        .structured-time-input
+        input[type="number"]::-webkit-outer-spin-button,
+      #catheter-table
+        .structured-time-input
+        input[type="number"]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+
+      #catheter-table .structured-time-input select {
+        border: none;
+        outline: none;
+        background: transparent;
+        padding: 2px 0;
+        font-size: 14px;
+        font-family: Arial, sans-serif;
+        font-weight: normal;
+        width: 50px;
+        min-height: 20px;
+        line-height: 1.4;
+        margin: 0;
+      }
+
+      #catheter-table .structured-time-input span {
+        font-weight: normal;
+        color: #000;
+        margin: 0;
+        font-size: 14px;
+        font-family: Arial, sans-serif;
+        padding: 0;
+        width: 8px;
+        text-align: center;
+      }
+
+      /* Submit button styles */
+      .submit-button {
+        background-color: #28a745;
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        font-size: 16px;
+        font-weight: bold;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        margin: 30px auto;
+        display: block;
+        min-width: 150px;
+      }
+
+      .submit-button:hover {
+        background-color: #218838;
+      }
+
+      .submit-button:active {
+        background-color: #1e7e34;
+        transform: translateY(1px);
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="header">
+        <img src="../assets/supercare-hospital_logo.png" alt="Supercare Logo" />
+        <div class="title-main">
+          Catheter Associated Urinary Tract Infection FORM
+        </div>
+        <div class="title-sub">Supercare</div>
+      </div>
+
+      <!-- Patient Info Table -->
+      <div
+        class="patient-info-table-wrapper"
+        style="overflow-x: auto; width: 100%"
+      >
+        <table class="tg" id="patient-info-table">
+          <thead>
+            <tr>
+              <th class="tg-0lax" style="vertical-align: middle">
+                <div class="form-field">
+                  <span class="form-label">Name:</span>
+                  <textarea
+                    name="name"
+                    class="form-input wide"
+                    rows="1"
+                    oninput="autoGrow(this)"
+                  ></textarea>
+                </div>
+              </th>
+              <th class="tg-0lax" style="vertical-align: middle">
+                <div class="form-field">
+                  <span class="form-label">Age:</span>
+                  <textarea
+                    class="form-input narrow"
+                    name="age"
+                    rows="1"
+                    oninput="autoGrow(this)"
+                  ></textarea>
+                </div>
+              </th>
+              <th class="tg-0lax" style="vertical-align: middle">
+                <div class="form-field">
+                  <span class="form-label">Sex:</span>
+                  <textarea
+                    class="form-input narrow"
+                    name="sex"
+                    rows="1"
+                    oninput="autoGrow(this)"
+                  ></textarea>
+                </div>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="tg-0lax" style="vertical-align: middle">
+                <div class="form-field">
+                  <span class="form-label">UHID:</span>
+                  <textarea
+                    class="form-input medium"
+                    name="uhid"
+                    rows="1"
+                    oninput="autoGrow(this)"
+                  ></textarea>
+                </div>
+              </td>
+              <td class="tg-0lax" style="vertical-align: middle">
+                <div class="form-field">
+                  <span class="form-label">Bed no./Ward:</span>
+                  <textarea
+                    class="form-input medium"
+                    name="bed"
+                    rows="1"
+                    oninput="autoGrow(this)"
+                  ></textarea>
+                </div>
+              </td>
+              <td class="tg-0lax" style="vertical-align: middle">
+                <div class="form-field">
+                  <span class="form-label">Date Of Admission:</span>
+                  <textarea
+                    class="form-input medium"
+                    name="date_of_admission"
+                    rows="1"
+                    oninput="autoGrow(this)"
+                  ></textarea>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td class="tg-0lax" style="vertical-align: middle" colspan="3">
+                <div class="form-field">
+                  <span class="form-label">Diagnosis:</span>
+                  <textarea
+                    class="form-input wide"
+                    name="diagnosis"
+                    rows="1"
+                    oninput="autoGrow(this)"
+                  ></textarea>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Catheter Table -->
+      <div
+        class="catheter-table-wrapper"
+        style="margin-top: 20px; overflow-x: auto; width: 100%"
+      >
+        <table class="tg" id="catheter-table">
+          <thead>
+            <tr>
+              <th
+                class="tg-5yq0"
+                colspan="6"
+                style="
+                  font-weight: 700;
+                  text-align: center;
+                  vertical-align: top;
+                  background-color: #c8e0c8;
+                "
+              >
+                CATHETER
+              </th>
+            </tr>
+            <tr>
+              <td
+                class="tg-9vaf"
+                style="
+                  font-weight: 700;
+                  text-align: center;
+                  vertical-align: top;
+                  background-color: #e6e6e6;
+                "
+              >
+                Date
+              </td>
+              <td
+                class="tg-9vaf"
+                style="
+                  font-weight: 700;
+                  text-align: center;
+                  vertical-align: top;
+                  background-color: #e6e6e6;
+                "
+              >
+                Time
+              </td>
+              <td
+                class="tg-9vaf"
+                style="
+                  font-weight: 700;
+                  text-align: center;
+                  vertical-align: top;
+                  background-color: #e6e6e6;
+                "
+              >
+                Catheter<br />Changed On
+              </td>
+              <td
+                class="tg-9vaf"
+                style="
+                  font-weight: 700;
+                  text-align: center;
+                  vertical-align: top;
+                  background-color: #e6e6e6;
+                "
+              >
+                Catheter<br />Removed On
+              </td>
+              <td
+                class="tg-9vaf"
+                style="
+                  font-weight: 700;
+                  text-align: center;
+                  vertical-align: top;
+                  background-color: #e6e6e6;
+                "
+              >
+                Catheter <br />out date & time
+              </td>
+              <td
+                class="tg-9vaf"
+                style="
+                  font-weight: 700;
+                  text-align: center;
+                  vertical-align: top;
+                  background-color: #e6e6e6;
+                "
+              >
+                Total Catheter<br />Days
+              </td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="catheter-row">
+              <td class="tg-0pky">
+                <input
+                  type="text"
+                  name="catheter_date_1"
+                  class="datepicker"
+                  placeholder="dd/mm/yyyy"
+                  autocomplete="off"
+                />
+              </td>
+              <td class="tg-0pky">
+                <div class="structured-time-input">
+                  <input
+                    type="number"
+                    name="catheter_hour_1"
+                    class="time-hour"
+                    placeholder="HH"
+                    min="1"
+                    max="12"
+                    maxlength="2"
+                    autocomplete="off"
+                  />
+                  <span>:</span>
+                  <input
+                    type="number"
+                    name="catheter_minute_1"
+                    class="time-minute"
+                    placeholder="MM"
+                    min="0"
+                    max="59"
+                    maxlength="2"
+                    autocomplete="off"
+                  />
+                  <select
+                    name="catheter_meridiem_1"
+                    class="time-meridiem"
+                    autocomplete="off"
+                  >
+                    <option value="AM">AM</option>
+                    <option value="PM">PM</option>
+                  </select>
+                </div>
+              </td>
+              <td class="tg-0pky">
+                <input
+                  type="text"
+                  name="catheter_changed_on_1"
+                  class="datepicker"
+                  placeholder="dd/mm/yyyy"
+                  autocomplete="off"
+                />
+              </td>
+              <td class="tg-0pky">
+                <input
+                  type="text"
+                  name="catheter_removed_on_1"
+                  class="datepicker"
+                  placeholder="dd/mm/yyyy"
+                  autocomplete="off"
+                />
+              </td>
+              <td class="tg-0pky">
+                <input
+                  type="text"
+                  name="catheter_out_date_1"
+                  class="datepicker"
+                  placeholder="dd/mm/yyyy"
+                  autocomplete="off"
+                />
+                <br />
+                <div class="structured-time-input">
+                  <input
+                    type="number"
+                    name="catheter_out_hour_1"
+                    class="time-hour"
+                    placeholder="HH"
+                    min="1"
+                    max="12"
+                    maxlength="2"
+                    autocomplete="off"
+                  />
+                  <span>:</span>
+                  <input
+                    type="number"
+                    name="catheter_out_minute_1"
+                    class="time-minute"
+                    placeholder="MM"
+                    min="0"
+                    max="59"
+                    maxlength="2"
+                    autocomplete="off"
+                  />
+                  <select
+                    name="catheter_out_meridiem_1"
+                    class="time-meridiem"
+                    autocomplete="off"
+                  >
+                    <option value="AM">AM</option>
+                    <option value="PM">PM</option>
+                  </select>
+                </div>
+              </td>
+              <td class="tg-0pky" style="text-align: center">
+                <textarea
+                  name="total_catheter_days_1"
+                  class="form-input medium"
+                  rows="1"
+                  oninput="autoGrow(this)"
+                ></textarea>
+              </td>
+            </tr>
+            <tr class="catheter-row">
+              <td class="tg-0pky">
+                <input
+                  type="text"
+                  name="catheter_date_2"
+                  class="datepicker"
+                  placeholder="dd/mm/yyyy"
+                  autocomplete="off"
+                />
+              </td>
+              <td class="tg-0pky">
+                <div class="structured-time-input">
+                  <input
+                    type="number"
+                    name="catheter_hour_2"
+                    class="time-hour"
+                    placeholder="HH"
+                    min="1"
+                    max="12"
+                    maxlength="2"
+                    autocomplete="off"
+                  />
+                  <span>:</span>
+                  <input
+                    type="number"
+                    name="catheter_minute_2"
+                    class="time-minute"
+                    placeholder="MM"
+                    min="0"
+                    max="59"
+                    maxlength="2"
+                    autocomplete="off"
+                  />
+                  <select
+                    name="catheter_meridiem_2"
+                    class="time-meridiem"
+                    autocomplete="off"
+                  >
+                    <option value="AM">AM</option>
+                    <option value="PM">PM</option>
+                  </select>
+                </div>
+              </td>
+              <td class="tg-0pky">
+                <input
+                  type="text"
+                  name="catheter_changed_on_2"
+                  class="datepicker"
+                  placeholder="dd/mm/yyyy"
+                  autocomplete="off"
+                />
+              </td>
+              <td class="tg-0pky">
+                <input
+                  type="text"
+                  name="catheter_removed_on_2"
+                  class="datepicker"
+                  placeholder="dd/mm/yyyy"
+                  autocomplete="off"
+                />
+              </td>
+              <td class="tg-0pky">
+                <input
+                  type="text"
+                  name="catheter_out_date_2"
+                  class="datepicker"
+                  placeholder="dd/mm/yyyy"
+                  autocomplete="off"
+                />
+                <br />
+                <div class="structured-time-input">
+                  <input
+                    type="number"
+                    name="catheter_out_hour_2"
+                    class="time-hour"
+                    placeholder="HH"
+                    min="1"
+                    max="12"
+                    maxlength="2"
+                    autocomplete="off"
+                  />
+                  <span>:</span>
+                  <input
+                    type="number"
+                    name="catheter_out_minute_2"
+                    class="time-minute"
+                    placeholder="MM"
+                    min="0"
+                    max="59"
+                    maxlength="2"
+                    autocomplete="off"
+                  />
+                  <select
+                    name="catheter_out_meridiem_2"
+                    class="time-meridiem"
+                    autocomplete="off"
+                  >
+                    <option value="AM">AM</option>
+                    <option value="PM">PM</option>
+                  </select>
+                </div>
+              </td>
+              <td class="tg-0pky" style="text-align: center">
+                <textarea
+                  name="total_catheter_days_2"
+                  class="form-input medium"
+                  rows="1"
+                  oninput="autoGrow(this)"
+                ></textarea>
+              </td>
+            </tr>
+            <tr class="catheter-row">
+              <td class="tg-0pky">
+                <input
+                  type="text"
+                  name="catheter_date_3"
+                  class="datepicker"
+                  placeholder="dd/mm/yyyy"
+                  autocomplete="off"
+                />
+              </td>
+              <td class="tg-0pky">
+                <div class="structured-time-input">
+                  <input
+                    type="number"
+                    name="catheter_hour_3"
+                    class="time-hour"
+                    placeholder="HH"
+                    min="1"
+                    max="12"
+                    maxlength="2"
+                    autocomplete="off"
+                  />
+                  <span>:</span>
+                  <input
+                    type="number"
+                    name="catheter_minute_3"
+                    class="time-minute"
+                    placeholder="MM"
+                    min="0"
+                    max="59"
+                    maxlength="2"
+                    autocomplete="off"
+                  />
+                  <select
+                    name="catheter_meridiem_3"
+                    class="time-meridiem"
+                    autocomplete="off"
+                  >
+                    <option value="AM">AM</option>
+                    <option value="PM">PM</option>
+                  </select>
+                </div>
+              </td>
+              <td class="tg-0pky">
+                <input
+                  type="text"
+                  name="catheter_changed_on_3"
+                  class="datepicker"
+                  placeholder="dd/mm/yyyy"
+                  autocomplete="off"
+                />
+              </td>
+              <td class="tg-0pky">
+                <input
+                  type="text"
+                  name="catheter_removed_on_3"
+                  class="datepicker"
+                  placeholder="dd/mm/yyyy"
+                  autocomplete="off"
+                />
+              </td>
+              <td class="tg-0pky">
+                <input
+                  type="text"
+                  name="catheter_out_date_3"
+                  class="datepicker"
+                  placeholder="dd/mm/yyyy"
+                  autocomplete="off"
+                />
+                <br />
+                <div class="structured-time-input">
+                  <input
+                    type="number"
+                    name="catheter_out_hour_3"
+                    class="time-hour"
+                    placeholder="HH"
+                    min="1"
+                    max="12"
+                    maxlength="2"
+                    autocomplete="off"
+                  />
+                  <span>:</span>
+                  <input
+                    type="number"
+                    name="catheter_out_minute_3"
+                    class="time-minute"
+                    placeholder="MM"
+                    min="0"
+                    max="59"
+                    maxlength="2"
+                    autocomplete="off"
+                  />
+                  <select
+                    name="catheter_out_meridiem_3"
+                    class="time-meridiem"
+                    autocomplete="off"
+                  >
+                    <option value="AM">AM</option>
+                    <option value="PM">PM</option>
+                  </select>
+                </div>
+              </td>
+              <td class="tg-0pky" style="text-align: center">
+                <textarea
+                  name="total_catheter_days_3"
+                  class="form-input medium"
+                  rows="1"
+                  oninput="autoGrow(this)"
+                ></textarea>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="mt-4" style="text-align: right">
+        <button onclick="addCatheterRow()" class="action-button">+</button>
+        <button onclick="removeCatheterRow()" class="action-button">−</button>
+      </div>
+
+      <!-- PROBLEM Table -->
+      <div
+        class="problem-table-wrapper"
+        style="margin-top: 20px; overflow-x: auto; width: 100%"
+      >
+        <table class="tg" id="problem-table">
+          <thead>
+            <tr>
+              <th
+                class="tg-9hef"
+                colspan="5"
+                style="
+                  font-weight: 700;
+                  text-align: center;
+                  vertical-align: top;
+                  background-color: #c8e0c8;
+                "
+              >
+                PROBLEM
+              </th>
+            </tr>
+            <tr>
+              <td
+                class="tg-9vaf"
+                style="
+                  font-weight: 700;
+                  text-align: center;
+                  vertical-align: top;
+                  background-color: #e6e6e6;
+                "
+              >
+                Date
+              </td>
+              <td
+                class="tg-9vaf"
+                style="
+                  font-weight: 700;
+                  text-align: center;
+                  vertical-align: top;
+                  background-color: #e6e6e6;
+                "
+              >
+                Time
+              </td>
+              <td
+                class="tg-9vaf"
+                style="
+                  font-weight: 700;
+                  text-align: center;
+                  vertical-align: top;
+                  background-color: #e6e6e6;
+                "
+              >
+                Types Of Symptoms
+              </td>
+              <td
+                class="tg-9vaf"
+                style="
+                  font-weight: 700;
+                  text-align: center;
+                  vertical-align: top;
+                  background-color: #e6e6e6;
+                "
+              >
+                Pain/ Burning<br />Sensation
+              </td>
+              <td
+                class="tg-9vaf"
+                style="
+                  font-weight: 700;
+                  text-align: center;
+                  vertical-align: top;
+                  background-color: #e6e6e6;
+                "
+              >
+                Fever
+              </td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="problem-row">
+              <td class="tg-0pky">
+                <input
+                  type="text"
+                  name="problem_date_1"
+                  class="datepicker"
+                  placeholder="dd/mm/yyyy"
+                  autocomplete="off"
+                />
+              </td>
+              <td class="tg-0pky">
+                <div class="structured-time-input">
+                  <input
+                    type="number"
+                    name="problem_hour_1"
+                    class="time-hour"
+                    placeholder="HH"
+                    min="1"
+                    max="12"
+                    maxlength="2"
+                    autocomplete="off"
+                  />
+                  <span>:</span>
+                  <input
+                    type="number"
+                    name="problem_minute_1"
+                    class="time-minute"
+                    placeholder="MM"
+                    min="0"
+                    max="59"
+                    maxlength="2"
+                    autocomplete="off"
+                  />
+                  <select
+                    name="problem_meridiem_1"
+                    class="time-meridiem"
+                    autocomplete="off"
+                  >
+                    <option value="AM">AM</option>
+                    <option value="PM">PM</option>
+                  </select>
+                </div>
+              </td>
+              <td class="tg-0pky">
+                <textarea
+                  name="types_of_symptoms_1"
+                  class="form-input wide"
+                  rows="1"
+                  oninput="autoGrow(this)"
+                ></textarea>
+              </td>
+              <td class="tg-0pky">
+                <textarea
+                  name="pain_burning_sensation_1"
+                  class="form-input medium"
+                  rows="1"
+                  oninput="autoGrow(this)"
+                ></textarea>
+              </td>
+              <td class="tg-0pky">
+                <div class="fever-input-container">
+                  <input
+                    type="number"
+                    name="fever_temperature_1"
+                    class="fever-temperature-input"
+                    placeholder="36.5"
+                    step="0.1"
+                    min="30"
+                    max="45"
+                    autocomplete="off"
+                  />
+                  <span class="degree-symbol">°</span>
+                  <span
+                    style="
+                      font-size: 14px;
+                      font-family: Arial, sans-serif;
+                      color: #000;
+                    "
+                    >C</span
+                  >
+                </div>
+              </td>
+            </tr>
+            <tr class="problem-row">
+              <td class="tg-0pky">
+                <input
+                  type="text"
+                  name="problem_date_2"
+                  class="datepicker"
+                  placeholder="dd/mm/yyyy"
+                  autocomplete="off"
+                />
+              </td>
+              <td class="tg-0pky">
+                <div class="structured-time-input">
+                  <input
+                    type="number"
+                    name="problem_hour_2"
+                    class="time-hour"
+                    placeholder="HH"
+                    min="1"
+                    max="12"
+                    maxlength="2"
+                    autocomplete="off"
+                  />
+                  <span>:</span>
+                  <input
+                    type="number"
+                    name="problem_minute_2"
+                    class="time-minute"
+                    placeholder="MM"
+                    min="0"
+                    max="59"
+                    maxlength="2"
+                    autocomplete="off"
+                  />
+                  <select
+                    name="problem_meridiem_2"
+                    class="time-meridiem"
+                    autocomplete="off"
+                  >
+                    <option value="AM">AM</option>
+                    <option value="PM">PM</option>
+                  </select>
+                </div>
+              </td>
+              <td class="tg-0pky">
+                <textarea
+                  name="types_of_symptoms_2"
+                  class="form-input wide"
+                  rows="1"
+                  oninput="autoGrow(this)"
+                ></textarea>
+              </td>
+              <td class="tg-0pky">
+                <textarea
+                  name="pain_burning_sensation_2"
+                  class="form-input medium"
+                  rows="1"
+                  oninput="autoGrow(this)"
+                ></textarea>
+              </td>
+              <td class="tg-0pky">
+                <div class="fever-input-container">
+                  <input
+                    type="number"
+                    name="fever_temperature_2"
+                    class="fever-temperature-input"
+                    placeholder="36.5"
+                    step="0.1"
+                    min="30"
+                    max="45"
+                    autocomplete="off"
+                  />
+                  <span class="degree-symbol">°</span>
+                  <span
+                    style="
+                      font-size: 14px;
+                      font-family: Arial, sans-serif;
+                      color: #000;
+                    "
+                    >C</span
+                  >
+                </div>
+              </td>
+            </tr>
+            <tr class="problem-row">
+              <td class="tg-0pky">
+                <input
+                  type="text"
+                  name="problem_date_3"
+                  class="datepicker"
+                  placeholder="dd/mm/yyyy"
+                  autocomplete="off"
+                />
+              </td>
+              <td class="tg-0pky">
+                <div class="structured-time-input">
+                  <input
+                    type="number"
+                    name="problem_hour_3"
+                    class="time-hour"
+                    placeholder="HH"
+                    min="1"
+                    max="12"
+                    maxlength="2"
+                    autocomplete="off"
+                  />
+                  <span>:</span>
+                  <input
+                    type="number"
+                    name="problem_minute_3"
+                    class="time-minute"
+                    placeholder="MM"
+                    min="0"
+                    max="59"
+                    maxlength="2"
+                    autocomplete="off"
+                  />
+                  <select
+                    name="problem_meridiem_3"
+                    class="time-meridiem"
+                    autocomplete="off"
+                  >
+                    <option value="AM">AM</option>
+                    <option value="PM">PM</option>
+                  </select>
+                </div>
+              </td>
+              <td class="tg-0pky">
+                <textarea
+                  name="types_of_symptoms_3"
+                  class="form-input wide"
+                  rows="1"
+                  oninput="autoGrow(this)"
+                ></textarea>
+              </td>
+              <td class="tg-0pky">
+                <textarea
+                  name="pain_burning_sensation_3"
+                  class="form-input medium"
+                  rows="1"
+                  oninput="autoGrow(this)"
+                ></textarea>
+              </td>
+              <td class="tg-0pky">
+                <div class="fever-input-container">
+                  <input
+                    type="number"
+                    name="fever_temperature_3"
+                    class="fever-temperature-input"
+                    placeholder="36.5"
+                    step="0.1"
+                    min="30"
+                    max="45"
+                    autocomplete="off"
+                  />
+                  <span class="degree-symbol">°</span>
+                  <span
+                    style="
+                      font-size: 14px;
+                      font-family: Arial, sans-serif;
+                      color: #000;
+                    "
+                    >C</span
+                  >
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="mt-4" style="text-align: right">
+        <button onclick="addProblemRow()" class="action-button">+</button>
+        <button onclick="removeProblemRow()" class="action-button">−</button>
+      </div>
+
+      <!-- URINE RE PUS CELLS Table -->
+      <div
+        class="urine-re-pus-table-wrapper"
+        style="margin-top: 20px; overflow-x: auto; width: 100%"
+      >
+        <table class="tg" id="urine-re-pus-table">
+          <thead>
+            <tr>
+              <th
+                class="tg-9hef"
+                colspan="3"
+                style="
+                  font-weight: 700;
+                  text-align: center;
+                  vertical-align: top;
+                  background-color: #c8e0c8;
+                "
+              >
+                URINE RE
+              </th>
+            </tr>
+            <tr>
+              <td
+                class="tg-9vaf"
+                style="
+                  font-weight: 700;
+                  text-align: center;
+                  vertical-align: top;
+                  background-color: #e6e6e6;
+                "
+              >
+                Date
+              </td>
+              <td
+                class="tg-9vaf"
+                style="
+                  font-weight: 700;
+                  text-align: center;
+                  vertical-align: top;
+                  background-color: #e6e6e6;
+                "
+              >
+                Time
+              </td>
+              <td
+                class="tg-9vaf"
+                style="
+                  font-weight: 700;
+                  text-align: center;
+                  vertical-align: top;
+                  background-color: #e6e6e6;
+                "
+              >
+                Pus Cells
+              </td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="urine-re-pus-row">
+              <td class="tg-0pky">
+                <input
+                  type="text"
+                  name="urine_re_pus_date_1"
+                  class="datepicker"
+                  placeholder="dd/mm/yyyy"
+                  autocomplete="off"
+                />
+              </td>
+              <td class="tg-0pky">
+                <div class="structured-time-input">
+                  <input
+                    type="number"
+                    name="urine_re_pus_hour_1"
+                    class="time-hour"
+                    placeholder="HH"
+                    min="1"
+                    max="12"
+                    maxlength="2"
+                    autocomplete="off"
+                  />
+                  <span>:</span>
+                  <input
+                    type="number"
+                    name="urine_re_pus_minute_1"
+                    class="time-minute"
+                    placeholder="MM"
+                    min="0"
+                    max="59"
+                    maxlength="2"
+                    autocomplete="off"
+                  />
+                  <select
+                    name="urine_re_pus_meridiem_1"
+                    class="time-meridiem"
+                    autocomplete="off"
+                  >
+                    <option value="AM">AM</option>
+                    <option value="PM">PM</option>
+                  </select>
+                </div>
+              </td>
+              <td class="tg-0pky">
+                <textarea
+                  name="urine_re_pus_cells_1"
+                  class="form-input wide"
+                  rows="1"
+                  oninput="autoGrow(this)"
+                ></textarea>
+              </td>
+            </tr>
+            <tr class="urine-re-pus-row">
+              <td class="tg-0pky">
+                <input
+                  type="text"
+                  name="urine_re_pus_date_2"
+                  class="datepicker"
+                  placeholder="dd/mm/yyyy"
+                  autocomplete="off"
+                />
+              </td>
+              <td class="tg-0pky">
+                <div class="structured-time-input">
+                  <input
+                    type="number"
+                    name="urine_re_pus_hour_2"
+                    class="time-hour"
+                    placeholder="HH"
+                    min="1"
+                    max="12"
+                    maxlength="2"
+                    autocomplete="off"
+                  />
+                  <span>:</span>
+                  <input
+                    type="number"
+                    name="urine_re_pus_minute_2"
+                    class="time-minute"
+                    placeholder="MM"
+                    min="0"
+                    max="59"
+                    maxlength="2"
+                    autocomplete="off"
+                  />
+                  <select
+                    name="urine_re_pus_meridiem_2"
+                    class="time-meridiem"
+                    autocomplete="off"
+                  >
+                    <option value="AM">AM</option>
+                    <option value="PM">PM</option>
+                  </select>
+                </div>
+              </td>
+              <td class="tg-0pky">
+                <textarea
+                  name="urine_re_pus_cells_2"
+                  class="form-input wide"
+                  rows="1"
+                  oninput="autoGrow(this)"
+                ></textarea>
+              </td>
+            </tr>
+            <tr class="urine-re-pus-row">
+              <td class="tg-0pky">
+                <input
+                  type="text"
+                  name="urine_re_pus_date_3"
+                  class="datepicker"
+                  placeholder="dd/mm/yyyy"
+                  autocomplete="off"
+                />
+              </td>
+              <td class="tg-0pky">
+                <div class="structured-time-input">
+                  <input
+                    type="number"
+                    name="urine_re_pus_hour_3"
+                    class="time-hour"
+                    placeholder="HH"
+                    min="1"
+                    max="12"
+                    maxlength="2"
+                    autocomplete="off"
+                  />
+                  <span>:</span>
+                  <input
+                    type="number"
+                    name="urine_re_pus_minute_3"
+                    class="time-minute"
+                    placeholder="MM"
+                    min="0"
+                    max="59"
+                    maxlength="2"
+                    autocomplete="off"
+                  />
+                  <select
+                    name="urine_re_pus_meridiem_3"
+                    class="time-meridiem"
+                    autocomplete="off"
+                  >
+                    <option value="AM">AM</option>
+                    <option value="PM">PM</option>
+                  </select>
+                </div>
+              </td>
+              <td class="tg-0pky">
+                <textarea
+                  name="urine_re_pus_cells_3"
+                  class="form-input wide"
+                  rows="1"
+                  oninput="autoGrow(this)"
+                ></textarea>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="mt-4" style="text-align: right">
+        <button onclick="addUrineRePusRow()" class="action-button">+</button>
+        <button onclick="removeUrineRePusRow()" class="action-button">−</button>
+      </div>
+
+      <!-- URINE CULTURE/ FOLEY'S TIP Table -->
+      <div
+        class="urine-re-table-wrapper"
+        style="margin-top: 20px; overflow-x: auto; width: 100%"
+      >
+        <table class="tg" id="urine-re-table">
+          <thead>
+            <tr>
+              <th
+                class="tg-9hef"
+                colspan="4"
+                style="
+                  font-weight: 700;
+                  text-align: center;
+                  vertical-align: top;
+                  background-color: #c8e0c8;
+                "
+              >
+                URINE CULTURE/ FOLEY'S TIP
+              </th>
+            </tr>
+            <tr>
+              <td
+                class="tg-9vaf"
+                style="
+                  font-weight: 700;
+                  text-align: center;
+                  vertical-align: top;
+                  background-color: #e6e6e6;
+                "
+              >
+                Date Of Sending
+              </td>
+              <td
+                class="tg-9vaf"
+                style="
+                  font-weight: 700;
+                  text-align: center;
+                  vertical-align: top;
+                  background-color: #e6e6e6;
+                "
+              >
+                Date of Reporting
+              </td>
+              <td
+                class="tg-9vaf"
+                style="
+                  font-weight: 700;
+                  text-align: center;
+                  vertical-align: top;
+                  background-color: #e6e6e6;
+                "
+              >
+                Type of Sample
+              </td>
+              <td
+                class="tg-9vaf"
+                style="
+                  font-weight: 700;
+                  text-align: center;
+                  vertical-align: top;
+                  background-color: #e6e6e6;
+                "
+              >
+                Result
+              </td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="urine-re-row">
+              <td class="tg-0pky">
+                <input
+                  type="text"
+                  name="urine_re_sending_date_1"
+                  class="datepicker"
+                  placeholder="dd/mm/yyyy"
+                  autocomplete="off"
+                />
+              </td>
+              <td class="tg-0pky">
+                <input
+                  type="text"
+                  name="urine_re_reporting_date_1"
+                  class="datepicker"
+                  placeholder="dd/mm/yyyy"
+                  autocomplete="off"
+                />
+              </td>
+              <td class="tg-0pky">
+                <textarea
+                  name="urine_re_sample_type_1"
+                  class="form-input medium"
+                  rows="1"
+                  oninput="autoGrow(this)"
+                ></textarea>
+              </td>
+              <td class="tg-0pky">
+                <textarea
+                  name="urine_re_result_1"
+                  class="form-input medium"
+                  rows="1"
+                  oninput="autoGrow(this)"
+                ></textarea>
+              </td>
+            </tr>
+            <tr class="urine-re-row">
+              <td class="tg-0pky">
+                <input
+                  type="text"
+                  name="urine_re_sending_date_2"
+                  class="datepicker"
+                  placeholder="dd/mm/yyyy"
+                  autocomplete="off"
+                />
+              </td>
+              <td class="tg-0pky">
+                <input
+                  type="text"
+                  name="urine_re_reporting_date_2"
+                  class="datepicker"
+                  placeholder="dd/mm/yyyy"
+                  autocomplete="off"
+                />
+              </td>
+              <td class="tg-0pky">
+                <textarea
+                  name="urine_re_sample_type_2"
+                  class="form-input medium"
+                  rows="1"
+                  oninput="autoGrow(this)"
+                ></textarea>
+              </td>
+              <td class="tg-0pky">
+                <textarea
+                  name="urine_re_result_2"
+                  class="form-input medium"
+                  rows="1"
+                  oninput="autoGrow(this)"
+                ></textarea>
+              </td>
+            </tr>
+            <tr class="urine-re-row">
+              <td class="tg-0pky">
+                <input
+                  type="text"
+                  name="urine_re_sending_date_3"
+                  class="datepicker"
+                  placeholder="dd/mm/yyyy"
+                  autocomplete="off"
+                />
+              </td>
+              <td class="tg-0pky">
+                <input
+                  type="text"
+                  name="urine_re_reporting_date_3"
+                  class="datepicker"
+                  placeholder="dd/mm/yyyy"
+                  autocomplete="off"
+                />
+              </td>
+              <td class="tg-0pky">
+                <textarea
+                  name="urine_re_sample_type_3"
+                  class="form-input medium"
+                  rows="1"
+                  oninput="autoGrow(this)"
+                ></textarea>
+              </td>
+              <td class="tg-0pky">
+                <textarea
+                  name="urine_re_result_3"
+                  class="form-input medium"
+                  rows="1"
+                  oninput="autoGrow(this)"
+                ></textarea>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="mt-4" style="text-align: right">
+        <button onclick="addUrineReRow()" class="action-button">+</button>
+        <button onclick="removeUrineReRow()" class="action-button">−</button>
+      </div>
+
+      <!-- URINE OUTPUT Table -->
+      <div
+        class="urine-output-table-wrapper"
+        style="margin-top: 20px; overflow-x: auto; width: 100%"
+      >
+        <table class="tg" id="urine-output-table">
+          <thead>
+            <tr>
+              <th
+                class="tg-9hef"
+                colspan="3"
+                style="
+                  font-weight: 700;
+                  text-align: center;
+                  vertical-align: top;
+                  background-color: #c8e0c8;
+                "
+              >
+                URINE OUTPUT 24
+              </th>
+            </tr>
+            <tr>
+              <td
+                class="tg-9vaf"
+                style="
+                  font-weight: 700;
+                  text-align: center;
+                  vertical-align: top;
+                  background-color: #e6e6e6;
+                "
+              >
+                Date
+              </td>
+              <td
+                class="tg-9vaf"
+                style="
+                  font-weight: 700;
+                  text-align: center;
+                  vertical-align: top;
+                  background-color: #e6e6e6;
+                "
+              >
+                Time
+              </td>
+              <td
+                class="tg-9vaf"
+                style="
+                  font-weight: 700;
+                  text-align: center;
+                  vertical-align: top;
+                  background-color: #e6e6e6;
+                "
+              >
+                Amount
+              </td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="urine-output-row">
+              <td class="tg-0pky">
+                <input
+                  type="text"
+                  name="urine_output_date_1"
+                  class="datepicker"
+                  placeholder="dd/mm/yyyy"
+                  autocomplete="off"
+                />
+              </td>
+              <td class="tg-0pky">
+                <div class="structured-time-input">
+                  <input
+                    type="number"
+                    name="urine_output_hour_1"
+                    class="time-hour"
+                    placeholder="HH"
+                    min="1"
+                    max="12"
+                    maxlength="2"
+                    autocomplete="off"
+                  />
+                  <span>:</span>
+                  <input
+                    type="number"
+                    name="urine_output_minute_1"
+                    class="time-minute"
+                    placeholder="MM"
+                    min="0"
+                    max="59"
+                    maxlength="2"
+                    autocomplete="off"
+                  />
+                  <select
+                    name="urine_output_meridiem_1"
+                    class="time-meridiem"
+                    autocomplete="off"
+                  >
+                    <option value="AM">AM</option>
+                    <option value="PM">PM</option>
+                  </select>
+                </div>
+              </td>
+              <td class="tg-0pky">
+                <textarea
+                  name="urine_output_amount_1"
+                  class="form-input wide"
+                  rows="1"
+                  oninput="autoGrow(this)"
+                ></textarea>
+              </td>
+            </tr>
+            <tr class="urine-output-row">
+              <td class="tg-0pky">
+                <input
+                  type="text"
+                  name="urine_output_date_2"
+                  class="datepicker"
+                  placeholder="dd/mm/yyyy"
+                  autocomplete="off"
+                />
+              </td>
+              <td class="tg-0pky">
+                <div class="structured-time-input">
+                  <input
+                    type="number"
+                    name="urine_output_hour_2"
+                    class="time-hour"
+                    placeholder="HH"
+                    min="1"
+                    max="12"
+                    maxlength="2"
+                    autocomplete="off"
+                  />
+                  <span>:</span>
+                  <input
+                    type="number"
+                    name="urine_output_minute_2"
+                    class="time-minute"
+                    placeholder="MM"
+                    min="0"
+                    max="59"
+                    maxlength="2"
+                    autocomplete="off"
+                  />
+                  <select
+                    name="urine_output_meridiem_2"
+                    class="time-meridiem"
+                    autocomplete="off"
+                  >
+                    <option value="AM">AM</option>
+                    <option value="PM">PM</option>
+                  </select>
+                </div>
+              </td>
+              <td class="tg-0pky">
+                <textarea
+                  name="urine_output_amount_2"
+                  class="form-input wide"
+                  rows="1"
+                  oninput="autoGrow(this)"
+                ></textarea>
+              </td>
+            </tr>
+            <tr class="urine-output-row">
+              <td class="tg-0pky">
+                <input
+                  type="text"
+                  name="urine_output_date_3"
+                  class="datepicker"
+                  placeholder="dd/mm/yyyy"
+                  autocomplete="off"
+                />
+              </td>
+              <td class="tg-0pky">
+                <div class="structured-time-input">
+                  <input
+                    type="number"
+                    name="urine_output_hour_3"
+                    class="time-hour"
+                    placeholder="HH"
+                    min="1"
+                    max="12"
+                    maxlength="2"
+                    autocomplete="off"
+                  />
+                  <span>:</span>
+                  <input
+                    type="number"
+                    name="urine_output_minute_3"
+                    class="time-minute"
+                    placeholder="MM"
+                    min="0"
+                    max="59"
+                    maxlength="2"
+                    autocomplete="off"
+                  />
+                  <select
+                    name="urine_output_meridiem_3"
+                    class="time-meridiem"
+                    autocomplete="off"
+                  >
+                    <option value="AM">AM</option>
+                    <option value="PM">PM</option>
+                  </select>
+                </div>
+              </td>
+              <td class="tg-0pky">
+                <textarea
+                  name="urine_output_amount_3"
+                  class="form-input wide"
+                  rows="1"
+                  oninput="autoGrow(this)"
+                ></textarea>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="mt-4" style="text-align: right">
+        <button onclick="addUrineOutputRow()" class="action-button">+</button>
+        <button onclick="removeUrineOutputRow()" class="action-button">
+          −
+        </button>
+      </div>
+
+      <!-- URINE RESULT Table -->
+      <div
+        class="urine-result-table-wrapper"
+        style="margin-top: 20px; overflow-x: auto; width: 100%"
+      >
+        <table class="tg" id="urine-result-table">
+          <thead>
+            <tr>
+              <th
+                class="tg-9hef"
+                colspan="4"
+                style="
+                  font-weight: 700;
+                  text-align: center;
+                  vertical-align: top;
+                  background-color: #c8e0c8;
+                "
+              >
+                URINE RESULT
+              </th>
+            </tr>
+            <tr>
+              <td
+                class="tg-9vaf"
+                style="
+                  font-weight: 700;
+                  text-align: center;
+                  vertical-align: top;
+                  background-color: #e6e6e6;
+                "
+              >
+                Date
+              </td>
+              <td
+                class="tg-9vaf"
+                style="
+                  font-weight: 700;
+                  text-align: center;
+                  vertical-align: top;
+                  background-color: #e6e6e6;
+                "
+              >
+                Color of Urine
+              </td>
+              <td
+                class="tg-9vaf"
+                style="
+                  font-weight: 700;
+                  text-align: center;
+                  vertical-align: top;
+                  background-color: #e6e6e6;
+                "
+              >
+                Cloudy Urine
+              </td>
+              <td
+                class="tg-9vaf"
+                style="
+                  font-weight: 700;
+                  text-align: center;
+                  vertical-align: top;
+                  background-color: #e6e6e6;
+                "
+              >
+                Catheter Observation
+              </td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="urine-result-row">
+              <td class="tg-0pky">
+                <input
+                  type="text"
+                  name="urine_result_date_1"
+                  class="datepicker"
+                  placeholder="dd/mm/yyyy"
+                  autocomplete="off"
+                />
+              </td>
+              <td class="tg-0pky">
+                <textarea
+                  name="urine_result_color_1"
+                  class="form-input medium"
+                  rows="1"
+                  oninput="autoGrow(this)"
+                ></textarea>
+              </td>
+              <td class="tg-0pky">
+                <textarea
+                  name="urine_result_cloudy_1"
+                  class="form-input medium"
+                  rows="1"
+                  oninput="autoGrow(this)"
+                ></textarea>
+              </td>
+              <td class="tg-0pky">
+                <textarea
+                  name="urine_result_catheter_obs_1"
+                  class="form-input wide"
+                  rows="1"
+                  oninput="autoGrow(this)"
+                ></textarea>
+              </td>
+            </tr>
+            <tr class="urine-result-row">
+              <td class="tg-0pky">
+                <input
+                  type="text"
+                  name="urine_result_date_2"
+                  class="datepicker"
+                  placeholder="dd/mm/yyyy"
+                  autocomplete="off"
+                />
+              </td>
+              <td class="tg-0pky">
+                <textarea
+                  name="urine_result_color_2"
+                  class="form-input medium"
+                  rows="1"
+                  oninput="autoGrow(this)"
+                ></textarea>
+              </td>
+              <td class="tg-0pky">
+                <textarea
+                  name="urine_result_cloudy_2"
+                  class="form-input medium"
+                  rows="1"
+                  oninput="autoGrow(this)"
+                ></textarea>
+              </td>
+              <td class="tg-0pky">
+                <textarea
+                  name="urine_result_catheter_obs_2"
+                  class="form-input wide"
+                  rows="1"
+                  oninput="autoGrow(this)"
+                ></textarea>
+              </td>
+            </tr>
+            <tr class="urine-result-row">
+              <td class="tg-0pky">
+                <input
+                  type="text"
+                  name="urine_result_date_3"
+                  class="datepicker"
+                  placeholder="dd/mm/yyyy"
+                  autocomplete="off"
+                />
+              </td>
+              <td class="tg-0pky">
+                <textarea
+                  name="urine_result_color_3"
+                  class="form-input medium"
+                  rows="1"
+                  oninput="autoGrow(this)"
+                ></textarea>
+              </td>
+              <td class="tg-0pky">
+                <textarea
+                  name="urine_result_cloudy_3"
+                  class="form-input medium"
+                  rows="1"
+                  oninput="autoGrow(this)"
+                ></textarea>
+              </td>
+              <td class="tg-0pky">
+                <textarea
+                  name="urine_result_catheter_obs_3"
+                  class="form-input wide"
+                  rows="1"
+                  oninput="autoGrow(this)"
+                ></textarea>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="mt-4" style="text-align: right">
+        <button onclick="addUrineResultRow()" class="action-button">+</button>
+        <button onclick="removeUrineResultRow()" class="action-button">
+          −
+        </button>
+      </div>
+
+      <!-- CREATININE LEVEL Table -->
+      <div
+        class="creatinine-level-table-wrapper"
+        style="margin-top: 20px; overflow-x: auto; width: 100%"
+      >
+        <table class="tg" id="creatinine-level-table">
+          <thead>
+            <tr>
+              <th
+                class="tg-9hef"
+                colspan="2"
+                style="
+                  font-weight: 700;
+                  text-align: center;
+                  vertical-align: top;
+                  background-color: #c8e0c8;
+                "
+              >
+                Creatinine Level
+              </th>
+            </tr>
+            <tr>
+              <td
+                class="tg-9vaf"
+                style="
+                  font-weight: 700;
+                  text-align: center;
+                  vertical-align: top;
+                  background-color: #e6e6e6;
+                "
+              >
+                Date
+              </td>
+              <td
+                class="tg-9vaf"
+                style="
+                  font-weight: 700;
+                  text-align: center;
+                  vertical-align: top;
+                  background-color: #e6e6e6;
+                "
+              >
+                Result
+              </td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="creatinine-level-row">
+              <td class="tg-0pky">
+                <input
+                  type="text"
+                  name="creatinine_level_date_1"
+                  class="datepicker"
+                  placeholder="dd/mm/yyyy"
+                  autocomplete="off"
+                />
+              </td>
+              <td class="tg-0pky">
+                <textarea
+                  name="creatinine_level_result_1"
+                  class="form-input wide"
+                  rows="1"
+                  oninput="autoGrow(this)"
+                ></textarea>
+              </td>
+            </tr>
+            <tr class="creatinine-level-row">
+              <td class="tg-0pky">
+                <input
+                  type="text"
+                  name="creatinine_level_date_2"
+                  class="datepicker"
+                  placeholder="dd/mm/yyyy"
+                  autocomplete="off"
+                />
+              </td>
+              <td class="tg-0pky">
+                <textarea
+                  name="creatinine_level_result_2"
+                  class="form-input wide"
+                  rows="1"
+                  oninput="autoGrow(this)"
+                ></textarea>
+              </td>
+            </tr>
+            <tr class="creatinine-level-row">
+              <td class="tg-0pky">
+                <input
+                  type="text"
+                  name="creatinine_level_date_3"
+                  class="datepicker"
+                  placeholder="dd/mm/yyyy"
+                  autocomplete="off"
+                />
+              </td>
+              <td class="tg-0pky">
+                <textarea
+                  name="creatinine_level_result_3"
+                  class="form-input wide"
+                  rows="1"
+                  oninput="autoGrow(this)"
+                ></textarea>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="mt-4" style="text-align: right">
+        <button onclick="addCreatinineLevelRow()" class="action-button">
+          +
+        </button>
+        <button onclick="removeCreatinineLevelRow()" class="action-button">
+          −
+        </button>
+      </div>
+
+      <!-- IMMUNO SUPPRESSANTS Table -->
+      <div
+        class="immuno-suppressants-table-wrapper"
+        style="margin-top: 20px; overflow-x: auto; width: 100%"
+      >
+        <table class="tg" id="immuno-suppressants-table">
+          <thead>
+            <tr>
+              <th
+                class="tg-9hef"
+                colspan="4"
+                style="
+                  font-weight: 700;
+                  text-align: center;
+                  vertical-align: top;
+                  background-color: #c8e0c8;
+                "
+              >
+                Immuno Suppressants
+              </th>
+            </tr>
+            <tr>
+              <td
+                class="tg-9vaf"
+                style="
+                  font-weight: 700;
+                  text-align: center;
+                  vertical-align: top;
+                  background-color: #e6e6e6;
+                "
+              >
+                Date
+              </td>
+              <td
+                class="tg-9vaf"
+                style="
+                  font-weight: 700;
+                  text-align: center;
+                  vertical-align: top;
+                  background-color: #e6e6e6;
+                "
+              >
+                Injection Name
+              </td>
+              <td
+                class="tg-9vaf"
+                style="
+                  font-weight: 700;
+                  text-align: center;
+                  vertical-align: top;
+                  background-color: #e6e6e6;
+                "
+              >
+                Start On
+              </td>
+              <td
+                class="tg-9vaf"
+                style="
+                  font-weight: 700;
+                  text-align: center;
+                  vertical-align: top;
+                  background-color: #e6e6e6;
+                "
+              >
+                Stop On
+              </td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="immuno-suppressants-row">
+              <td class="tg-0pky">
+                <input
+                  type="text"
+                  name="immuno_suppressants_date_1"
+                  class="datepicker"
+                  placeholder="dd/mm/yyyy"
+                  autocomplete="off"
+                />
+              </td>
+              <td class="tg-0pky">
+                <textarea
+                  name="immuno_suppressants_injection_name_1"
+                  class="form-input wide"
+                  rows="1"
+                  oninput="autoGrow(this)"
+                ></textarea>
+              </td>
+              <td class="tg-0pky">
+                <input
+                  type="text"
+                  name="immuno_suppressants_start_on_1"
+                  class="form-input"
+                  autocomplete="off"
+                />
+              </td>
+              <td class="tg-0pky">
+                <input
+                  type="text"
+                  name="immuno_suppressants_stop_on_1"
+                  class="form-input"
+                  autocomplete="off"
+                />
+              </td>
+            </tr>
+            <tr class="immuno-suppressants-row">
+              <td class="tg-0pky">
+                <input
+                  type="text"
+                  name="immuno_suppressants_date_2"
+                  class="datepicker"
+                  placeholder="dd/mm/yyyy"
+                  autocomplete="off"
+                />
+              </td>
+              <td class="tg-0pky">
+                <textarea
+                  name="immuno_suppressants_injection_name_2"
+                  class="form-input wide"
+                  rows="1"
+                  oninput="autoGrow(this)"
+                ></textarea>
+              </td>
+              <td class="tg-0pky">
+                <input
+                  type="text"
+                  name="immuno_suppressants_start_on_2"
+                  class="form-input"
+                  autocomplete="off"
+                />
+              </td>
+              <td class="tg-0pky">
+                <input
+                  type="text"
+                  name="immuno_suppressants_stop_on_2"
+                  class="form-input"
+                  autocomplete="off"
+                />
+              </td>
+            </tr>
+            <tr class="immuno-suppressants-row">
+              <td class="tg-0pky">
+                <input
+                  type="text"
+                  name="immuno_suppressants_date_3"
+                  class="datepicker"
+                  placeholder="dd/mm/yyyy"
+                  autocomplete="off"
+                />
+              </td>
+              <td class="tg-0pky">
+                <textarea
+                  name="immuno_suppressants_injection_name_3"
+                  class="form-input wide"
+                  rows="1"
+                  oninput="autoGrow(this)"
+                ></textarea>
+              </td>
+              <td class="tg-0pky">
+                <input
+                  type="text"
+                  name="immuno_suppressants_start_on_3"
+                  class="form-input"
+                  autocomplete="off"
+                />
+              </td>
+              <td class="tg-0pky">
+                <input
+                  type="text"
+                  name="immuno_suppressants_stop_on_3"
+                  class="form-input"
+                  autocomplete="off"
+                />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="mt-4" style="text-align: right">
+        <button onclick="addImmunoSuppressantsRow()" class="action-button">
+          +
+        </button>
+        <button onclick="removeImmunoSuppressantsRow()" class="action-button">
+          −
+        </button>
+      </div>
+
+      <!-- Notes Section -->
+      <div class="notes-section mt-4" style="margin-top: 30px">
+        <div
+          class="notes-title"
+          style="
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 10px;
+            color: #000;
+            text-align: left;
+          "
+        >
+          Notes
+        </div>
+        <div
+          class="notes-container"
+          style="
+            width: 100%;
+            border: 2px solid #000;
+            border-radius: 6px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            box-sizing: border-box;
+          "
+        >
+          <textarea
+            name="nurse_notes"
+            class="notes-textarea"
+            rows="6"
+            placeholder="Enter any additional notes, observations, or comments here..."
+            style="
+              width: 100%;
+              min-height: 120px;
+              padding: 15px;
+              border: 1px solid #ccc;
+              border-radius: 4px;
+              font-family: 'Courier New', 'Monaco', monospace;
+              font-size: 14px;
+              line-height: 1.4;
+              resize: vertical;
+              box-sizing: border-box;
+              background-color: #fff;
+              color: #000;
+              outline: none;
+              font-weight: bold;
+              letter-spacing: 0.5px;
+            "
+          ></textarea>
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+      <button type="submit" class="submit-button">Submit Form</button>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>

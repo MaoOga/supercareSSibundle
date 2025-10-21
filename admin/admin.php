@@ -149,7 +149,7 @@ header("Pragma: no-cache");
         const loadingHtml =
           '<div class="p-3 text-center text-sm" style="color: var(--text-secondary);"><i class="fas fa-spinner fa-spin mr-2"></i>Loading nurses...</div>';
         tbody.innerHTML =
-          '<tr><td colspan="6" class="p-3 text-center text-sm" style="color: var(--text-secondary);"><i class="fas fa-spinner fa-spin mr-2"></i>Loading nurses...</td></tr>';
+          '<tr><td colspan="7" class="p-3 text-center text-sm" style="color: var(--text-secondary);"><i class="fas fa-spinner fa-spin mr-2"></i>Loading nurses...</td></tr>';
         cardBody.innerHTML = loadingHtml;
 
         fetch("get_nurses_simple.php")
@@ -171,19 +171,27 @@ header("Pragma: no-cache");
                 const emptyHtml =
                   '<div class="p-3 text-center text-sm" style="color: var(--text-secondary);">No nurses yet</div>';
                 tbody.innerHTML =
-                  '<tr><td colspan="6" class="p-3 text-center text-sm" style="color: var(--text-secondary);">No nurses yet</td></tr>';
+                  '<tr><td colspan="7" class="p-3 text-center text-sm" style="color: var(--text-secondary);">No nurses yet</td></tr>';
                 cardBody.innerHTML = emptyHtml;
               } else {
                 // Render table for desktop
                 tbody.innerHTML = nurses
                   .map(
-                    (n, idx) => `
+                    (n, idx) => {
+                      const formAccessBadge = n.form_access ? 
+                        (n.form_access === 'ssi' ? '<span class="inline-block px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs font-semibold">SSI</span>' :
+                         n.form_access === 'cauti' ? '<span class="inline-block px-2 py-1 bg-green-100 text-green-800 rounded text-xs font-semibold">CAUTI</span>' :
+                         '<span class="inline-block px-2 py-1 bg-gray-100 text-gray-800 rounded text-xs">' + n.form_access.toUpperCase() + '</span>') :
+                        '<span class="inline-block px-2 py-1 bg-gray-100 text-gray-800 rounded text-xs">N/A</span>';
+                      
+                      return `
                <tr class="border-b" style="border-color: var(--border-secondary);">
                  <td class="p-3">${idx + 1}</td>
                  <td class="p-3 font-medium">${n.nurse_id}</td>
                  <td class="p-3">${n.name || "—"}</td>
                  <td class="p-3">${n.email || "—"}</td>
                  <td class="p-3"><span class="inline-block px-2 py-1 bg-gray-100 rounded text-xs">••••••</span></td>
+                 <td class="p-3">${formAccessBadge}</td>
                  <td class="p-3 text-right">
                    <button class="px-2 py-1 text-xs rounded border" style="border-color: var(--border-secondary);" onclick="editNurse('${
                      n.id
@@ -193,14 +201,22 @@ header("Pragma: no-cache");
                    }')"><i class="fas fa-trash mr-1"></i>Delete</button>
                  </td>
                </tr>
-             `
+             `;
+                    }
                   )
                   .join("");
 
                 // Render cards for mobile
                 cardBody.innerHTML = nurses
                   .map(
-                    (n, idx) => `
+                    (n, idx) => {
+                      const formAccessBadge = n.form_access ? 
+                        (n.form_access === 'ssi' ? '<span class="inline-block px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs font-semibold">SSI</span>' :
+                         n.form_access === 'cauti' ? '<span class="inline-block px-2 py-1 bg-green-100 text-green-800 rounded text-xs font-semibold">CAUTI</span>' :
+                         '<span class="inline-block px-2 py-1 bg-gray-100 text-gray-800 rounded text-xs">' + n.form_access.toUpperCase() + '</span>') :
+                        '<span class="inline-block px-2 py-1 bg-gray-100 text-gray-800 rounded text-xs">N/A</span>';
+                      
+                      return `
                <div class="bg-white border rounded-lg p-4 mb-3 shadow-sm" style="border-color: var(--border-secondary);">
                  <div class="flex items-center justify-between mb-3">
                    <div class="flex items-center gap-2">
@@ -233,9 +249,14 @@ header("Pragma: no-cache");
                      <i class="fas fa-lock text-xs" style="color: var(--text-secondary);"></i>
                      <span class="inline-block px-2 py-1 bg-gray-100 rounded text-xs">••••••</span>
                    </div>
+                   <div class="flex items-center gap-2">
+                     <i class="fas fa-file-medical text-xs" style="color: var(--text-secondary);"></i>
+                     ${formAccessBadge}
+                   </div>
                  </div>
                </div>
-             `
+             `;
+                    }
                   )
                   .join("");
               }
@@ -245,7 +266,7 @@ header("Pragma: no-cache");
                 data.message +
                 "</div>";
               tbody.innerHTML =
-                '<tr><td colspan="6" class="p-3 text-center text-sm" style="color: #dc2626;">Error loading nurses: ' +
+                '<tr><td colspan="7" class="p-3 text-center text-sm" style="color: #dc2626;">Error loading nurses: ' +
                 data.message +
                 "</td></tr>";
               cardBody.innerHTML = errorHtml;
@@ -256,7 +277,7 @@ header("Pragma: no-cache");
             const errorHtml =
               '<div class="p-3 text-center text-sm" style="color: #dc2626;">Network error occurred</div>';
             tbody.innerHTML =
-              '<tr><td colspan="6" class="p-3 text-center text-sm" style="color: #dc2626;">Network error occurred</td></tr>';
+              '<tr><td colspan="7" class="p-3 text-center text-sm" style="color: #dc2626;">Network error occurred</td></tr>';
             cardBody.innerHTML = errorHtml;
           });
       }
@@ -322,6 +343,7 @@ header("Pragma: no-cache");
         formData.append("email", form.email.value.trim());
         formData.append("password", form.password.value);
         formData.append("role", form.role.value);
+        formData.append("formAccess", form.formAccess.value);
 
         if (isEditing) {
           formData.append("id", isEditing);
@@ -386,6 +408,7 @@ header("Pragma: no-cache");
                 form.name.value = nurse.name || "";
                 form.email.value = nurse.email || "";
                 form.role.value = nurse.role || "nurse";
+                form.formAccess.value = nurse.form_access || "";
                 form.password.value = ""; // Clear password field for security
                 document.getElementById("nurseSubmit").innerText =
                   "Update Nurse";
@@ -919,7 +942,7 @@ header("Pragma: no-cache");
         </div>
         <form
           id="nurseForm"
-          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 mb-4"
+          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 mb-4"
         >
           <input
             name="nurseId"
@@ -960,6 +983,17 @@ header("Pragma: no-cache");
             </button>
           </div>
 
+          <select
+            name="formAccess"
+            class="p-3 border rounded focus:outline-none"
+            style="border-color: var(--border-secondary)"
+            required
+          >
+            <option value="" disabled selected>Select Form Access</option>
+            <option value="ssi">SSI Form</option>
+            <option value="cauti">CAUTI Form</option>
+          </select>
+
           <input name="role" type="hidden" value="nurse" />
           <button
             id="nurseSubmit"
@@ -981,6 +1015,7 @@ header("Pragma: no-cache");
                 <th class="p-3 text-left">Name</th>
                 <th class="p-3 text-left">Email</th>
                 <th class="p-3 text-left">Password</th>
+                <th class="p-3 text-left">Form Access</th>
                 <th class="p-3 text-right">Actions</th>
               </tr>
             </thead>
