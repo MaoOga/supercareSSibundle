@@ -487,7 +487,7 @@
             <div class="hidden sm:flex items-center gap-3 sm:gap-4">
               <a
                 id="newPatientButton"
-                href="cauti.html"
+                href="cauti_form.html"
                 target="_blank"
                 rel="noopener noreferrer"
                 class="new-patient-button text-white px-3 sm:px-4 py-2 rounded-lg flex items-center justify-center gap-2 transition-all duration-300 text-sm sm:text-base hover:bg-[var(--button-bg-hover)]"
@@ -751,7 +751,7 @@
           </button>
           <a
             id="navAdd"
-            href="cauti.html"
+            href="cauti_form.html"
             target="_blank"
             rel="noopener noreferrer"
             class="nav-item"
@@ -1082,7 +1082,7 @@
             </td>
             <td class="p-3 sm:p-4">
               <div class="flex justify-center">
-                <a href="cauti.html?patient_id=${
+                <a href="cauti_form.html?patient_id=${
                   patient.patient_id
                 }" target="_blank" rel="noopener noreferrer" 
                    class="action-button w-full max-w-[200px] mx-auto sm:mx-0 text-white px-3 sm:px-4 py-2 rounded-lg flex items-center justify-center gap-2 transition-all duration-300 text-sm hover:bg-[var(--button-bg-hover)]"

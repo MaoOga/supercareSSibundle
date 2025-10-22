@@ -985,13 +985,13 @@ header("Pragma: no-cache");
 
           <select
             name="formAccess"
-            class="p-3 border rounded focus:outline-none"
-            style="border-color: var(--border-secondary)"
+            class="p-2 sm:p-3 border rounded focus:outline-none text-xs sm:text-sm w-full"
+            style="border-color: var(--border-secondary); max-width: 100%; -webkit-appearance: none; -moz-appearance: none; appearance: none; background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2220%22%20height%3D%2220%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M5%207l5%205%205-5H5z%22%20fill%3D%22%23666%22%2F%3E%3C%2Fsvg%3E'); background-repeat: no-repeat; background-position: right 0.7em top 50%; background-size: 1em auto; padding-right: 2em;"
             required
           >
-            <option value="" disabled selected>Select Form Access</option>
-            <option value="ssi">SSI Form</option>
-            <option value="cauti">CAUTI Form</option>
+            <option value="" disabled selected>Form Access</option>
+            <option value="ssi">SSI</option>
+            <option value="cauti">CAUTI</option>
           </select>
 
           <input name="role" type="hidden" value="nurse" />

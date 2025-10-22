@@ -40,7 +40,7 @@ try {
     }
 
     // Check if token exists and is not expired
-    $stmt = $pdo->prepare("SELECT id, nurse_id, name FROM nurses WHERE reset_token = ? AND reset_expiry > NOW()");
+    $stmt = $pdo->prepare("SELECT id, nurse_id, name, form_access FROM nurses WHERE reset_token = ? AND reset_expiry > NOW()");
     $stmt->execute([$token]);
     $nurse = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -59,9 +59,14 @@ try {
         throw new Exception('Failed to update password. Please try again.');
     }
 
+    // Determine redirect URL based on form access
+    $formAccess = $nurse['form_access'] ?? 'ssi';
+    $redirectUrl = ($formAccess === 'cauti') ? '../Cauti_form/cauti_login.html' : 'login.html';
+    
     echo json_encode([
         'success' => true,
-        'message' => 'Password has been reset successfully!'
+        'message' => 'Password has been reset successfully!',
+        'redirect_url' => $redirectUrl
     ]);
 
 } catch (Exception $e) {

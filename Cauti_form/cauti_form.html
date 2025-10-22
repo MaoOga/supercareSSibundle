@@ -15,7 +15,264 @@
     <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
     <script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
     <link rel="stylesheet" type="text/css" href="../assets/new_style.css" />
+
     <style>
+      /* Mobile Responsive Styles - EXACT COPY from Example/style.css */
+      @media screen and (max-width: 640px) {
+        body {
+          padding: 1rem;
+          overflow-y: auto;
+          overflow-x: hidden; /* Prevent horizontal scrolling site-wide */
+          min-height: 100vh;
+        }
+
+        .container {
+          max-width: 100%;
+          padding-bottom: 4rem;
+          overflow-y: visible;
+        }
+
+        .header {
+          flex-direction: column;
+          align-items: center;
+          gap: 10px;
+        }
+
+        .header img {
+          height: 60px;
+        }
+
+        .header .title-main {
+          font-size: 1.5em;
+        }
+
+        .header .title-sub {
+          font-size: 1.2em;
+          text-align: center;
+        }
+
+        .tg {
+          font-size: 12px;
+          margin-bottom: 1.5rem;
+          min-width: unset; /* Prevent horizontal scrolling for these tables */
+          max-width: 100%; /* Fit within viewport */
+          width: 100%;
+          box-sizing: border-box;
+        }
+
+        .tg td,
+        .tg th {
+          padding: 8px;
+          white-space: normal;
+          word-break: normal;
+        }
+
+        .tg tr {
+          display: flex;
+          flex-direction: column;
+        }
+
+        .tg td,
+        .tg th {
+          width: 100% !important;
+          display: block;
+        }
+
+        /* Complex data tables - Enable horizontal scrolling */
+        #catheter-table,
+        #problem-table,
+        #urine-re-table,
+        #urine-re-pus-table,
+        #urine-output-table,
+        #urine-result-table,
+        #creatinine-level-table,
+        #immuno-suppressants-table {
+          min-width: 800px;
+          font-size: 11px;
+        }
+
+        /* Override stacking for complex tables - keep them as table */
+        #catheter-table tr,
+        #problem-table tr,
+        #urine-re-table tr,
+        #urine-re-pus-table tr,
+        #urine-output-table tr,
+        #urine-result-table tr,
+        #creatinine-level-table tr,
+        #immuno-suppressants-table tr {
+          display: table-row !important;
+        }
+
+        #catheter-table td,
+        #catheter-table th,
+        #problem-table td,
+        #problem-table th,
+        #urine-re-table td,
+        #urine-re-table th,
+        #urine-re-pus-table td,
+        #urine-re-pus-table th,
+        #urine-output-table td,
+        #urine-output-table th,
+        #urine-result-table td,
+        #urine-result-table th,
+        #creatinine-level-table td,
+        #creatinine-level-table th,
+        #immuno-suppressants-table td,
+        #immuno-suppressants-table th {
+          display: table-cell !important;
+          width: auto !important;
+          min-width: 100px;
+        }
+
+        /* Make table wrappers scrollable */
+        .catheter-table-wrapper,
+        .problem-table-wrapper,
+        .urine-re-table-wrapper,
+        .urine-re-pus-table-wrapper,
+        .urine-output-table-wrapper,
+        .urine-result-table-wrapper,
+        .creatinine-level-table-wrapper,
+        .immuno-suppressants-table-wrapper {
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+        }
+
+        input[type="text"].datepicker {
+          width: 100% !important;
+          max-width: 100px !important;
+          min-width: 90px;
+          padding: 2px 20px 2px 4px;
+          font-size: 11px;
+          box-sizing: border-box;
+          border: 1px solid #d1d5db;
+          border-radius: 4px;
+          vertical-align: middle;
+        }
+
+        input[type="text"].datepicker::-webkit-calendar-picker-indicator {
+          right: 2px;
+          padding: 1px;
+          width: 16px;
+          height: 16px;
+        }
+
+        .input-overlay,
+        .input-full,
+        select {
+          font-size: 12px;
+          padding: 4px;
+          vertical-align: middle;
+          max-width: 100%; /* Prevent inputs from causing overflow */
+        }
+
+        /* Force labels to expand and inputs to fill space */
+        label.flex {
+          display: flex !important;
+          width: 100% !important;
+          align-items: center;
+        }
+
+        label.flex .input-overlay,
+        label.flex .input-full,
+        label.flex input,
+        label.flex textarea,
+        label.flex select {
+          flex: 1 !important;
+          min-width: 0 !important;
+        }
+
+        label.flex span,
+        label.flex .label-bold,
+        label.flex .whitespace-nowrap {
+          flex-shrink: 0 !important;
+        }
+
+        .action-button {
+          width: 24px;
+          height: 24px;
+          font-size: 16px;
+        }
+      }
+
+      /* Global utility classes (from example) */
+      .flex {
+        display: flex;
+      }
+
+      .gap-2 {
+        gap: 0.5rem;
+      }
+
+      .items-center {
+        align-items: center;
+      }
+
+      .w-full {
+        width: 100%;
+      }
+
+      .whitespace-nowrap {
+        white-space: nowrap;
+      }
+
+      .label-bold {
+        font-weight: bold;
+        white-space: nowrap;
+        display: inline-block;
+        vertical-align: middle;
+      }
+
+      .input-overlay {
+        width: 100%;
+        border: none;
+        outline: none;
+        background: transparent;
+        font: inherit;
+        padding: 0;
+        margin: 0;
+        resize: none;
+        box-sizing: border-box;
+      }
+
+      .input-full {
+        width: 100%;
+        border: none;
+        outline: none;
+        background: transparent;
+        font: inherit;
+        resize: none;
+        box-sizing: border-box;
+      }
+
+      label.flex {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        width: 100%;
+      }
+
+      /* Make inputs expand to fill available space */
+      label.flex .input-overlay,
+      label.flex .input-full,
+      label.flex input,
+      label.flex textarea,
+      label.flex select {
+        flex: 1;
+        min-width: 0;
+      }
+
+      /* Table cell styles */
+      .tg .tg-1wig {
+        font-weight: bold;
+        text-align: left;
+        vertical-align: top;
+      }
+
+      .tg .tg-0lax {
+        text-align: left;
+        vertical-align: top;
+      }
+
       /* Time picker and datetime picker styles from VAP */
       .time-picker {
         position: absolute;
@@ -208,34 +465,53 @@
         -ms-autocomplete: off;
       }
 
-      /* Patient Info table - Set table layout and width */
+      /* Patient Info table - Flexible layout */
       #patient-info-table {
-        width: 100% !important;
-        max-width: 100% !important;
-        table-layout: fixed !important;
+        width: 100%;
+        max-width: 1200px;
+        table-layout: auto; /* Flexible table layout */
       }
 
-      /* Patient Info table column widths */
-      #patient-info-table th:first-child,
-      #patient-info-table td:first-child {
-        width: 33.33% !important;
+      /* Patient info table label and input styling */
+      #patient-info-table .tg-1wig {
+        font-weight: bold;
+        text-align: left;
+        vertical-align: middle;
       }
 
-      #patient-info-table th:nth-child(2),
-      #patient-info-table td:nth-child(2) {
-        width: 33.33% !important;
+      #patient-info-table label.flex {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        width: 100%;
+        flex-wrap: nowrap;
       }
 
-      #patient-info-table th:nth-child(3),
-      #patient-info-table td:nth-child(3) {
-        width: 33.33% !important;
+      #patient-info-table .input-overlay,
+      #patient-info-table .input-full {
+        flex: 1;
+        width: 100%;
+        border: none;
+        outline: none;
+        background: transparent;
+        font: inherit;
+        padding: 0;
+        margin: 0;
+        resize: none;
+        box-sizing: border-box;
       }
 
-      /* Override form-input min-width for patient info table */
-      #patient-info-table .form-input {
-        min-width: 0 !important;
-        width: 100% !important;
-        max-width: 100% !important;
+      #patient-info-table .label-bold {
+        font-weight: bold;
+        white-space: nowrap !important;
+        display: inline-block;
+        vertical-align: middle;
+        flex-shrink: 0;
+      }
+
+      #patient-info-table .whitespace-nowrap {
+        white-space: nowrap !important;
+        flex-shrink: 0;
       }
 
       /* CATETHER Table - Column width adjustments */
@@ -591,8 +867,8 @@
         line-height: 1.4;
         margin: 0;
         /* Hide number input spinners */
-        -moz-appearance: textfield;
         appearance: textfield;
+        -moz-appearance: textfield;
       }
 
       #problem-table
@@ -654,8 +930,8 @@
         margin: 0;
         text-align: center;
         /* Hide number input spinners */
-        -moz-appearance: textfield;
         appearance: textfield;
+        -moz-appearance: textfield;
       }
 
       #problem-table .fever-temperature-input::-webkit-outer-spin-button,
@@ -995,8 +1271,8 @@
         line-height: 1.4;
         margin: 0;
         /* Hide number input spinners */
-        -moz-appearance: textfield;
         appearance: textfield;
+        -moz-appearance: textfield;
       }
 
       #urine-re-pus-table
@@ -1006,7 +1282,6 @@
         .structured-time-input
         input[type="number"]::-webkit-inner-spin-button {
         -webkit-appearance: none;
-        appearance: none;
         margin: 0;
       }
 
@@ -1194,8 +1469,8 @@
         line-height: 1.4;
         margin: 0;
         /* Hide number input spinners */
-        -moz-appearance: textfield;
         appearance: textfield;
+        -moz-appearance: textfield;
       }
 
       #urine-output-table
@@ -1695,8 +1970,8 @@
         line-height: 1.4;
         margin: 0;
         /* Hide number input spinners */
-        -moz-appearance: textfield;
         appearance: textfield;
+        -moz-appearance: textfield;
       }
 
       #catheter-table
@@ -1733,31 +2008,6 @@
         width: 8px;
         text-align: center;
       }
-
-      /* Submit button styles */
-      .submit-button {
-        background-color: #28a745;
-        color: white;
-        border: none;
-        padding: 12px 30px;
-        font-size: 16px;
-        font-weight: bold;
-        border-radius: 6px;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-        margin: 30px auto;
-        display: block;
-        min-width: 150px;
-      }
-
-      .submit-button:hover {
-        background-color: #218838;
-      }
-
-      .submit-button:active {
-        background-color: #1e7e34;
-        transform: translateY(1px);
-      }
     </style>
   </head>
 
@@ -1772,100 +2022,84 @@
       </div>
 
       <!-- Patient Info Table -->
-      <div
-        class="patient-info-table-wrapper"
-        style="overflow-x: auto; width: 100%"
-      >
-        <table class="tg" id="patient-info-table">
-          <thead>
-            <tr>
-              <th class="tg-0lax" style="vertical-align: middle">
-                <div class="form-field">
-                  <span class="form-label">Name:</span>
-                  <textarea
-                    name="name"
-                    class="form-input wide"
-                    rows="1"
-                    oninput="autoGrow(this)"
-                  ></textarea>
-                </div>
-              </th>
-              <th class="tg-0lax" style="vertical-align: middle">
-                <div class="form-field">
-                  <span class="form-label">Age:</span>
-                  <textarea
-                    class="form-input narrow"
-                    name="age"
-                    rows="1"
-                    oninput="autoGrow(this)"
-                  ></textarea>
-                </div>
-              </th>
-              <th class="tg-0lax" style="vertical-align: middle">
-                <div class="form-field">
-                  <span class="form-label">Sex:</span>
-                  <textarea
-                    class="form-input narrow"
-                    name="sex"
-                    rows="1"
-                    oninput="autoGrow(this)"
-                  ></textarea>
-                </div>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td class="tg-0lax" style="vertical-align: middle">
-                <div class="form-field">
-                  <span class="form-label">UHID:</span>
-                  <textarea
-                    class="form-input medium"
-                    name="uhid"
-                    rows="1"
-                    oninput="autoGrow(this)"
-                  ></textarea>
-                </div>
-              </td>
-              <td class="tg-0lax" style="vertical-align: middle">
-                <div class="form-field">
-                  <span class="form-label">Bed no./Ward:</span>
-                  <textarea
-                    class="form-input medium"
-                    name="bed"
-                    rows="1"
-                    oninput="autoGrow(this)"
-                  ></textarea>
-                </div>
-              </td>
-              <td class="tg-0lax" style="vertical-align: middle">
-                <div class="form-field">
-                  <span class="form-label">Date Of Admission:</span>
-                  <textarea
-                    class="form-input medium"
-                    name="date_of_admission"
-                    rows="1"
-                    oninput="autoGrow(this)"
-                  ></textarea>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td class="tg-0lax" style="vertical-align: middle" colspan="3">
-                <div class="form-field">
-                  <span class="form-label">Diagnosis:</span>
-                  <textarea
-                    class="form-input wide"
-                    name="diagnosis"
-                    rows="1"
-                    oninput="autoGrow(this)"
-                  ></textarea>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <table class="tg" id="patient-info-table">
+        <thead>
+          <tr>
+            <th class="tg-1wig">
+              <label class="flex gap-2 items-center w-full"
+                >Name:
+                <textarea
+                  name="name"
+                  class="input-overlay input-full"
+                  rows="1"
+                  oninput="autoGrow(this)"
+                  style="min-height: 28px; line-height: 1.2"
+                ></textarea>
+              </label>
+            </th>
+            <th class="tg-1wig">
+              <label class="flex gap-2 items-center w-full"
+                >Age:
+                <input type="number" class="input-overlay" name="age" />
+              </label>
+            </th>
+            <th class="tg-1wig">
+              <label class="flex gap-2 items-center w-full"
+                >Sex:
+                <textarea
+                  class="input-overlay input-full"
+                  name="sex"
+                  rows="1"
+                  oninput="autoGrow(this)"
+                  style="min-height: 28px; line-height: 1.2"
+                ></textarea>
+              </label>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="tg-1wig">
+              <label class="flex gap-2 items-center w-full"
+                >UHID:
+                <input type="text" class="input-overlay" name="uhid" />
+              </label>
+            </td>
+            <td class="tg-1wig">
+              <label class="flex gap-2 items-center w-full">
+                <span class="whitespace-nowrap label-bold">Bed no./Ward:</span>
+                <input type="text" class="input-overlay" name="bed" />
+              </label>
+            </td>
+            <td class="tg-1wig">
+              <label class="flex gap-2 items-center w-full">
+                <span class="whitespace-nowrap label-bold"
+                  >Date Of Admission:</span
+                >
+                <input
+                  type="text"
+                  class="input-overlay"
+                  name="date_of_admission"
+                />
+              </label>
+            </td>
+          </tr>
+          <tr>
+            <td class="tg-1wig" colspan="3">
+              <label class="flex gap-2 items-center w-full">
+                <span class="whitespace-nowrap label-bold">Diagnosis:</span>
+                <textarea
+                  class="input-overlay input-full"
+                  name="diagnosis"
+                  rows="1"
+                  oninput="autoGrow(this)"
+                  style="min-height: 28px; line-height: 1.2"
+                ></textarea>
+              </label>
+            </td>
+          </tr>
+        </tbody>
+      </table>
 
       <!-- Catheter Table -->
       <div
@@ -1959,7 +2193,7 @@
           </thead>
           <tbody>
             <tr class="catheter-row">
-              <td class="tg-0pky">
+              <td class="tg-0pky" data-label="Date">
                 <input
                   type="text"
                   name="catheter_date_1"
@@ -1968,7 +2202,7 @@
                   autocomplete="off"
                 />
               </td>
-              <td class="tg-0pky">
+              <td class="tg-0pky" data-label="Time">
                 <div class="structured-time-input">
                   <input
                     type="number"
@@ -2001,7 +2235,7 @@
                   </select>
                 </div>
               </td>
-              <td class="tg-0pky">
+              <td class="tg-0pky" data-label="Catheter Changed On">
                 <input
                   type="text"
                   name="catheter_changed_on_1"
@@ -2010,7 +2244,7 @@
                   autocomplete="off"
                 />
               </td>
-              <td class="tg-0pky">
+              <td class="tg-0pky" data-label="Catheter Removed On">
                 <input
                   type="text"
                   name="catheter_removed_on_1"
@@ -2019,7 +2253,7 @@
                   autocomplete="off"
                 />
               </td>
-              <td class="tg-0pky">
+              <td class="tg-0pky" data-label="Catheter Out Date & Time">
                 <input
                   type="text"
                   name="catheter_out_date_1"
@@ -2060,7 +2294,11 @@
                   </select>
                 </div>
               </td>
-              <td class="tg-0pky" style="text-align: center">
+              <td
+                class="tg-0pky"
+                style="text-align: center"
+                data-label="Total Catheter Days"
+              >
                 <textarea
                   name="total_catheter_days_1"
                   class="form-input medium"
@@ -3803,11 +4041,9 @@
           ></textarea>
         </div>
       </div>
-
-      <!-- Submit Button -->
-      <button type="submit" class="submit-button">Submit Form</button>
     </div>
 
-    <script src="script.js"></script>
+    <script src="../assets/new_script.js"></script>
+    <!-- All CAUTI table functions are in new_script.js -->
   </body>
 </html>

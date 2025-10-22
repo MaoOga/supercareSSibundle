@@ -51,7 +51,7 @@ try {
     $resetLink = "http://" . $_SERVER['HTTP_HOST'] . dirname($_SERVER['REQUEST_URI']) . "/reset_password.html?token=" . $resetToken;
 
     // Email content
-    $subject = "SSI Bundle - Password Reset Request";
+    $subject = "Supercare Hospital - Password Reset Request";
     $message = "
     <html>
     <head>
@@ -60,14 +60,14 @@ try {
     <body>
         <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;'>
             <div style='background-color: #1aaf51; color: white; padding: 20px; text-align: center;'>
-                <h1>SSI Bundle System</h1>
+                <h1>Supercare Hospital</h1>
                 <h2>Password Reset Request</h2>
             </div>
             
             <div style='padding: 20px; background-color: #f9f9f9;'>
                 <p>Hello {$nurse['name']},</p>
                 
-                <p>We received a request to reset your password for the SSI Bundle System.</p>
+                <p>We received a request to reset your password for the Supercare Hospital Nurse Portal.</p>
                 
                 <p>If you did not make this request, please ignore this email. Your password will remain unchanged.</p>
                 
@@ -88,11 +88,12 @@ try {
                 <p>If you have any questions, please contact your system administrator.</p>
                 
                 <p>Best regards,<br>
-                SSI Bundle System Team</p>
+                Supercare Hospital IT Team</p>
             </div>
             
             <div style='background-color: #333; color: white; padding: 15px; text-align: center; font-size: 12px;'>
                 <p>This is an automated message. Please do not reply to this email.</p>
+                <p style='margin-top: 10px;'>&copy; 2024 Supercare Hospital. All rights reserved.</p>
             </div>
         </div>
     </body>

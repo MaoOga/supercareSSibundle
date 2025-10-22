@@ -65,6 +65,67 @@
         .title-sub {
           font-size: 0.875rem !important;
         }
+
+        /* Prevent mobile zoom on input focus - set minimum 16px font-size */
+        input,
+        textarea,
+        select {
+          font-size: 16px !important;
+        }
+
+        /* Prevent scroll jumping when focusing inputs */
+        html {
+          scroll-behavior: auto !important;
+        }
+
+        body {
+          overflow-x: hidden;
+          overflow-y: auto;
+        }
+
+        /* Stable input focus - prevent jumping */
+        input:focus,
+        textarea:focus,
+        select:focus {
+          outline: 2px solid #1aaf51;
+          outline-offset: 0;
+        }
+
+        /* Prevent iOS momentum scrolling issues */
+        .container {
+          -webkit-overflow-scrolling: touch;
+        }
+
+        /* Increase width of DOA, DOS, DOD date fields on mobile */
+        input[name="patient_info[doa]"],
+        input[name="patient_info[dos]"],
+        input[name="patient_info[dod]"] {
+          width: 160px !important;
+          max-width: 160px !important;
+          padding: 8px !important;
+          font-size: 16px !important;
+          font-weight: bold !important;
+        }
+
+        /* Fix label positions - keep labels at top/baseline on mobile */
+        label.flex,
+        label.items-center {
+          align-items: flex-start !important;
+        }
+
+        label.flex .label-bold,
+        label.flex .whitespace-nowrap,
+        label.flex span {
+          flex-shrink: 0 !important;
+          align-self: flex-start !important;
+          padding-top: 4px !important;
+        }
+
+        label.flex input,
+        label.flex textarea,
+        label.flex select {
+          flex: 1 !important;
+        }
       }
 
       /* Center form and mobile fit */
@@ -147,6 +208,42 @@
         textarea,
         select {
           text-align: left !important;
+        }
+      }
+
+      /* Mobile-specific: Reduce date font sizes */
+      @media (max-width: 640px) {
+        input[name="Wound-Complication_Date"] {
+          font-size: 13px !important;
+        }
+
+        input[name="date_completed"] {
+          font-size: 13px !important;
+        }
+
+        input[name="ReviewOn"],
+        input[name="SuturesROn"] {
+          font-size: 13px !important;
+        }
+
+        input[name="RevieworPhoneDate"] {
+          font-size: 13px !important;
+        }
+
+        /* Reduce surgeon dropdown font size */
+        #surgeonDropdown,
+        select[name="patient_info[surgeon]"] {
+          font-size: 13px !important;
+        }
+
+        /* Reduce height of DOA, DOS, DOD date picker fields */
+        input[name="patient_info[doa]"],
+        input[name="patient_info[dos]"],
+        input[name="patient_info[dod]"] {
+          height: 28px !important;
+          min-height: 28px !important;
+          padding: 4px 6px !important;
+          line-height: 1.2 !important;
         }
       }
 
@@ -2051,10 +2148,18 @@
         }
 
         // Load surgeons when page loads - moved to main DOMContentLoaded
-        // Auto-grow function for textareas
+        // Auto-grow function for textareas - optimized to prevent jumping
         function autoGrow(element) {
-          element.style.height = "auto";
-          element.style.height = element.scrollHeight + "px";
+          if (!element) return;
+
+          // Only resize if content has actually changed
+          const currentHeight = element.scrollHeight;
+          const setHeight = parseInt(element.style.height) || 0;
+
+          if (currentHeight !== setHeight) {
+            element.style.height = "auto";
+            element.style.height = element.scrollHeight + "px";
+          }
         }
 
         // Initialize textareas to be clickable and functional
@@ -2067,17 +2172,21 @@
             textarea.style.cursor = "text";
             textarea.style.pointerEvents = "auto";
 
-            // Add click event to focus
+            // Add click event to focus - simplified for mobile
             textarea.addEventListener("click", function (e) {
               e.stopPropagation();
-              this.focus();
+              // Don't call this.focus() - browser handles it naturally
             });
 
-            // Add touch event for mobile
-            textarea.addEventListener("touchstart", function (e) {
-              e.stopPropagation();
-              this.focus();
-            });
+            // Add touch event for mobile - prevent default to avoid jumping
+            textarea.addEventListener(
+              "touchstart",
+              function (e) {
+                e.stopPropagation();
+                // Don't call this.focus() - browser handles it naturally
+              },
+              { passive: true }
+            );
 
             // Initialize height
             autoGrow(textarea);
