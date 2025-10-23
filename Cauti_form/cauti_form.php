@@ -17,6 +17,8 @@ if (isset($_SESSION['username']) || isset($_SESSION['nurse_id'])) {
 $patient_id = isset($_GET['patient_id']) ? intval($_GET['patient_id']) : 0;
 $patientData = null;
 $catheterRecords = [];
+$problemRecords = [];
+$urineCultureRecords = [];
 
 // If editing, fetch patient data directly in PHP
 if ($patient_id > 0 && $pdo) {
@@ -82,9 +84,92 @@ if ($patient_id > 0 && $pdo) {
                 }
             }
             unset($record);
+            
+            // Fetch problem records
+            $stmt = $pdo->prepare("SELECT * FROM cauti_problem WHERE patient_id = ? ORDER BY id ASC");
+            $stmt->execute([$patient_id]);
+            $problemRecords = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            // Format problem data
+            foreach ($problemRecords as &$record) {
+                // Format dates
+                if (!empty($record['problem_date'])) {
+                    $date_obj = new DateTime($record['problem_date']);
+                    $record['problem_date'] = $date_obj->format('d/m/Y');
+                }
+                
+                // Convert time from 24-hour to 12-hour format
+                if (!empty($record['problem_time'])) {
+                    $time_obj = new DateTime($record['problem_time']);
+                    $hour = intval($time_obj->format('H'));
+                    $minute = $time_obj->format('i');
+                    $meridiem = ($hour >= 12) ? 'PM' : 'AM';
+                    $hour_12 = ($hour > 12) ? ($hour - 12) : (($hour == 0) ? 12 : $hour);
+                    $record['problem_hour'] = $hour_12;
+                    $record['problem_minute'] = $minute;
+                    $record['problem_meridiem'] = $meridiem;
+                }
+            }
+            unset($record);
+            
+            // Fetch urine culture records
+            $stmt = $pdo->prepare("SELECT * FROM cauti_urine_culture WHERE patient_id = ? ORDER BY id ASC");
+            $stmt->execute([$patient_id]);
+            $urineCultureRecords = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            // Format urine culture data
+            foreach ($urineCultureRecords as &$record) {
+                // Format dates
+                if (!empty($record['sending_date'])) {
+                    $date_obj = new DateTime($record['sending_date']);
+                    $record['sending_date'] = $date_obj->format('d/m/Y');
+                }
+                if (!empty($record['reporting_date'])) {
+                    $date_obj = new DateTime($record['reporting_date']);
+                    $record['reporting_date'] = $date_obj->format('d/m/Y');
+                }
+            }
+            unset($record);
         }
     } catch (Exception $e) {
         error_log("Error loading patient data: " . $e->getMessage());
+    }
+}
+
+// Initialize urine re pus records array
+$urineRePusRecords = [];
+
+// If editing, fetch urine re pus data
+if ($patient_id > 0 && $pdo && $patientData) {
+    try {
+        // Fetch urine re pus records
+        $stmt = $pdo->prepare("SELECT * FROM cauti_urine_re_pus WHERE patient_id = ? ORDER BY id ASC");
+        $stmt->execute([$patient_id]);
+        $urineRePusRecords = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        // Format urine re pus data
+        foreach ($urineRePusRecords as &$record) {
+            // Format dates
+            if (!empty($record['test_date'])) {
+                $date_obj = new DateTime($record['test_date']);
+                $record['test_date'] = $date_obj->format('d/m/Y');
+            }
+            
+            // Convert time from 24-hour to 12-hour format
+            if (!empty($record['test_time'])) {
+                $time_obj = new DateTime($record['test_time']);
+                $hour = intval($time_obj->format('H'));
+                $minute = $time_obj->format('i');
+                $meridiem = ($hour >= 12) ? 'PM' : 'AM';
+                $hour_12 = ($hour > 12) ? ($hour - 12) : (($hour == 0) ? 12 : $hour);
+                $record['test_hour'] = $hour_12;
+                $record['test_minute'] = $minute;
+                $record['test_meridiem'] = $meridiem;
+            }
+        }
+        unset($record);
+    } catch (Exception $e) {
+        error_log("Error loading urine re pus data: " . $e->getMessage());
     }
 }
 
@@ -2706,8 +2791,8 @@ function getValue($data, $field, $default = '') {
         </table>
       </div>
       <div class="mt-4" style="text-align: right">
-        <button onclick="addCatheterRow()" class="action-button">+</button>
-        <button onclick="removeCatheterRow()" class="action-button">−</button>
+        <button type="button" onclick="addCatheterRow()" class="action-button">+</button>
+        <button type="button" onclick="removeCatheterRow()" class="action-button">−</button>
       </div>
 
       <!-- PROBLEM Table -->
@@ -2798,6 +2883,7 @@ function getValue($data, $field, $default = '') {
                   class="datepicker"
                   placeholder="dd/mm/yyyy"
                   autocomplete="off"
+                  value="<?php echo isset($problemRecords[0]['problem_date']) ? htmlspecialchars($problemRecords[0]['problem_date']) : ''; ?>"
                 />
               </td>
               <td class="tg-0pky">
@@ -2811,6 +2897,7 @@ function getValue($data, $field, $default = '') {
                     max="12"
                     maxlength="2"
                     autocomplete="off"
+                    value="<?php echo isset($problemRecords[0]['problem_hour']) ? htmlspecialchars($problemRecords[0]['problem_hour']) : ''; ?>"
                   />
                   <span>:</span>
                   <input
@@ -2822,14 +2909,15 @@ function getValue($data, $field, $default = '') {
                     max="59"
                     maxlength="2"
                     autocomplete="off"
+                    value="<?php echo isset($problemRecords[0]['problem_minute']) ? htmlspecialchars($problemRecords[0]['problem_minute']) : ''; ?>"
                   />
                   <select
                     name="problem_meridiem_1"
                     class="time-meridiem"
                     autocomplete="off"
                   >
-                    <option value="AM">AM</option>
-                    <option value="PM">PM</option>
+                    <option value="AM" <?php echo (isset($problemRecords[0]['problem_meridiem']) && $problemRecords[0]['problem_meridiem'] === 'AM') ? 'selected' : ''; ?>>AM</option>
+                    <option value="PM" <?php echo (isset($problemRecords[0]['problem_meridiem']) && $problemRecords[0]['problem_meridiem'] === 'PM') ? 'selected' : ''; ?>>PM</option>
                   </select>
                 </div>
               </td>
@@ -2839,7 +2927,7 @@ function getValue($data, $field, $default = '') {
                   class="form-input wide"
                   rows="1"
                   oninput="autoGrow(this)"
-                ></textarea>
+                ><?php echo isset($problemRecords[0]['types_of_symptoms']) ? htmlspecialchars($problemRecords[0]['types_of_symptoms']) : ''; ?></textarea>
               </td>
               <td class="tg-0pky">
                 <textarea
@@ -2847,7 +2935,7 @@ function getValue($data, $field, $default = '') {
                   class="form-input medium"
                   rows="1"
                   oninput="autoGrow(this)"
-                ></textarea>
+                ><?php echo isset($problemRecords[0]['pain_burning_sensation']) ? htmlspecialchars($problemRecords[0]['pain_burning_sensation']) : ''; ?></textarea>
               </td>
               <td class="tg-0pky">
                 <div class="fever-input-container">
@@ -2858,8 +2946,8 @@ function getValue($data, $field, $default = '') {
                     placeholder="36.5"
                     step="0.1"
                     min="30"
-                    max="45"
                     autocomplete="off"
+                    value="<?php echo isset($problemRecords[0]['fever_temperature']) ? htmlspecialchars($problemRecords[0]['fever_temperature']) : ''; ?>"
                   />
                   <span class="degree-symbol">°</span>
                   <span
@@ -2881,6 +2969,7 @@ function getValue($data, $field, $default = '') {
                   class="datepicker"
                   placeholder="dd/mm/yyyy"
                   autocomplete="off"
+                  value="<?php echo isset($problemRecords[1]['problem_date']) ? htmlspecialchars($problemRecords[1]['problem_date']) : ''; ?>"
                 />
               </td>
               <td class="tg-0pky">
@@ -2894,6 +2983,7 @@ function getValue($data, $field, $default = '') {
                     max="12"
                     maxlength="2"
                     autocomplete="off"
+                    value="<?php echo isset($problemRecords[1]['problem_hour']) ? htmlspecialchars($problemRecords[1]['problem_hour']) : ''; ?>"
                   />
                   <span>:</span>
                   <input
@@ -2905,14 +2995,15 @@ function getValue($data, $field, $default = '') {
                     max="59"
                     maxlength="2"
                     autocomplete="off"
+                    value="<?php echo isset($problemRecords[1]['problem_minute']) ? htmlspecialchars($problemRecords[1]['problem_minute']) : ''; ?>"
                   />
                   <select
                     name="problem_meridiem_2"
                     class="time-meridiem"
                     autocomplete="off"
                   >
-                    <option value="AM">AM</option>
-                    <option value="PM">PM</option>
+                    <option value="AM" <?php echo (isset($problemRecords[1]['problem_meridiem']) && $problemRecords[1]['problem_meridiem'] === 'AM') ? 'selected' : ''; ?>>AM</option>
+                    <option value="PM" <?php echo (isset($problemRecords[1]['problem_meridiem']) && $problemRecords[1]['problem_meridiem'] === 'PM') ? 'selected' : ''; ?>>PM</option>
                   </select>
                 </div>
               </td>
@@ -2922,7 +3013,7 @@ function getValue($data, $field, $default = '') {
                   class="form-input wide"
                   rows="1"
                   oninput="autoGrow(this)"
-                ></textarea>
+                ><?php echo isset($problemRecords[1]['types_of_symptoms']) ? htmlspecialchars($problemRecords[1]['types_of_symptoms']) : ''; ?></textarea>
               </td>
               <td class="tg-0pky">
                 <textarea
@@ -2930,7 +3021,7 @@ function getValue($data, $field, $default = '') {
                   class="form-input medium"
                   rows="1"
                   oninput="autoGrow(this)"
-                ></textarea>
+                ><?php echo isset($problemRecords[1]['pain_burning_sensation']) ? htmlspecialchars($problemRecords[1]['pain_burning_sensation']) : ''; ?></textarea>
               </td>
               <td class="tg-0pky">
                 <div class="fever-input-container">
@@ -2941,8 +3032,8 @@ function getValue($data, $field, $default = '') {
                     placeholder="36.5"
                     step="0.1"
                     min="30"
-                    max="45"
                     autocomplete="off"
+                    value="<?php echo isset($problemRecords[1]['fever_temperature']) ? htmlspecialchars($problemRecords[1]['fever_temperature']) : ''; ?>"
                   />
                   <span class="degree-symbol">°</span>
                   <span
@@ -2964,6 +3055,7 @@ function getValue($data, $field, $default = '') {
                   class="datepicker"
                   placeholder="dd/mm/yyyy"
                   autocomplete="off"
+                  value="<?php echo isset($problemRecords[2]['problem_date']) ? htmlspecialchars($problemRecords[2]['problem_date']) : ''; ?>"
                 />
               </td>
               <td class="tg-0pky">
@@ -2977,6 +3069,7 @@ function getValue($data, $field, $default = '') {
                     max="12"
                     maxlength="2"
                     autocomplete="off"
+                    value="<?php echo isset($problemRecords[2]['problem_hour']) ? htmlspecialchars($problemRecords[2]['problem_hour']) : ''; ?>"
                   />
                   <span>:</span>
                   <input
@@ -2988,14 +3081,15 @@ function getValue($data, $field, $default = '') {
                     max="59"
                     maxlength="2"
                     autocomplete="off"
+                    value="<?php echo isset($problemRecords[2]['problem_minute']) ? htmlspecialchars($problemRecords[2]['problem_minute']) : ''; ?>"
                   />
                   <select
                     name="problem_meridiem_3"
                     class="time-meridiem"
                     autocomplete="off"
                   >
-                    <option value="AM">AM</option>
-                    <option value="PM">PM</option>
+                    <option value="AM" <?php echo (isset($problemRecords[2]['problem_meridiem']) && $problemRecords[2]['problem_meridiem'] === 'AM') ? 'selected' : ''; ?>>AM</option>
+                    <option value="PM" <?php echo (isset($problemRecords[2]['problem_meridiem']) && $problemRecords[2]['problem_meridiem'] === 'PM') ? 'selected' : ''; ?>>PM</option>
                   </select>
                 </div>
               </td>
@@ -3005,7 +3099,7 @@ function getValue($data, $field, $default = '') {
                   class="form-input wide"
                   rows="1"
                   oninput="autoGrow(this)"
-                ></textarea>
+                ><?php echo isset($problemRecords[2]['types_of_symptoms']) ? htmlspecialchars($problemRecords[2]['types_of_symptoms']) : ''; ?></textarea>
               </td>
               <td class="tg-0pky">
                 <textarea
@@ -3013,7 +3107,7 @@ function getValue($data, $field, $default = '') {
                   class="form-input medium"
                   rows="1"
                   oninput="autoGrow(this)"
-                ></textarea>
+                ><?php echo isset($problemRecords[2]['pain_burning_sensation']) ? htmlspecialchars($problemRecords[2]['pain_burning_sensation']) : ''; ?></textarea>
               </td>
               <td class="tg-0pky">
                 <div class="fever-input-container">
@@ -3024,8 +3118,8 @@ function getValue($data, $field, $default = '') {
                     placeholder="36.5"
                     step="0.1"
                     min="30"
-                    max="45"
                     autocomplete="off"
+                    value="<?php echo isset($problemRecords[2]['fever_temperature']) ? htmlspecialchars($problemRecords[2]['fever_temperature']) : ''; ?>"
                   />
                   <span class="degree-symbol">°</span>
                   <span
@@ -3043,8 +3137,8 @@ function getValue($data, $field, $default = '') {
         </table>
       </div>
       <div class="mt-4" style="text-align: right">
-        <button onclick="addProblemRow()" class="action-button">+</button>
-        <button onclick="removeProblemRow()" class="action-button">−</button>
+        <button type="button" onclick="addProblemRow()" class="action-button">+</button>
+        <button type="button" onclick="removeProblemRow()" class="action-button">−</button>
       </div>
 
       <!-- URINE RE PUS CELLS Table -->
@@ -3113,6 +3207,7 @@ function getValue($data, $field, $default = '') {
                   class="datepicker"
                   placeholder="dd/mm/yyyy"
                   autocomplete="off"
+                  value="<?php echo getValue($urineRePusRecords[0] ?? null, 'test_date'); ?>"
                 />
               </td>
               <td class="tg-0pky">
@@ -3126,6 +3221,7 @@ function getValue($data, $field, $default = '') {
                     max="12"
                     maxlength="2"
                     autocomplete="off"
+                    value="<?php echo getValue($urineRePusRecords[0] ?? null, 'test_hour'); ?>"
                   />
                   <span>:</span>
                   <input
@@ -3137,14 +3233,15 @@ function getValue($data, $field, $default = '') {
                     max="59"
                     maxlength="2"
                     autocomplete="off"
+                    value="<?php echo getValue($urineRePusRecords[0] ?? null, 'test_minute'); ?>"
                   />
                   <select
                     name="urine_re_pus_meridiem_1"
                     class="time-meridiem"
                     autocomplete="off"
                   >
-                    <option value="AM">AM</option>
-                    <option value="PM">PM</option>
+                    <option value="AM" <?php echo (getValue($urineRePusRecords[0] ?? null, 'test_meridiem') === 'AM') ? 'selected' : ''; ?>>AM</option>
+                    <option value="PM" <?php echo (getValue($urineRePusRecords[0] ?? null, 'test_meridiem') === 'PM') ? 'selected' : ''; ?>>PM</option>
                   </select>
                 </div>
               </td>
@@ -3154,7 +3251,7 @@ function getValue($data, $field, $default = '') {
                   class="form-input wide"
                   rows="1"
                   oninput="autoGrow(this)"
-                ></textarea>
+                ><?php echo getValue($urineRePusRecords[0] ?? null, 'pus_cells'); ?></textarea>
               </td>
             </tr>
             <tr class="urine-re-pus-row">
@@ -3165,6 +3262,7 @@ function getValue($data, $field, $default = '') {
                   class="datepicker"
                   placeholder="dd/mm/yyyy"
                   autocomplete="off"
+                  value="<?php echo getValue($urineRePusRecords[1] ?? null, 'test_date'); ?>"
                 />
               </td>
               <td class="tg-0pky">
@@ -3178,6 +3276,7 @@ function getValue($data, $field, $default = '') {
                     max="12"
                     maxlength="2"
                     autocomplete="off"
+                    value="<?php echo getValue($urineRePusRecords[1] ?? null, 'test_hour'); ?>"
                   />
                   <span>:</span>
                   <input
@@ -3189,14 +3288,15 @@ function getValue($data, $field, $default = '') {
                     max="59"
                     maxlength="2"
                     autocomplete="off"
+                    value="<?php echo getValue($urineRePusRecords[1] ?? null, 'test_minute'); ?>"
                   />
                   <select
                     name="urine_re_pus_meridiem_2"
                     class="time-meridiem"
                     autocomplete="off"
                   >
-                    <option value="AM">AM</option>
-                    <option value="PM">PM</option>
+                    <option value="AM" <?php echo (getValue($urineRePusRecords[1] ?? null, 'test_meridiem') === 'AM') ? 'selected' : ''; ?>>AM</option>
+                    <option value="PM" <?php echo (getValue($urineRePusRecords[1] ?? null, 'test_meridiem') === 'PM') ? 'selected' : ''; ?>>PM</option>
                   </select>
                 </div>
               </td>
@@ -3206,7 +3306,7 @@ function getValue($data, $field, $default = '') {
                   class="form-input wide"
                   rows="1"
                   oninput="autoGrow(this)"
-                ></textarea>
+                ><?php echo getValue($urineRePusRecords[1] ?? null, 'pus_cells'); ?></textarea>
               </td>
             </tr>
             <tr class="urine-re-pus-row">
@@ -3217,6 +3317,7 @@ function getValue($data, $field, $default = '') {
                   class="datepicker"
                   placeholder="dd/mm/yyyy"
                   autocomplete="off"
+                  value="<?php echo getValue($urineRePusRecords[2] ?? null, 'test_date'); ?>"
                 />
               </td>
               <td class="tg-0pky">
@@ -3230,6 +3331,7 @@ function getValue($data, $field, $default = '') {
                     max="12"
                     maxlength="2"
                     autocomplete="off"
+                    value="<?php echo getValue($urineRePusRecords[2] ?? null, 'test_hour'); ?>"
                   />
                   <span>:</span>
                   <input
@@ -3241,14 +3343,15 @@ function getValue($data, $field, $default = '') {
                     max="59"
                     maxlength="2"
                     autocomplete="off"
+                    value="<?php echo getValue($urineRePusRecords[2] ?? null, 'test_minute'); ?>"
                   />
                   <select
                     name="urine_re_pus_meridiem_3"
                     class="time-meridiem"
                     autocomplete="off"
                   >
-                    <option value="AM">AM</option>
-                    <option value="PM">PM</option>
+                    <option value="AM" <?php echo (getValue($urineRePusRecords[2] ?? null, 'test_meridiem') === 'AM') ? 'selected' : ''; ?>>AM</option>
+                    <option value="PM" <?php echo (getValue($urineRePusRecords[2] ?? null, 'test_meridiem') === 'PM') ? 'selected' : ''; ?>>PM</option>
                   </select>
                 </div>
               </td>
@@ -3258,15 +3361,15 @@ function getValue($data, $field, $default = '') {
                   class="form-input wide"
                   rows="1"
                   oninput="autoGrow(this)"
-                ></textarea>
+                ><?php echo getValue($urineRePusRecords[2] ?? null, 'pus_cells'); ?></textarea>
               </td>
             </tr>
           </tbody>
         </table>
       </div>
       <div class="mt-4" style="text-align: right">
-        <button onclick="addUrineRePusRow()" class="action-button">+</button>
-        <button onclick="removeUrineRePusRow()" class="action-button">−</button>
+        <button type="button" onclick="addUrineRePusRow()" class="action-button">+</button>
+        <button type="button" onclick="removeUrineRePusRow()" class="action-button">−</button>
       </div>
 
       <!-- URINE CULTURE/ FOLEY'S TIP Table -->
@@ -3346,6 +3449,7 @@ function getValue($data, $field, $default = '') {
                   class="datepicker"
                   placeholder="dd/mm/yyyy"
                   autocomplete="off"
+                  value="<?php echo isset($urineCultureRecords[0]['sending_date']) ? htmlspecialchars($urineCultureRecords[0]['sending_date']) : ''; ?>"
                 />
               </td>
               <td class="tg-0pky">
@@ -3355,6 +3459,7 @@ function getValue($data, $field, $default = '') {
                   class="datepicker"
                   placeholder="dd/mm/yyyy"
                   autocomplete="off"
+                  value="<?php echo isset($urineCultureRecords[0]['reporting_date']) ? htmlspecialchars($urineCultureRecords[0]['reporting_date']) : ''; ?>"
                 />
               </td>
               <td class="tg-0pky">
@@ -3363,7 +3468,7 @@ function getValue($data, $field, $default = '') {
                   class="form-input medium"
                   rows="1"
                   oninput="autoGrow(this)"
-                ></textarea>
+                ><?php echo isset($urineCultureRecords[0]['sample_type']) ? htmlspecialchars($urineCultureRecords[0]['sample_type']) : ''; ?></textarea>
               </td>
               <td class="tg-0pky">
                 <textarea
@@ -3371,7 +3476,7 @@ function getValue($data, $field, $default = '') {
                   class="form-input medium"
                   rows="1"
                   oninput="autoGrow(this)"
-                ></textarea>
+                ><?php echo isset($urineCultureRecords[0]['result']) ? htmlspecialchars($urineCultureRecords[0]['result']) : ''; ?></textarea>
               </td>
             </tr>
             <tr class="urine-re-row">
@@ -3382,6 +3487,7 @@ function getValue($data, $field, $default = '') {
                   class="datepicker"
                   placeholder="dd/mm/yyyy"
                   autocomplete="off"
+                  value="<?php echo isset($urineCultureRecords[1]['sending_date']) ? htmlspecialchars($urineCultureRecords[1]['sending_date']) : ''; ?>"
                 />
               </td>
               <td class="tg-0pky">
@@ -3391,6 +3497,7 @@ function getValue($data, $field, $default = '') {
                   class="datepicker"
                   placeholder="dd/mm/yyyy"
                   autocomplete="off"
+                  value="<?php echo isset($urineCultureRecords[1]['reporting_date']) ? htmlspecialchars($urineCultureRecords[1]['reporting_date']) : ''; ?>"
                 />
               </td>
               <td class="tg-0pky">
@@ -3399,7 +3506,7 @@ function getValue($data, $field, $default = '') {
                   class="form-input medium"
                   rows="1"
                   oninput="autoGrow(this)"
-                ></textarea>
+                ><?php echo isset($urineCultureRecords[1]['sample_type']) ? htmlspecialchars($urineCultureRecords[1]['sample_type']) : ''; ?></textarea>
               </td>
               <td class="tg-0pky">
                 <textarea
@@ -3407,7 +3514,7 @@ function getValue($data, $field, $default = '') {
                   class="form-input medium"
                   rows="1"
                   oninput="autoGrow(this)"
-                ></textarea>
+                ><?php echo isset($urineCultureRecords[1]['result']) ? htmlspecialchars($urineCultureRecords[1]['result']) : ''; ?></textarea>
               </td>
             </tr>
             <tr class="urine-re-row">
@@ -3418,6 +3525,7 @@ function getValue($data, $field, $default = '') {
                   class="datepicker"
                   placeholder="dd/mm/yyyy"
                   autocomplete="off"
+                  value="<?php echo isset($urineCultureRecords[2]['sending_date']) ? htmlspecialchars($urineCultureRecords[2]['sending_date']) : ''; ?>"
                 />
               </td>
               <td class="tg-0pky">
@@ -3427,6 +3535,7 @@ function getValue($data, $field, $default = '') {
                   class="datepicker"
                   placeholder="dd/mm/yyyy"
                   autocomplete="off"
+                  value="<?php echo isset($urineCultureRecords[2]['reporting_date']) ? htmlspecialchars($urineCultureRecords[2]['reporting_date']) : ''; ?>"
                 />
               </td>
               <td class="tg-0pky">
@@ -3435,7 +3544,7 @@ function getValue($data, $field, $default = '') {
                   class="form-input medium"
                   rows="1"
                   oninput="autoGrow(this)"
-                ></textarea>
+                ><?php echo isset($urineCultureRecords[2]['sample_type']) ? htmlspecialchars($urineCultureRecords[2]['sample_type']) : ''; ?></textarea>
               </td>
               <td class="tg-0pky">
                 <textarea
@@ -3443,15 +3552,15 @@ function getValue($data, $field, $default = '') {
                   class="form-input medium"
                   rows="1"
                   oninput="autoGrow(this)"
-                ></textarea>
+                ><?php echo isset($urineCultureRecords[2]['result']) ? htmlspecialchars($urineCultureRecords[2]['result']) : ''; ?></textarea>
               </td>
             </tr>
           </tbody>
         </table>
       </div>
       <div class="mt-4" style="text-align: right">
-        <button onclick="addUrineReRow()" class="action-button">+</button>
-        <button onclick="removeUrineReRow()" class="action-button">−</button>
+        <button type="button" onclick="addUrineReRow()" class="action-button">+</button>
+        <button type="button" onclick="removeUrineReRow()" class="action-button">−</button>
       </div>
 
       <!-- URINE OUTPUT Table -->
@@ -3672,8 +3781,8 @@ function getValue($data, $field, $default = '') {
         </table>
       </div>
       <div class="mt-4" style="text-align: right">
-        <button onclick="addUrineOutputRow()" class="action-button">+</button>
-        <button onclick="removeUrineOutputRow()" class="action-button">
+        <button type="button" onclick="addUrineOutputRow()" class="action-button">+</button>
+        <button type="button" onclick="removeUrineOutputRow()" class="action-button">
           −
         </button>
       </div>
@@ -3856,8 +3965,8 @@ function getValue($data, $field, $default = '') {
         </table>
       </div>
       <div class="mt-4" style="text-align: right">
-        <button onclick="addUrineResultRow()" class="action-button">+</button>
-        <button onclick="removeUrineResultRow()" class="action-button">
+        <button type="button" onclick="addUrineResultRow()" class="action-button">+</button>
+        <button type="button" onclick="removeUrineResultRow()" class="action-button">
           −
         </button>
       </div>
@@ -3970,10 +4079,10 @@ function getValue($data, $field, $default = '') {
         </table>
       </div>
       <div class="mt-4" style="text-align: right">
-        <button onclick="addCreatinineLevelRow()" class="action-button">
+        <button type="button" onclick="addCreatinineLevelRow()" class="action-button">
           +
         </button>
-        <button onclick="removeCreatinineLevelRow()" class="action-button">
+        <button type="button" onclick="removeCreatinineLevelRow()" class="action-button">
           −
         </button>
       </div>
@@ -4156,10 +4265,10 @@ function getValue($data, $field, $default = '') {
         </table>
       </div>
       <div class="mt-4" style="text-align: right">
-        <button onclick="addImmunoSuppressantsRow()" class="action-button">
+        <button type="button" onclick="addImmunoSuppressantsRow()" class="action-button">
           +
         </button>
-        <button onclick="removeImmunoSuppressantsRow()" class="action-button">
+        <button type="button" onclick="removeImmunoSuppressantsRow()" class="action-button">
           −
         </button>
       </div>
@@ -4493,6 +4602,237 @@ function getValue($data, $field, $default = '') {
 
       // No need for JavaScript loading - data is pre-filled via PHP!
       // Patient data loads instantly with the page
+      
+      // BUT: Handle dynamically added catheter rows (beyond the 3 static rows)
+      document.addEventListener('DOMContentLoaded', function() {
+        <?php if (!empty($catheterRecords) && count($catheterRecords) > 3): ?>
+          // We have more than 3 catheter records - need to create additional rows
+          const additionalRecords = <?php echo json_encode(array_slice($catheterRecords, 3)); ?>;
+          const catheterTableBody = document.querySelector('#catheter-table tbody');
+          
+          if (additionalRecords && additionalRecords.length > 0) {
+            console.log('Creating', additionalRecords.length, 'additional catheter rows...');
+            
+            additionalRecords.forEach((record, index) => {
+              const rowNum = index + 4; // Start from row 4 (since we have 3 static rows)
+              
+              // Create new row
+              const newRow = document.createElement('tr');
+              newRow.className = 'catheter-row';
+              newRow.innerHTML = `
+                <td class="tg-0pky">
+                  <input type="text" name="catheter_date_${rowNum}" class="datepicker" placeholder="dd/mm/yyyy" autocomplete="off" value="${record.catheter_date || ''}">
+                </td>
+                <td class="tg-0pky">
+                  <div class="structured-time-input">
+                    <input type="number" name="catheter_hour_${rowNum}" class="time-hour" placeholder="HH" min="1" max="12" maxlength="2" autocomplete="off" value="${record.catheter_hour || ''}">
+                    <span>:</span>
+                    <input type="number" name="catheter_minute_${rowNum}" class="time-minute" placeholder="MM" min="0" max="59" maxlength="2" autocomplete="off" value="${record.catheter_minute || ''}">
+                    <select name="catheter_meridiem_${rowNum}" class="time-meridiem" autocomplete="off">
+                      <option value="AM" ${record.catheter_meridiem === 'AM' ? 'selected' : ''}>AM</option>
+                      <option value="PM" ${record.catheter_meridiem === 'PM' ? 'selected' : ''}>PM</option>
+                    </select>
+                  </div>
+                </td>
+                <td class="tg-0pky">
+                  <input type="text" name="catheter_changed_on_${rowNum}" class="datepicker" placeholder="dd/mm/yyyy" autocomplete="off" value="${record.catheter_changed_on || ''}">
+                </td>
+                <td class="tg-0pky">
+                  <input type="text" name="catheter_removed_on_${rowNum}" class="datepicker" placeholder="dd/mm/yyyy" autocomplete="off" value="${record.catheter_removed_on || ''}">
+                </td>
+                <td class="tg-0pky">
+                  <input type="text" name="catheter_out_date_${rowNum}" class="datepicker" placeholder="dd/mm/yyyy" autocomplete="off" value="${record.catheter_out_date || ''}">
+                  <br>
+                  <div class="structured-time-input">
+                    <input type="number" name="catheter_out_hour_${rowNum}" class="time-hour" placeholder="HH" min="1" max="12" maxlength="2" autocomplete="off" value="${record.catheter_out_hour || ''}">
+                    <span>:</span>
+                    <input type="number" name="catheter_out_minute_${rowNum}" class="time-minute" placeholder="MM" min="0" max="59" maxlength="2" autocomplete="off" value="${record.catheter_out_minute || ''}">
+                    <select name="catheter_out_meridiem_${rowNum}" class="time-meridiem" autocomplete="off">
+                      <option value="AM" ${record.catheter_out_meridiem === 'AM' ? 'selected' : ''}>AM</option>
+                      <option value="PM" ${record.catheter_out_meridiem === 'PM' ? 'selected' : ''}>PM</option>
+                    </select>
+                  </div>
+                </td>
+                <td class="tg-0pky" style="text-align: center">
+                  <textarea name="total_catheter_days_${rowNum}" class="form-input medium" rows="1" oninput="autoGrow(this)">${record.total_catheter_days || ''}</textarea>
+                </td>
+              `;
+              
+              catheterTableBody.appendChild(newRow);
+            });
+            
+            // Re-initialize datepickers for new rows
+            if (typeof jQuery !== 'undefined' && jQuery.fn.datepicker) {
+              jQuery('.datepicker').datepicker({
+                dateFormat: 'dd/mm/yy',
+                changeMonth: true,
+                changeYear: true,
+                yearRange: '-100:+0'
+              });
+            }
+            
+            console.log('Additional catheter rows created and populated!');
+          }
+        <?php endif; ?>
+        
+        <?php if (!empty($problemRecords) && count($problemRecords) > 3): ?>
+          // We have more than 3 problem records - need to create additional rows
+          const additionalProblemRecords = <?php echo json_encode(array_slice($problemRecords, 3)); ?>;
+          const problemTableBody = document.querySelector('#problem-table tbody');
+          
+          if (additionalProblemRecords && additionalProblemRecords.length > 0) {
+            console.log('Creating', additionalProblemRecords.length, 'additional problem rows...');
+            
+            additionalProblemRecords.forEach((record, index) => {
+              const rowNum = index + 4; // Start from row 4 (since we have 3 static rows)
+              
+              // Create new row
+              const newRow = document.createElement('tr');
+              newRow.className = 'problem-row';
+              newRow.innerHTML = `
+                <td class="tg-0pky">
+                  <input type="text" name="problem_date_${rowNum}" class="datepicker" placeholder="dd/mm/yyyy" autocomplete="off" value="${record.problem_date || ''}">
+                </td>
+                <td class="tg-0pky">
+                  <div class="structured-time-input">
+                    <input type="number" name="problem_hour_${rowNum}" class="time-hour" placeholder="HH" min="1" max="12" maxlength="2" autocomplete="off" value="${record.problem_hour || ''}">
+                    <span>:</span>
+                    <input type="number" name="problem_minute_${rowNum}" class="time-minute" placeholder="MM" min="0" max="59" maxlength="2" autocomplete="off" value="${record.problem_minute || ''}">
+                    <select name="problem_meridiem_${rowNum}" class="time-meridiem" autocomplete="off">
+                      <option value="AM" ${record.problem_meridiem === 'AM' ? 'selected' : ''}>AM</option>
+                      <option value="PM" ${record.problem_meridiem === 'PM' ? 'selected' : ''}>PM</option>
+                    </select>
+                  </div>
+                </td>
+                <td class="tg-0pky">
+                  <textarea name="types_of_symptoms_${rowNum}" class="form-input wide" rows="1" oninput="autoGrow(this)">${record.types_of_symptoms || ''}</textarea>
+                </td>
+                <td class="tg-0pky">
+                  <textarea name="pain_burning_sensation_${rowNum}" class="form-input medium" rows="1" oninput="autoGrow(this)">${record.pain_burning_sensation || ''}</textarea>
+                </td>
+                <td class="tg-0pky">
+                  <div class="fever-input-container">
+                    <input type="number" name="fever_temperature_${rowNum}" class="fever-temperature-input" placeholder="36.5" step="0.1" min="30" autocomplete="off" value="${record.fever_temperature || ''}">
+                    <span class="degree-symbol">°</span>
+                    <span style="font-size: 14px; font-family: Arial, sans-serif; color: #000;">C</span>
+                  </div>
+                </td>
+              `;
+              
+              problemTableBody.appendChild(newRow);
+            });
+            
+            // Re-initialize datepickers for new rows
+            if (typeof jQuery !== 'undefined' && jQuery.fn.datepicker) {
+              jQuery('.datepicker').datepicker({
+                dateFormat: 'dd/mm/yy',
+                changeMonth: true,
+                changeYear: true,
+                yearRange: '-100:+0'
+              });
+            }
+            
+            console.log('Additional problem rows created and populated!');
+          }
+        <?php endif; ?>
+        
+        <?php if (!empty($urineCultureRecords) && count($urineCultureRecords) > 3): ?>
+          // We have more than 3 urine culture records - need to create additional rows
+          const additionalUrineCultureRecords = <?php echo json_encode(array_slice($urineCultureRecords, 3)); ?>;
+          const urineCultureTableBody = document.querySelector('#urine-re-table tbody');
+          
+          if (additionalUrineCultureRecords && additionalUrineCultureRecords.length > 0) {
+            console.log('Creating', additionalUrineCultureRecords.length, 'additional urine culture rows...');
+            
+            additionalUrineCultureRecords.forEach((record, index) => {
+              const rowNum = index + 4; // Start from row 4 (since we have 3 static rows)
+              
+              // Create new row
+              const newRow = document.createElement('tr');
+              newRow.className = 'urine-re-row';
+              newRow.innerHTML = `
+                <td class="tg-0pky">
+                  <input type="text" name="urine_re_sending_date_${rowNum}" class="datepicker" placeholder="dd/mm/yyyy" autocomplete="off" value="${record.sending_date || ''}">
+                </td>
+                <td class="tg-0pky">
+                  <input type="text" name="urine_re_reporting_date_${rowNum}" class="datepicker" placeholder="dd/mm/yyyy" autocomplete="off" value="${record.reporting_date || ''}">
+                </td>
+                <td class="tg-0pky">
+                  <textarea name="urine_re_sample_type_${rowNum}" class="form-input medium" rows="1" oninput="autoGrow(this)">${record.sample_type || ''}</textarea>
+                </td>
+                <td class="tg-0pky">
+                  <textarea name="urine_re_result_${rowNum}" class="form-input medium" rows="1" oninput="autoGrow(this)">${record.result || ''}</textarea>
+                </td>
+              `;
+              
+              urineCultureTableBody.appendChild(newRow);
+            });
+            
+            // Re-initialize datepickers for new rows
+            if (typeof jQuery !== 'undefined' && jQuery.fn.datepicker) {
+              jQuery('.datepicker').datepicker({
+                dateFormat: 'dd/mm/yy',
+                changeMonth: true,
+                changeYear: true,
+                yearRange: '-100:+0'
+              });
+            }
+            
+            console.log('Additional urine culture rows created and populated!');
+          }
+        <?php endif; ?>
+        
+        <?php if (!empty($urineRePusRecords) && count($urineRePusRecords) > 3): ?>
+          // We have more than 3 urine re pus records - need to create additional rows
+          const additionalUrineRePusRecords = <?php echo json_encode(array_slice($urineRePusRecords, 3)); ?>;
+          const urineRePusTableBody = document.querySelector('#urine-re-pus-table tbody');
+          
+          if (additionalUrineRePusRecords && additionalUrineRePusRecords.length > 0) {
+            console.log('Creating', additionalUrineRePusRecords.length, 'additional urine re pus rows...');
+            
+            additionalUrineRePusRecords.forEach((record, index) => {
+              const rowNum = index + 4; // Start from row 4 (since we have 3 static rows)
+              
+              // Create new row
+              const newRow = document.createElement('tr');
+              newRow.className = 'urine-re-pus-row';
+              newRow.innerHTML = `
+                <td class="tg-0pky">
+                  <input type="text" name="urine_re_pus_date_${rowNum}" class="datepicker" placeholder="dd/mm/yyyy" autocomplete="off" value="${record.test_date || ''}">
+                </td>
+                <td class="tg-0pky">
+                  <div class="structured-time-input">
+                    <input type="number" name="urine_re_pus_hour_${rowNum}" class="time-hour" placeholder="HH" min="1" max="12" maxlength="2" autocomplete="off" value="${record.test_hour || ''}">
+                    <span>:</span>
+                    <input type="number" name="urine_re_pus_minute_${rowNum}" class="time-minute" placeholder="MM" min="0" max="59" maxlength="2" autocomplete="off" value="${record.test_minute || ''}">
+                    <select name="urine_re_pus_meridiem_${rowNum}" class="time-meridiem" autocomplete="off">
+                      <option value="AM" ${record.test_meridiem === 'AM' ? 'selected' : ''}>AM</option>
+                      <option value="PM" ${record.test_meridiem === 'PM' ? 'selected' : ''}>PM</option>
+                    </select>
+                  </div>
+                </td>
+                <td class="tg-0pky">
+                  <textarea name="urine_re_pus_cells_${rowNum}" class="form-input wide" rows="1" oninput="autoGrow(this)">${record.pus_cells || ''}</textarea>
+                </td>
+              `;
+              
+              urineRePusTableBody.appendChild(newRow);
+            });
+            
+            // Re-initialize datepickers for new rows
+            if (typeof jQuery !== 'undefined' && jQuery.fn.datepicker) {
+              jQuery('.datepicker').datepicker({
+                dateFormat: 'dd/mm/yy',
+                changeMonth: true,
+                changeYear: true,
+                yearRange: '-100:+0'
+              });
+            }
+            
+            console.log('Additional urine re pus rows created and populated!');
+          }
+        <?php endif; ?>
+      });
     </script>
   </body>
 </html>

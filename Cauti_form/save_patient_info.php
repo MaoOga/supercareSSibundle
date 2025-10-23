@@ -92,9 +92,9 @@ try {
         $inserted_id = $patient_id; // Use existing ID for update
     } else {
         // INSERT new record
-        $sql = "INSERT INTO cauti_patient_info 
-                (name, age, sex, uhid, bed_ward, date_of_admission, diagnosis) 
-                VALUES 
+    $sql = "INSERT INTO cauti_patient_info 
+            (name, age, sex, uhid, bed_ward, date_of_admission, diagnosis) 
+            VALUES 
                 (:name, :age, :sex, :uhid, :bed_ward, :date_of_admission, :diagnosis)";
         
         $stmt = $pdo->prepare($sql);
@@ -211,6 +211,181 @@ try {
             $catheterInsertCount++;
         }
         
+        // If updating, delete existing problem records first
+        if ($is_update) {
+            $deleteStmt = $pdo->prepare("DELETE FROM cauti_problem WHERE patient_id = ?");
+            $deleteStmt->execute([$inserted_id]);
+        }
+        
+        // Now insert problem data (multiple rows)
+        $problemInsertCount = 0;
+        $problemStmt = $pdo->prepare("
+            INSERT INTO cauti_problem 
+            (patient_id, problem_date, problem_time, types_of_symptoms, pain_burning_sensation, fever_temperature) 
+            VALUES 
+            (:patient_id, :problem_date, :problem_time, :types_of_symptoms, :pain_burning_sensation, :fever_temperature)
+        ");
+        
+        // Loop through up to 10 problem rows (adjust as needed)
+        for ($i = 1; $i <= 10; $i++) {
+            $problem_date = isset($_POST["problem_date_$i"]) ? trim($_POST["problem_date_$i"]) : '';
+            
+            // Skip if this row is empty (no date means empty row)
+            if (empty($problem_date)) {
+                continue;
+            }
+            
+            // Get problem time components
+            $problem_hour = isset($_POST["problem_hour_$i"]) ? trim($_POST["problem_hour_$i"]) : '';
+            $problem_minute = isset($_POST["problem_minute_$i"]) ? trim($_POST["problem_minute_$i"]) : '';
+            $problem_meridiem = isset($_POST["problem_meridiem_$i"]) ? trim($_POST["problem_meridiem_$i"]) : 'AM';
+            
+            // Convert 12-hour time to 24-hour format
+            $problem_time = null;
+            if (!empty($problem_hour) && !empty($problem_minute)) {
+                $hour_24 = intval($problem_hour);
+                if ($problem_meridiem === 'PM' && $hour_24 != 12) {
+                    $hour_24 += 12;
+                } elseif ($problem_meridiem === 'AM' && $hour_24 == 12) {
+                    $hour_24 = 0;
+                }
+                $problem_time = sprintf('%02d:%02d:00', $hour_24, intval($problem_minute));
+            }
+            
+            // Convert date from dd/mm/yyyy to yyyy-mm-dd
+            $problem_date_formatted = null;
+            if (!empty($problem_date) && preg_match('/^(\d{2})\/(\d{2})\/(\d{4})$/', $problem_date, $matches)) {
+                $problem_date_formatted = $matches[3] . '-' . $matches[2] . '-' . $matches[1];
+            }
+            
+            $types_of_symptoms = isset($_POST["types_of_symptoms_$i"]) ? trim($_POST["types_of_symptoms_$i"]) : '';
+            $pain_burning_sensation = isset($_POST["pain_burning_sensation_$i"]) ? trim($_POST["pain_burning_sensation_$i"]) : '';
+            $fever_temperature = isset($_POST["fever_temperature_$i"]) && $_POST["fever_temperature_$i"] !== '' ? floatval($_POST["fever_temperature_$i"]) : null;
+            
+            // Insert problem record
+            $problemStmt->execute([
+                ':patient_id' => $inserted_id,
+                ':problem_date' => $problem_date_formatted,
+                ':problem_time' => $problem_time,
+                ':types_of_symptoms' => $types_of_symptoms,
+                ':pain_burning_sensation' => $pain_burning_sensation,
+                ':fever_temperature' => $fever_temperature
+            ]);
+            
+            $problemInsertCount++;
+        }
+        
+        // If updating, delete existing urine culture records first
+        if ($is_update) {
+            $deleteStmt = $pdo->prepare("DELETE FROM cauti_urine_culture WHERE patient_id = ?");
+            $deleteStmt->execute([$inserted_id]);
+        }
+        
+        // Now insert urine culture data (multiple rows)
+        $urineCultureInsertCount = 0;
+        $urineCultureStmt = $pdo->prepare("
+            INSERT INTO cauti_urine_culture 
+            (patient_id, sending_date, reporting_date, sample_type, result) 
+            VALUES 
+            (:patient_id, :sending_date, :reporting_date, :sample_type, :result)
+        ");
+        
+        // Loop through up to 10 urine culture rows (adjust as needed)
+        for ($i = 1; $i <= 10; $i++) {
+            $sending_date = isset($_POST["urine_re_sending_date_$i"]) ? trim($_POST["urine_re_sending_date_$i"]) : '';
+            
+            // Skip if this row is empty (no sending date means empty row)
+            if (empty($sending_date)) {
+                continue;
+            }
+            
+            // Convert date from dd/mm/yyyy to yyyy-mm-dd
+            $sending_date_formatted = null;
+            if (!empty($sending_date) && preg_match('/^(\d{2})\/(\d{2})\/(\d{4})$/', $sending_date, $matches)) {
+                $sending_date_formatted = $matches[3] . '-' . $matches[2] . '-' . $matches[1];
+            }
+            
+            $reporting_date = isset($_POST["urine_re_reporting_date_$i"]) ? trim($_POST["urine_re_reporting_date_$i"]) : '';
+            $reporting_date_formatted = null;
+            if (!empty($reporting_date) && preg_match('/^(\d{2})\/(\d{2})\/(\d{4})$/', $reporting_date, $matches)) {
+                $reporting_date_formatted = $matches[3] . '-' . $matches[2] . '-' . $matches[1];
+            }
+            
+            $sample_type = isset($_POST["urine_re_sample_type_$i"]) ? trim($_POST["urine_re_sample_type_$i"]) : '';
+            $result = isset($_POST["urine_re_result_$i"]) ? trim($_POST["urine_re_result_$i"]) : '';
+            
+            // Insert urine culture record
+            $urineCultureStmt->execute([
+                ':patient_id' => $inserted_id,
+                ':sending_date' => $sending_date_formatted,
+                ':reporting_date' => $reporting_date_formatted,
+                ':sample_type' => $sample_type,
+                ':result' => $result
+            ]);
+            
+            $urineCultureInsertCount++;
+        }
+        
+        // If updating, delete existing urine re pus records first
+        if ($is_update) {
+            $deleteStmt = $pdo->prepare("DELETE FROM cauti_urine_re_pus WHERE patient_id = ?");
+            $deleteStmt->execute([$inserted_id]);
+        }
+        
+        // Now insert urine re pus data (multiple rows)
+        $urineRePusInsertCount = 0;
+        $urineRePusStmt = $pdo->prepare("
+            INSERT INTO cauti_urine_re_pus 
+            (patient_id, test_date, test_time, pus_cells) 
+            VALUES 
+            (:patient_id, :test_date, :test_time, :pus_cells)
+        ");
+        
+        // Loop through up to 10 urine re pus rows (adjust as needed)
+        for ($i = 1; $i <= 10; $i++) {
+            $test_date = isset($_POST["urine_re_pus_date_$i"]) ? trim($_POST["urine_re_pus_date_$i"]) : '';
+            
+            // Skip if this row is empty (no date means empty row)
+            if (empty($test_date)) {
+                continue;
+            }
+            
+            // Get test time components
+            $test_hour = isset($_POST["urine_re_pus_hour_$i"]) ? trim($_POST["urine_re_pus_hour_$i"]) : '';
+            $test_minute = isset($_POST["urine_re_pus_minute_$i"]) ? trim($_POST["urine_re_pus_minute_$i"]) : '';
+            $test_meridiem = isset($_POST["urine_re_pus_meridiem_$i"]) ? trim($_POST["urine_re_pus_meridiem_$i"]) : 'AM';
+            
+            // Convert 12-hour time to 24-hour format
+            $test_time = null;
+            if (!empty($test_hour) && !empty($test_minute)) {
+                $hour_24 = intval($test_hour);
+                if ($test_meridiem === 'PM' && $hour_24 != 12) {
+                    $hour_24 += 12;
+                } elseif ($test_meridiem === 'AM' && $hour_24 == 12) {
+                    $hour_24 = 0;
+                }
+                $test_time = sprintf('%02d:%02d:00', $hour_24, intval($test_minute));
+            }
+            
+            // Convert date from dd/mm/yyyy to yyyy-mm-dd
+            $test_date_formatted = null;
+            if (!empty($test_date) && preg_match('/^(\d{2})\/(\d{2})\/(\d{4})$/', $test_date, $matches)) {
+                $test_date_formatted = $matches[3] . '-' . $matches[2] . '-' . $matches[1];
+            }
+            
+            $pus_cells = isset($_POST["urine_re_pus_cells_$i"]) ? trim($_POST["urine_re_pus_cells_$i"]) : '';
+            
+            // Insert urine re pus record
+            $urineRePusStmt->execute([
+                ':patient_id' => $inserted_id,
+                ':test_date' => $test_date_formatted,
+                ':test_time' => $test_time,
+                ':pus_cells' => $pus_cells
+            ]);
+            
+            $urineRePusInsertCount++;
+        }
+        
         $success_message = $is_update ? 'Patient information updated successfully!' : 'Patient information saved successfully!';
         $_SESSION['success'] = $success_message . ' Patient ID: ' . $inserted_id;
         $_SESSION['patient_id'] = $inserted_id;
@@ -221,6 +396,9 @@ try {
             'message' => $success_message,
             'patient_id' => $inserted_id,
             'catheter_records_saved' => $catheterInsertCount,
+            'problem_records_saved' => $problemInsertCount,
+            'urine_culture_records_saved' => $urineCultureInsertCount,
+            'urine_re_pus_records_saved' => $urineRePusInsertCount,
             'is_update' => $is_update
         ]);
         exit;
