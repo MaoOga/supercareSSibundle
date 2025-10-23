@@ -368,18 +368,18 @@ function buildTimePicker(timePickable) {
 
   picker.classList.add("time-picker");
   picker.innerHTML = `
-        <select class="time-picker__select">
-            ${hourOptions.join("")}
-        </select>
-        :
-        <select class="time-picker__select">
-            ${minuteOptions.join("")}
-        </select>
-        <select class="time-picker__select">
-            <option value="am">am</option>
-            <option value="pm">pm</option>
-        </select>
-    `;
+      <select class="time-picker__select">
+          ${hourOptions.join("")}
+      </select>
+      :
+      <select class="time-picker__select">
+          ${minuteOptions.join("")}
+      </select>
+      <select class="time-picker__select">
+          <option value="am">am</option>
+          <option value="pm">pm</option>
+      </select>
+  `;
 
   const selects = getSelectsFromTimePicker(picker);
 
@@ -499,27 +499,27 @@ function buildDateTimePicker(datetimePickable) {
 
   picker.classList.add("datetime-pi   cker");
   picker.innerHTML = `
-        <div class="datetime-picker__section">
-            <label class="datetime-picker__label">Date</label>
-            <input type="date" class="datetime-picker__date" id="date-input">
-        </div>
-        <div class="datetime-picker__section">
-            <label class="datetime-picker__label">Time</label>
-            <div class="datetime-picker__time">
-                <select class="datetime-picker__select" id="hour-select">
-                    ${hourOptions.join("")}
-                </select>
-                <span class="datetime-picker__separator">:</span>
-                <select class="datetime-picker__select" id="minute-select">
-                    ${minuteOptions.join("")}
-                </select>
-                <select class="datetime-picker__select" id="meridiem-select">
-                    <option value="am">AM</option>
-                    <option value="pm">PM</option>
-                </select>
-            </div>
-        </div>
-    `;
+      <div class="datetime-picker__section">
+          <label class="datetime-picker__label">Date</label>
+          <input type="date" class="datetime-picker__date" id="date-input">
+      </div>
+      <div class="datetime-picker__section">
+          <label class="datetime-picker__label">Time</label>
+          <div class="datetime-picker__time">
+              <select class="datetime-picker__select" id="hour-select">
+                  ${hourOptions.join("")}
+              </select>
+              <span class="datetime-picker__separator">:</span>
+              <select class="datetime-picker__select" id="minute-select">
+                  ${minuteOptions.join("")}
+              </select>
+              <select class="datetime-picker__select" id="meridiem-select">
+                  <option value="am">AM</option>
+                  <option value="pm">PM</option>
+              </select>
+          </div>
+      </div>
+  `;
 
   const dateInput = picker.querySelector("#date-input");
   const hourSelect = picker.querySelector("#hour-select");

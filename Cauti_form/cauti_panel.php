@@ -1,3 +1,59 @@
+<?php
+session_start();
+require_once '../database/config.php';
+
+// Store nurse info for JavaScript
+$nurseInfoJson = '';
+if (isset($_SESSION['username']) || isset($_SESSION['nurse_id'])) {
+    $nurseInfo = [
+        'nurse_id' => $_SESSION['username'] ?? $_SESSION['nurse_id'] ?? 'Unknown',
+        'username' => $_SESSION['username'] ?? $_SESSION['nurse_id'] ?? 'Unknown',
+        'name' => $_SESSION['name'] ?? ''
+    ];
+    $nurseInfoJson = json_encode($nurseInfo);
+}
+
+// Fetch patient data directly in PHP
+$patients = [];
+$statistics = [
+    'total_patients' => 0,
+    'cauti_cases' => 0,
+    'active_catheters' => 0,
+    'pending_reviews' => 0
+];
+
+try {
+    if ($pdo) {
+        // Fetch patient data
+        $stmt = $pdo->query("SELECT id as patient_id, name, age, sex, uhid, bed_ward as ward, date_of_admission as catheter_date, diagnosis FROM cauti_patient_info ORDER BY created_at DESC");
+        $patients = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Calculate statistics
+        $statistics['total_patients'] = count($patients);
+        
+        foreach ($patients as &$patient) {
+            // Format date for display
+            if (!empty($patient['catheter_date'])) {
+                $date_obj = new DateTime($patient['catheter_date']);
+                $patient['catheter_date'] = $date_obj->format('d/m/Y');
+            } else {
+                $patient['catheter_date'] = 'N/A';
+            }
+            // Add dummy status for now (you can calculate these based on actual data)
+            $patient['catheter_status'] = 'Active';
+            $patient['cauti_status'] = 'Negative';
+            $patient['review_status'] = 'Pending';
+
+            if ($patient['catheter_status'] === 'Active') $statistics['active_catheters']++;
+            if ($patient['cauti_status'] === 'Positive') $statistics['cauti_cases']++;
+            if ($patient['review_status'] === 'Pending') $statistics['pending_reviews']++;
+        }
+        unset($patient);
+    }
+} catch (Exception $e) {
+    error_log("Error loading patient data: " . $e->getMessage());
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -479,7 +535,14 @@
                 ></i>
                 <span class="font-medium text-xs">ID:</span>
                 <span class="font-bold text-xs" id="mobileNurseIdValue"
-                  >Loading...</span
+                  ><?php 
+                    if (!empty($nurseInfoJson)) {
+                      $nurse = json_decode($nurseInfoJson, true);
+                      echo htmlspecialchars($nurse['nurse_id'] ?? 'Guest');
+                    } else {
+                      echo 'Guest';
+                    }
+                  ?></span
                 >
               </div>
             </div>
@@ -487,7 +550,7 @@
             <div class="hidden sm:flex items-center gap-3 sm:gap-4">
               <a
                 id="newPatientButton"
-                href="cauti_form.html"
+                href="cauti_form.php"
                 target="_blank"
                 rel="noopener noreferrer"
                 class="new-patient-button text-white px-3 sm:px-4 py-2 rounded-lg flex items-center justify-center gap-2 transition-all duration-300 text-sm sm:text-base hover:bg-[var(--button-bg-hover)]"
@@ -512,7 +575,14 @@
                     style="color: var(--text-icon)"
                   ></i>
                   <span class="font-medium">Nurse ID:</span>
-                  <span class="font-bold" id="nurseIdValue">Loading...</span>
+                  <span class="font-bold" id="nurseIdValue"><?php 
+                    if (!empty($nurseInfoJson)) {
+                      $nurse = json_decode($nurseInfoJson, true);
+                      echo htmlspecialchars($nurse['nurse_id'] ?? 'Guest');
+                    } else {
+                      echo 'Guest';
+                    }
+                  ?></span>
                 </div>
 
                 <!-- Logout Button -->
@@ -540,7 +610,7 @@
               <div>
                 <p class="text-white/90 text-sm font-medium">Total Patients</p>
                 <p class="text-2xl sm:text-3xl font-bold" id="totalPatients">
-                  0
+                  <?php echo $statistics['total_patients']; ?>
                 </p>
               </div>
               <i class="fas fa-users text-2xl sm:text-3xl text-white/80"></i>
@@ -554,7 +624,7 @@
                   class="text-2xl sm:text-3xl font-bold"
                   id="cautiCasesCount"
                 >
-                  0
+                  <?php echo $statistics['cauti_cases']; ?>
                 </p>
               </div>
               <i
@@ -572,7 +642,7 @@
                   class="text-2xl sm:text-3xl font-bold"
                   id="activeCathetersCount"
                 >
-                  0
+                  <?php echo $statistics['active_catheters']; ?>
                 </p>
               </div>
               <i
@@ -588,7 +658,7 @@
                   class="text-2xl sm:text-3xl font-bold"
                   id="pendingReviewsCount"
                 >
-                  0
+                  <?php echo $statistics['pending_reviews']; ?>
                 </p>
               </div>
               <i class="fas fa-clock text-2xl sm:text-3xl text-white/80"></i>
@@ -687,7 +757,7 @@
                 class="text-lg sm:text-xl font-semibold"
                 style="color: var(--text-primary)"
               >
-                Recent CAUTI Records (<span id="recordCount">0</span>
+                Recent CAUTI Records (<span id="recordCount"><?php echo count($patients); ?></span>
                 total)
               </h2>
             </div>
@@ -711,7 +781,7 @@
                 </tr>
               </thead>
               <tbody id="patientTableBody">
-                <!-- Loading message - will be replaced by JavaScript -->
+                <?php if (count($patients) === 0): ?>
                 <tr>
                   <td
                     colspan="7"
@@ -722,12 +792,79 @@
                     "
                   >
                     <i
-                      class="fas fa-spinner fa-spin"
+                      class="fas fa-inbox"
                       style="margin-right: 8px; font-size: 24px"
                     ></i>
-                    Loading patient data...
+                    No CAUTI records found
                   </td>
                 </tr>
+                <?php else: ?>
+                  <?php foreach ($patients as $patient): ?>
+                    <?php
+                      $ageSex = ($patient['age'] ?? 'N/A') . '/' . ($patient['sex'] ?? 'N/A');
+                      $catheterStatus = $patient['catheter_status'] ?? 'N/A';
+                      $cautiStatus = $patient['cauti_status'] ?? 'Negative';
+                      $reviewStatus = $patient['review_status'] ?? 'Pending';
+                    ?>
+                    <tr class="table-row border-b" 
+                        style="background-color: var(--bg-card); border-color: var(--border-secondary);"
+                        data-uhid="<?php echo htmlspecialchars($patient['uhid'] ?? ''); ?>"
+                        data-name="<?php echo htmlspecialchars($patient['name'] ?? ''); ?>"
+                        data-ward="<?php echo htmlspecialchars($patient['ward'] ?? ''); ?>"
+                        data-catheter-status="<?php echo htmlspecialchars($catheterStatus); ?>"
+                        data-cauti-status="<?php echo htmlspecialchars($cautiStatus); ?>"
+                        data-review="<?php echo htmlspecialchars($reviewStatus); ?>">
+                      <td class="p-3 sm:p-4" data-label="UHID">
+                        <span class="font-medium"><?php echo htmlspecialchars($patient['uhid'] ?? 'N/A'); ?></span>
+                      </td>
+                      <td class="p-3 sm:p-4" data-label="Name">
+                        <span class="font-medium"><?php echo htmlspecialchars($patient['name'] ?? 'N/A'); ?></span>
+                      </td>
+                      <td class="p-3 sm:p-4" data-label="Age/Sex"><?php echo htmlspecialchars($ageSex); ?></td>
+                      <td class="p-3 sm:p-4" data-label="Ward"><?php echo htmlspecialchars($patient['ward'] ?? 'N/A'); ?></td>
+                      <td class="p-3 sm:p-4" data-label="Catheter Date"><?php echo htmlspecialchars($patient['catheter_date'] ?? 'N/A'); ?></td>
+                      <td class="p-3 sm:p-4" data-label="Status">
+                        <div class="flex flex-col gap-1 sm:gap-2">
+                          <?php if ($catheterStatus === 'Active'): ?>
+                            <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-semibold">
+                              <i class="fas fa-syringe mr-1"></i>Active Catheter
+                            </span>
+                          <?php elseif ($catheterStatus === 'Removed'): ?>
+                            <span class="bg-gray-100 text-gray-800 px-2 py-1 rounded-full text-xs font-semibold">
+                              <i class="fas fa-check mr-1"></i>Catheter Removed
+                            </span>
+                          <?php endif; ?>
+                          
+                          <?php if ($cautiStatus === 'Positive'): ?>
+                            <span class="complication-badge bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs font-semibold">
+                              <i class="fas fa-exclamation-triangle mr-1"></i>CAUTI Positive
+                            </span>
+                          <?php endif; ?>
+                          
+                          <?php if ($reviewStatus === 'Completed'): ?>
+                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-semibold">Completed</span>
+                          <?php elseif ($reviewStatus === 'In Progress'): ?>
+                            <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-semibold">In Progress</span>
+                          <?php else: ?>
+                            <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-semibold">Pending</span>
+                          <?php endif; ?>
+                        </div>
+                      </td>
+                      <td class="p-3 sm:p-4">
+                        <div class="flex justify-center">
+                          <a href="cauti_form.php?patient_id=<?php echo $patient['patient_id']; ?>" 
+                             target="_blank" 
+                             rel="noopener noreferrer" 
+                             class="action-button w-full max-w-[200px] mx-auto sm:mx-0 text-white px-3 sm:px-4 py-2 rounded-lg flex items-center justify-center gap-2 transition-all duration-300 text-sm hover:bg-[var(--button-bg-hover)]"
+                             style="background-color: var(--button-bg)">
+                            <i class="fas fa-eye"></i>
+                            <span>View/Edit</span>
+                          </a>
+                        </div>
+                      </td>
+                    </tr>
+                  <?php endforeach; ?>
+                <?php endif; ?>
               </tbody>
             </table>
           </div>
@@ -751,7 +888,7 @@
           </button>
           <a
             id="navAdd"
-            href="cauti_form.html"
+            href="cauti_form.php"
             target="_blank"
             rel="noopener noreferrer"
             class="nav-item"
@@ -934,231 +1071,48 @@
         performSearch();
       });
 
-      // Load patient data from database
-      function loadPatientData() {
-        // For frontend-only version, show empty state or sample data
-        // When backend is ready, uncomment the fetch code below
-        
-        /*
-        fetch("get_cauti_patients.php")
-          .then((response) => response.json())
-          .then((data) => {
-            if (data.success) {
-              populatePatientTable(data.patients);
-              recordCount.textContent = data.total_count;
-              // Update statistics
-              if (data.statistics) {
-                totalPatients.textContent = data.statistics.total_patients;
-                cautiCasesCount.textContent = data.statistics.cauti_cases;
-                activeCathetersCount.textContent = data.statistics.active_catheters;
-                pendingReviewsCount.textContent = data.statistics.pending_reviews;
-              }
-            } else {
-              console.error("Error loading patient data:", data.message);
-              showEmptyState();
-            }
-          })
-          .catch((error) => {
-            console.error("Network error:", error);
-            showEmptyState();
-          });
-        */
-        
-        // Show empty state for frontend-only version
-        showEmptyState();
-      }
-      
-      // Show empty state
-      function showEmptyState() {
-        tableBody.innerHTML = `
-          <tr>
-            <td colspan="7" style="text-align: center; padding: 2rem; color: var(--text-secondary);">
-              <i class="fas fa-inbox" style="margin-right: 8px; font-size: 24px;"></i>
-              No CAUTI records found. Backend not connected.
-            </td>
-          </tr>
-        `;
-        recordCount.textContent = "0";
-        // Set statistics to 0
-        totalPatients.textContent = "0";
-        cautiCasesCount.textContent = "0";
-        activeCathetersCount.textContent = "0";
-        pendingReviewsCount.textContent = "0";
-      }
-
-      // Populate the patient table with data
-      function populatePatientTable(patients) {
-        if (patients.length === 0) {
-          tableBody.innerHTML = `
-            <tr>
-              <td colspan="7" style="text-align: center; padding: 2rem; color: var(--text-secondary);">
-                <i class="fas fa-inbox" style="margin-right: 8px; font-size: 24px;"></i>
-                No CAUTI records found
-              </td>
-            </tr>
-          `;
-          return;
-        }
-
-        tableBody.innerHTML = "";
-
-        patients.forEach((patient) => {
-          const ageSex = `${patient.age || "N/A"}/${patient.sex || "N/A"}`;
-          const catheterStatus = patient.catheter_status || "N/A";
-          const cautiStatus = patient.cauti_status || "Negative";
-          const reviewStatus = patient.review_status || "Pending";
-
-          const row = document.createElement("tr");
-          row.className = "table-row border-b";
-          row.style.cssText =
-            "background-color: var(--bg-card); border-color: var(--border-secondary);";
-          row.dataset.uhid = patient.uhid;
-          row.dataset.name = patient.name;
-          row.dataset.ward = patient.ward;
-          row.dataset.catheterStatus = catheterStatus;
-          row.dataset.cautiStatus = cautiStatus;
-          row.dataset.review = reviewStatus;
-
-          // Determine status badges
-          let statusBadges = "";
-          
-          // Catheter Status
-          if (catheterStatus === "Active") {
-            statusBadges += `
-              <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-semibold">
-                <i class="fas fa-syringe mr-1"></i>Active Catheter
-              </span>
-            `;
-          } else if (catheterStatus === "Removed") {
-            statusBadges += `
-              <span class="bg-gray-100 text-gray-800 px-2 py-1 rounded-full text-xs font-semibold">
-                <i class="fas fa-check mr-1"></i>Catheter Removed
-              </span>
-            `;
-          }
-
-          // CAUTI Status
-          if (cautiStatus === "Positive") {
-            statusBadges += `
-              <span class="complication-badge bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs font-semibold">
-                <i class="fas fa-exclamation-triangle mr-1"></i>CAUTI Positive
-              </span>
-            `;
-          }
-
-          // Review Status
-          if (reviewStatus === "Completed") {
-            statusBadges += `
-              <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-semibold">Completed</span>
-            `;
-          } else if (reviewStatus === "In Progress") {
-            statusBadges += `
-              <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-semibold">In Progress</span>
-            `;
-          } else {
-            statusBadges += `
-              <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-semibold">Pending</span>
-            `;
-          }
-
-          row.innerHTML = `
-            <td class="p-3 sm:p-4" data-label="UHID">
-              <span class="font-medium">${patient.uhid || "N/A"}</span>
-            </td>
-            <td class="p-3 sm:p-4" data-label="Name">
-              <span class="font-medium">${patient.name || "N/A"}</span>
-            </td>
-            <td class="p-3 sm:p-4" data-label="Age/Sex">${ageSex}</td>
-            <td class="p-3 sm:p-4" data-label="Ward">${
-              patient.ward || "N/A"
-            }</td>
-            <td class="p-3 sm:p-4" data-label="Catheter Date">${
-              patient.catheter_date || "N/A"
-            }</td>
-            <td class="p-3 sm:p-4" data-label="Status">
-              <div class="flex flex-col gap-1 sm:gap-2">
-                ${statusBadges}
-              </div>
-            </td>
-            <td class="p-3 sm:p-4">
-              <div class="flex justify-center">
-                <a href="cauti_form.html?patient_id=${
-                  patient.patient_id
-                }" target="_blank" rel="noopener noreferrer" 
-                   class="action-button w-full max-w-[200px] mx-auto sm:mx-0 text-white px-3 sm:px-4 py-2 rounded-lg flex items-center justify-center gap-2 transition-all duration-300 text-sm hover:bg-[var(--button-bg-hover)]"
-                   style="background-color: var(--button-bg)">
-                  <i class="fas fa-eye"></i>
-                  <span>View/Edit</span>
-                </a>
-              </div>
-            </td>
-          `;
-
-          tableBody.appendChild(row);
-        });
-      }
+      // Data is already loaded via PHP - no need for AJAX!
+      // Patient table is pre-populated instantly on page load
 
       // Function to load and display nurse ID
-      async function loadNurseInfo() {
-        try {
-          // Fetch session information from sessionStorage
-          const nurseInfo = sessionStorage.getItem("nurseInfo");
+      function loadNurseInfo() {
+        // Try to get nurse info from PHP session first
+        <?php if (!empty($nurseInfoJson)): ?>
+          const nurseInfoFromPHP = <?php echo $nurseInfoJson; ?>;
           
           // Desktop nurse ID display
           const nurseIdValue = document.getElementById("nurseIdValue");
           const nurseIdDisplay = document.getElementById("nurseIdDisplay");
 
           // Mobile nurse ID display
-          const mobileNurseIdValue =
-            document.getElementById("mobileNurseIdValue");
-          const mobileNurseIdDisplay = document.getElementById(
-            "mobileNurseIdDisplay"
-          );
-
-          if (nurseInfo) {
-            const nurse = JSON.parse(nurseInfo);
-
-            if (nurseIdValue && nurseIdDisplay) {
-              // Display nurse ID on desktop
-              nurseIdValue.textContent = nurse.nurse_id || nurse.username || "Unknown";
-              nurseIdDisplay.style.display = "flex";
-            }
-
-            if (mobileNurseIdValue && mobileNurseIdDisplay) {
-              // Display nurse ID on mobile
-              mobileNurseIdValue.textContent = nurse.nurse_id || nurse.username || "Unknown";
-              mobileNurseIdDisplay.style.display = "flex";
-            }
-
-            console.log("Nurse ID displayed:", nurse.nurse_id || nurse.username);
-          } else {
-            // For frontend-only version, show "Guest" or default nurse ID
-            if (nurseIdValue && nurseIdDisplay) {
-              nurseIdValue.textContent = "Guest";
-              nurseIdDisplay.style.display = "flex";
-            }
-            if (mobileNurseIdValue && mobileNurseIdDisplay) {
-              mobileNurseIdValue.textContent = "Guest";
-              mobileNurseIdDisplay.style.display = "flex";
-            }
-          }
-        } catch (error) {
-          console.error("Error loading nurse info:", error);
-          // Show default for frontend-only version
-          const nurseIdValue = document.getElementById("nurseIdValue");
-          const nurseIdDisplay = document.getElementById("nurseIdDisplay");
           const mobileNurseIdValue = document.getElementById("mobileNurseIdValue");
           const mobileNurseIdDisplay = document.getElementById("mobileNurseIdDisplay");
 
-          if (nurseIdValue && nurseIdDisplay) {
-            nurseIdValue.textContent = "Guest";
-            nurseIdDisplay.style.display = "flex";
+          if (nurseInfoFromPHP && nurseInfoFromPHP.nurse_id) {
+            if (nurseIdValue) nurseIdValue.textContent = nurseInfoFromPHP.nurse_id;
+            if (mobileNurseIdValue) mobileNurseIdValue.textContent = nurseInfoFromPHP.nurse_id;
+            
+            // Also store in sessionStorage for consistency
+            sessionStorage.setItem("nurseInfo", JSON.stringify(nurseInfoFromPHP));
           }
-          if (mobileNurseIdValue && mobileNurseIdDisplay) {
-            mobileNurseIdValue.textContent = "Guest";
-            mobileNurseIdDisplay.style.display = "flex";
+        <?php else: ?>
+          // Fallback to sessionStorage if PHP session not available
+          const nurseInfo = sessionStorage.getItem("nurseInfo");
+          if (nurseInfo) {
+            const nurse = JSON.parse(nurseInfo);
+            const nurseIdValue = document.getElementById("nurseIdValue");
+            const mobileNurseIdValue = document.getElementById("mobileNurseIdValue");
+            
+            if (nurseIdValue) nurseIdValue.textContent = nurse.nurse_id || nurse.username || "Guest";
+            if (mobileNurseIdValue) mobileNurseIdValue.textContent = nurse.nurse_id || nurse.username || "Guest";
+          } else {
+            // Show Guest as fallback
+            const nurseIdValue = document.getElementById("nurseIdValue");
+            const mobileNurseIdValue = document.getElementById("mobileNurseIdValue");
+            if (nurseIdValue) nurseIdValue.textContent = "Guest";
+            if (mobileNurseIdValue) mobileNurseIdValue.textContent = "Guest";
           }
-        }
+        <?php endif; ?>
       }
 
       // Logout functionality
@@ -1229,17 +1183,16 @@
         document.body.classList.add("session-verified");
       }
 
-      // Load patient data when page loads
+      // Initialize page when DOM is ready
       document.addEventListener("DOMContentLoaded", function () {
         // Hide loading screen
         hideLoadingScreen();
 
-        // Load nurse info and patient data
+        // Load nurse info (data already loaded via PHP)
         loadNurseInfo();
-        loadPatientData();
-
-        // Refresh data every 30 seconds
-        setInterval(loadPatientData, 30000);
+        
+        // Note: Patient data is already populated via PHP - no AJAX needed!
+        // Page loads instantly with all data pre-filled
       });
     </script>
   </body>

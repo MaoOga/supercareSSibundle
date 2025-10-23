@@ -76,7 +76,7 @@ body {
 /* Form field styling */
 .form-field {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   width: 100%;
   min-height: 30px;
   position: relative;
@@ -88,8 +88,11 @@ body {
   font-weight: 700;
   white-space: nowrap;
   flex-shrink: 0;
+  line-height: 1.4;
+  font-size: 14px;
+  font-family: Arial, sans-serif;
   align-self: flex-start;
-  margin-top: 2px;
+  padding-top: 1px;
 }
 
 .form-input {
@@ -103,15 +106,15 @@ body {
   min-height: 20px;
   height: auto;
   line-height: 1.4;
-  padding: 2px 0;
+  padding: 0;
   margin: 0;
   flex: 1;
-  align-self: flex-start;
   min-width: 300px;
   position: relative;
   z-index: 1;
   max-height: none;
   overflow: visible;
+  align-self: flex-start;
 }
 
 /* Remove borders from all input elements in forms */
@@ -124,6 +127,7 @@ textarea {
   outline: none !important;
   background: transparent !important;
   box-shadow: none !important;
+  vertical-align: baseline !important;
 }
 
 input[type="text"]:focus,
@@ -155,12 +159,11 @@ textarea:focus {
 /* Table cell styling */
 .tg th,
 .tg td {
-  height: 40px !important;
   min-height: 40px;
+  height: auto;
   vertical-align: top !important;
   position: relative;
   overflow: visible;
-  max-height: 40px !important;
 }
 
 .tg th .form-field {

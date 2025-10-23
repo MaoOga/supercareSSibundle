@@ -1,3 +1,98 @@
+<?php
+session_start();
+require_once '../database/config.php';
+
+// Store nurse info for JavaScript if available from PHP session
+$nurseInfoJson = '';
+if (isset($_SESSION['username']) || isset($_SESSION['nurse_id'])) {
+    $nurseInfo = [
+        'nurse_id' => $_SESSION['username'] ?? $_SESSION['nurse_id'] ?? 'Unknown',
+        'username' => $_SESSION['username'] ?? $_SESSION['nurse_id'] ?? 'Unknown',
+        'name' => $_SESSION['name'] ?? ''
+    ];
+    $nurseInfoJson = json_encode($nurseInfo);
+}
+
+// Check if patient_id is in URL for edit mode
+$patient_id = isset($_GET['patient_id']) ? intval($_GET['patient_id']) : 0;
+$patientData = null;
+$catheterRecords = [];
+
+// If editing, fetch patient data directly in PHP
+if ($patient_id > 0 && $pdo) {
+    try {
+        // Fetch patient information
+        $stmt = $pdo->prepare("SELECT * FROM cauti_patient_info WHERE id = ?");
+        $stmt->execute([$patient_id]);
+        $patientData = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if ($patientData) {
+            // Format date for display (yyyy-mm-dd to dd/mm/yyyy)
+            if (!empty($patientData['date_of_admission'])) {
+                $date_obj = new DateTime($patientData['date_of_admission']);
+                $patientData['date_of_admission'] = $date_obj->format('d/m/Y');
+            }
+            
+            // Fetch catheter records
+            $stmt = $pdo->prepare("SELECT * FROM cauti_catheter WHERE patient_id = ? ORDER BY id ASC");
+            $stmt->execute([$patient_id]);
+            $catheterRecords = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            // Format catheter data
+            foreach ($catheterRecords as &$record) {
+                // Format dates
+                if (!empty($record['catheter_date'])) {
+                    $date_obj = new DateTime($record['catheter_date']);
+                    $record['catheter_date'] = $date_obj->format('d/m/Y');
+                }
+                if (!empty($record['catheter_changed_on'])) {
+                    $date_obj = new DateTime($record['catheter_changed_on']);
+                    $record['catheter_changed_on'] = $date_obj->format('d/m/Y');
+                }
+                if (!empty($record['catheter_removed_on'])) {
+                    $date_obj = new DateTime($record['catheter_removed_on']);
+                    $record['catheter_removed_on'] = $date_obj->format('d/m/Y');
+                }
+                if (!empty($record['catheter_out_date'])) {
+                    $date_obj = new DateTime($record['catheter_out_date']);
+                    $record['catheter_out_date'] = $date_obj->format('d/m/Y');
+                }
+                
+                // Convert time from 24-hour to 12-hour format
+                if (!empty($record['catheter_time'])) {
+                    $time_obj = new DateTime($record['catheter_time']);
+                    $hour = intval($time_obj->format('H'));
+                    $minute = $time_obj->format('i');
+                    $meridiem = ($hour >= 12) ? 'PM' : 'AM';
+                    $hour_12 = ($hour > 12) ? ($hour - 12) : (($hour == 0) ? 12 : $hour);
+                    $record['catheter_hour'] = $hour_12;
+                    $record['catheter_minute'] = $minute;
+                    $record['catheter_meridiem'] = $meridiem;
+                }
+                
+                if (!empty($record['catheter_out_time'])) {
+                    $time_obj = new DateTime($record['catheter_out_time']);
+                    $hour = intval($time_obj->format('H'));
+                    $minute = $time_obj->format('i');
+                    $meridiem = ($hour >= 12) ? 'PM' : 'AM';
+                    $hour_12 = ($hour > 12) ? ($hour - 12) : (($hour == 0) ? 12 : $hour);
+                    $record['catheter_out_hour'] = $hour_12;
+                    $record['catheter_out_minute'] = $minute;
+                    $record['catheter_out_meridiem'] = $meridiem;
+                }
+            }
+            unset($record);
+        }
+    } catch (Exception $e) {
+        error_log("Error loading patient data: " . $e->getMessage());
+    }
+}
+
+// Helper function to safely output value
+function getValue($data, $field, $default = '') {
+    return isset($data[$field]) ? htmlspecialchars($data[$field]) : $default;
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -15,7 +110,6 @@
     <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
     <script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
     <link rel="stylesheet" type="text/css" href="../assets/new_style.css" />
-
     <style>
       /* Mobile Responsive Styles - EXACT COPY from Example/style.css */
       @media screen and (max-width: 640px) {
@@ -169,7 +263,7 @@
         label.flex {
           display: flex !important;
           width: 100% !important;
-          align-items: center;
+          align-items: flex-start;
         }
 
         label.flex .input-overlay,
@@ -185,6 +279,7 @@
         label.flex .label-bold,
         label.flex .whitespace-nowrap {
           flex-shrink: 0 !important;
+          padding-top: 2px;
         }
 
         .action-button {
@@ -232,6 +327,8 @@
         margin: 0;
         resize: none;
         box-sizing: border-box;
+        line-height: 1.4;
+        vertical-align: baseline;
       }
 
       .input-full {
@@ -242,11 +339,13 @@
         font: inherit;
         resize: none;
         box-sizing: border-box;
+        line-height: 1.4;
+        vertical-align: baseline;
       }
 
       label.flex {
         display: flex;
-        align-items: center;
+        align-items: flex-start;
         gap: 8px;
         width: 100%;
       }
@@ -259,6 +358,7 @@
       label.flex select {
         flex: 1;
         min-width: 0;
+        padding-top: 1px;
       }
 
       /* Table cell styles */
@@ -476,15 +576,22 @@
       #patient-info-table .tg-1wig {
         font-weight: bold;
         text-align: left;
-        vertical-align: middle;
+        vertical-align: top;
       }
 
       #patient-info-table label.flex {
         display: flex;
-        align-items: center;
+        align-items: flex-start;
         gap: 8px;
         width: 100%;
         flex-wrap: nowrap;
+      }
+
+      /* Keep label text aligned at the top */
+      #patient-info-table label.flex > span,
+      #patient-info-table label.flex > .label-bold,
+      #patient-info-table label.flex > .whitespace-nowrap {
+        padding-top: 2px;
       }
 
       #patient-info-table .input-overlay,
@@ -512,6 +619,29 @@
       #patient-info-table .whitespace-nowrap {
         white-space: nowrap !important;
         flex-shrink: 0;
+      }
+
+      /* Date picker styling for patient info table */
+      #patient-info-table input.datepicker {
+        border: none;
+        outline: none;
+        background: transparent;
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        font-weight: normal;
+        padding: 2px 0;
+        margin: 0;
+        min-height: 20px;
+        line-height: 1.4;
+        width: 120px;
+        flex: 0 0 auto;
+      }
+
+      #patient-info-table input.datepicker:focus {
+        border: none;
+        outline: none;
+        background: transparent;
+        box-shadow: none;
       }
 
       /* CATETHER Table - Column width adjustments */
@@ -2014,45 +2144,61 @@
   <body>
     <div class="container">
       <div class="header">
-        <img src="../assets/supercare-hospital_logo.png" alt="Supercare Logo" />
+        <a
+          href="../Cauti_form/cauti_panel.php"
+          style="display: inline-block; cursor: pointer"
+        >
+          <img
+            src="/supercareSSibundle/assets/supercare-hospital_logo.png"
+            alt="Supercare Logo"
+            style="cursor: pointer; height: 80px"
+          />
+        </a>
         <div class="title-main">
           Catheter Associated Urinary Tract Infection FORM
         </div>
         <div class="title-sub">Supercare</div>
       </div>
 
+      <!-- Form Start -->
+      <form method="POST" action="save_patient_info.php">
+      
+      <!-- Hidden field for patient_id (for edit mode) -->
+      <input type="hidden" name="patient_id" id="patient_id_hidden" value="<?php echo $patient_id; ?>">
+
+
       <!-- Patient Info Table -->
       <table class="tg" id="patient-info-table">
         <thead>
           <tr>
             <th class="tg-1wig">
-              <label class="flex gap-2 items-center w-full"
-                >Name:
+              <label class="flex gap-2 w-full" style="align-items: baseline;"
+                ><span style="padding-top: 4px;">Name:</span>
                 <textarea
                   name="name"
                   class="input-overlay input-full"
                   rows="1"
                   oninput="autoGrow(this)"
-                  style="min-height: 28px; line-height: 1.2"
-                ></textarea>
+                  style="min-height: 28px; line-height: 1.2; padding: 2px;"
+                ><?php echo getValue($patientData, 'name'); ?></textarea>
               </label>
             </th>
             <th class="tg-1wig">
               <label class="flex gap-2 items-center w-full"
                 >Age:
-                <input type="number" class="input-overlay" name="age" />
+                <input type="number" class="input-overlay" name="age" value="<?php echo getValue($patientData, 'age'); ?>" />
               </label>
             </th>
-            <th class="tg-1wig">
-              <label class="flex gap-2 items-center w-full"
-                >Sex:
+            <th class="tg-1wig" style="vertical-align: middle;">
+              <label class="flex gap-2 w-full" style="align-items: baseline;"
+                ><span style="padding-top: 4px;">Sex:</span>
                 <textarea
                   class="input-overlay input-full"
                   name="sex"
                   rows="1"
                   oninput="autoGrow(this)"
-                  style="min-height: 28px; line-height: 1.2"
-                ></textarea>
+                  style="min-height: 28px; line-height: 1.2; padding: 2px; flex: 1;"
+                ><?php echo getValue($patientData, 'sex'); ?></textarea>
               </label>
             </th>
           </tr>
@@ -2062,13 +2208,13 @@
             <td class="tg-1wig">
               <label class="flex gap-2 items-center w-full"
                 >UHID:
-                <input type="text" class="input-overlay" name="uhid" />
+                <input type="text" class="input-overlay" name="uhid" value="<?php echo getValue($patientData, 'uhid'); ?>" />
               </label>
             </td>
             <td class="tg-1wig">
-              <label class="flex gap-2 items-center w-full">
-                <span class="whitespace-nowrap label-bold">Bed no./Ward:</span>
-                <input type="text" class="input-overlay" name="bed" />
+              <label class="flex gap-2 w-full" style="align-items: baseline;">
+                <span class="whitespace-nowrap label-bold" style="padding-top: 4px;">Bed no./Ward:</span>
+                <input type="text" class="input-overlay" name="bed" style="padding: 2px;" value="<?php echo getValue($patientData, 'bed_ward'); ?>" />
               </label>
             </td>
             <td class="tg-1wig">
@@ -2078,23 +2224,26 @@
                 >
                 <input
                   type="text"
-                  class="input-overlay"
+                  class="datepicker"
                   name="date_of_admission"
+                  placeholder="dd/mm/yyyy"
+                  autocomplete="off"
+                  value="<?php echo getValue($patientData, 'date_of_admission'); ?>"
                 />
               </label>
             </td>
           </tr>
           <tr>
             <td class="tg-1wig" colspan="3">
-              <label class="flex gap-2 items-center w-full">
-                <span class="whitespace-nowrap label-bold">Diagnosis:</span>
+              <label class="flex gap-2 w-full" style="align-items: baseline;">
+                <span class="whitespace-nowrap label-bold" style="padding-top: 4px;">Diagnosis:</span>
                 <textarea
                   class="input-overlay input-full"
                   name="diagnosis"
                   rows="1"
                   oninput="autoGrow(this)"
-                  style="min-height: 28px; line-height: 1.2"
-                ></textarea>
+                  style="min-height: 28px; line-height: 1.2; padding: 2px;"
+                ><?php echo getValue($patientData, 'diagnosis'); ?></textarea>
               </label>
             </td>
           </tr>
@@ -2200,6 +2349,7 @@
                   class="datepicker"
                   placeholder="dd/mm/yyyy"
                   autocomplete="off"
+                  value="<?php echo isset($catheterRecords[0]['catheter_date']) ? htmlspecialchars($catheterRecords[0]['catheter_date']) : ''; ?>"
                 />
               </td>
               <td class="tg-0pky" data-label="Time">
@@ -2213,6 +2363,7 @@
                     max="12"
                     maxlength="2"
                     autocomplete="off"
+                    value="<?php echo isset($catheterRecords[0]['catheter_hour']) ? htmlspecialchars($catheterRecords[0]['catheter_hour']) : ''; ?>"
                   />
                   <span>:</span>
                   <input
@@ -2224,14 +2375,15 @@
                     max="59"
                     maxlength="2"
                     autocomplete="off"
+                    value="<?php echo isset($catheterRecords[0]['catheter_minute']) ? htmlspecialchars($catheterRecords[0]['catheter_minute']) : ''; ?>"
                   />
                   <select
                     name="catheter_meridiem_1"
                     class="time-meridiem"
                     autocomplete="off"
                   >
-                    <option value="AM">AM</option>
-                    <option value="PM">PM</option>
+                    <option value="AM" <?php echo (isset($catheterRecords[0]['catheter_meridiem']) && $catheterRecords[0]['catheter_meridiem'] === 'AM') ? 'selected' : ''; ?>>AM</option>
+                    <option value="PM" <?php echo (isset($catheterRecords[0]['catheter_meridiem']) && $catheterRecords[0]['catheter_meridiem'] === 'PM') ? 'selected' : ''; ?>>PM</option>
                   </select>
                 </div>
               </td>
@@ -2242,6 +2394,7 @@
                   class="datepicker"
                   placeholder="dd/mm/yyyy"
                   autocomplete="off"
+                  value="<?php echo isset($catheterRecords[0]['catheter_changed_on']) ? htmlspecialchars($catheterRecords[0]['catheter_changed_on']) : ''; ?>"
                 />
               </td>
               <td class="tg-0pky" data-label="Catheter Removed On">
@@ -2251,6 +2404,7 @@
                   class="datepicker"
                   placeholder="dd/mm/yyyy"
                   autocomplete="off"
+                  value="<?php echo isset($catheterRecords[0]['catheter_removed_on']) ? htmlspecialchars($catheterRecords[0]['catheter_removed_on']) : ''; ?>"
                 />
               </td>
               <td class="tg-0pky" data-label="Catheter Out Date & Time">
@@ -2260,6 +2414,7 @@
                   class="datepicker"
                   placeholder="dd/mm/yyyy"
                   autocomplete="off"
+                  value="<?php echo isset($catheterRecords[0]['catheter_out_date']) ? htmlspecialchars($catheterRecords[0]['catheter_out_date']) : ''; ?>"
                 />
                 <br />
                 <div class="structured-time-input">
@@ -2272,6 +2427,7 @@
                     max="12"
                     maxlength="2"
                     autocomplete="off"
+                    value="<?php echo isset($catheterRecords[0]['catheter_out_hour']) ? htmlspecialchars($catheterRecords[0]['catheter_out_hour']) : ''; ?>"
                   />
                   <span>:</span>
                   <input
@@ -2283,14 +2439,15 @@
                     max="59"
                     maxlength="2"
                     autocomplete="off"
+                    value="<?php echo isset($catheterRecords[0]['catheter_out_minute']) ? htmlspecialchars($catheterRecords[0]['catheter_out_minute']) : ''; ?>"
                   />
                   <select
                     name="catheter_out_meridiem_1"
                     class="time-meridiem"
                     autocomplete="off"
                   >
-                    <option value="AM">AM</option>
-                    <option value="PM">PM</option>
+                    <option value="AM" <?php echo (isset($catheterRecords[0]['catheter_out_meridiem']) && $catheterRecords[0]['catheter_out_meridiem'] === 'AM') ? 'selected' : ''; ?>>AM</option>
+                    <option value="PM" <?php echo (isset($catheterRecords[0]['catheter_out_meridiem']) && $catheterRecords[0]['catheter_out_meridiem'] === 'PM') ? 'selected' : ''; ?>>PM</option>
                   </select>
                 </div>
               </td>
@@ -2304,7 +2461,7 @@
                   class="form-input medium"
                   rows="1"
                   oninput="autoGrow(this)"
-                ></textarea>
+                ><?php echo isset($catheterRecords[0]['total_catheter_days']) ? htmlspecialchars($catheterRecords[0]['total_catheter_days']) : ''; ?></textarea>
               </td>
             </tr>
             <tr class="catheter-row">
@@ -2315,6 +2472,7 @@
                   class="datepicker"
                   placeholder="dd/mm/yyyy"
                   autocomplete="off"
+                  value="<?php echo isset($catheterRecords[1]['catheter_date']) ? htmlspecialchars($catheterRecords[1]['catheter_date']) : ''; ?>"
                 />
               </td>
               <td class="tg-0pky">
@@ -2328,6 +2486,7 @@
                     max="12"
                     maxlength="2"
                     autocomplete="off"
+                    value="<?php echo isset($catheterRecords[1]['catheter_hour']) ? htmlspecialchars($catheterRecords[1]['catheter_hour']) : ''; ?>"
                   />
                   <span>:</span>
                   <input
@@ -2339,14 +2498,15 @@
                     max="59"
                     maxlength="2"
                     autocomplete="off"
+                    value="<?php echo isset($catheterRecords[1]['catheter_minute']) ? htmlspecialchars($catheterRecords[1]['catheter_minute']) : ''; ?>"
                   />
                   <select
                     name="catheter_meridiem_2"
                     class="time-meridiem"
                     autocomplete="off"
                   >
-                    <option value="AM">AM</option>
-                    <option value="PM">PM</option>
+                    <option value="AM" <?php echo (isset($catheterRecords[1]['catheter_meridiem']) && $catheterRecords[1]['catheter_meridiem'] === 'AM') ? 'selected' : ''; ?>>AM</option>
+                    <option value="PM" <?php echo (isset($catheterRecords[1]['catheter_meridiem']) && $catheterRecords[1]['catheter_meridiem'] === 'PM') ? 'selected' : ''; ?>>PM</option>
                   </select>
                 </div>
               </td>
@@ -2357,6 +2517,7 @@
                   class="datepicker"
                   placeholder="dd/mm/yyyy"
                   autocomplete="off"
+                  value="<?php echo isset($catheterRecords[1]['catheter_changed_on']) ? htmlspecialchars($catheterRecords[1]['catheter_changed_on']) : ''; ?>"
                 />
               </td>
               <td class="tg-0pky">
@@ -2366,6 +2527,7 @@
                   class="datepicker"
                   placeholder="dd/mm/yyyy"
                   autocomplete="off"
+                  value="<?php echo isset($catheterRecords[1]['catheter_removed_on']) ? htmlspecialchars($catheterRecords[1]['catheter_removed_on']) : ''; ?>"
                 />
               </td>
               <td class="tg-0pky">
@@ -2375,6 +2537,7 @@
                   class="datepicker"
                   placeholder="dd/mm/yyyy"
                   autocomplete="off"
+                  value="<?php echo isset($catheterRecords[1]['catheter_out_date']) ? htmlspecialchars($catheterRecords[1]['catheter_out_date']) : ''; ?>"
                 />
                 <br />
                 <div class="structured-time-input">
@@ -2387,6 +2550,7 @@
                     max="12"
                     maxlength="2"
                     autocomplete="off"
+                    value="<?php echo isset($catheterRecords[1]['catheter_out_hour']) ? htmlspecialchars($catheterRecords[1]['catheter_out_hour']) : ''; ?>"
                   />
                   <span>:</span>
                   <input
@@ -2398,14 +2562,15 @@
                     max="59"
                     maxlength="2"
                     autocomplete="off"
+                    value="<?php echo isset($catheterRecords[1]['catheter_out_minute']) ? htmlspecialchars($catheterRecords[1]['catheter_out_minute']) : ''; ?>"
                   />
                   <select
                     name="catheter_out_meridiem_2"
                     class="time-meridiem"
                     autocomplete="off"
                   >
-                    <option value="AM">AM</option>
-                    <option value="PM">PM</option>
+                    <option value="AM" <?php echo (isset($catheterRecords[1]['catheter_out_meridiem']) && $catheterRecords[1]['catheter_out_meridiem'] === 'AM') ? 'selected' : ''; ?>>AM</option>
+                    <option value="PM" <?php echo (isset($catheterRecords[1]['catheter_out_meridiem']) && $catheterRecords[1]['catheter_out_meridiem'] === 'PM') ? 'selected' : ''; ?>>PM</option>
                   </select>
                 </div>
               </td>
@@ -2415,7 +2580,7 @@
                   class="form-input medium"
                   rows="1"
                   oninput="autoGrow(this)"
-                ></textarea>
+                ><?php echo isset($catheterRecords[1]['total_catheter_days']) ? htmlspecialchars($catheterRecords[1]['total_catheter_days']) : ''; ?></textarea>
               </td>
             </tr>
             <tr class="catheter-row">
@@ -2426,6 +2591,7 @@
                   class="datepicker"
                   placeholder="dd/mm/yyyy"
                   autocomplete="off"
+                  value="<?php echo isset($catheterRecords[2]['catheter_date']) ? htmlspecialchars($catheterRecords[2]['catheter_date']) : ''; ?>"
                 />
               </td>
               <td class="tg-0pky">
@@ -2439,6 +2605,7 @@
                     max="12"
                     maxlength="2"
                     autocomplete="off"
+                    value="<?php echo isset($catheterRecords[2]['catheter_hour']) ? htmlspecialchars($catheterRecords[2]['catheter_hour']) : ''; ?>"
                   />
                   <span>:</span>
                   <input
@@ -2450,14 +2617,15 @@
                     max="59"
                     maxlength="2"
                     autocomplete="off"
+                    value="<?php echo isset($catheterRecords[2]['catheter_minute']) ? htmlspecialchars($catheterRecords[2]['catheter_minute']) : ''; ?>"
                   />
                   <select
                     name="catheter_meridiem_3"
                     class="time-meridiem"
                     autocomplete="off"
                   >
-                    <option value="AM">AM</option>
-                    <option value="PM">PM</option>
+                    <option value="AM" <?php echo (isset($catheterRecords[2]['catheter_meridiem']) && $catheterRecords[2]['catheter_meridiem'] === 'AM') ? 'selected' : ''; ?>>AM</option>
+                    <option value="PM" <?php echo (isset($catheterRecords[2]['catheter_meridiem']) && $catheterRecords[2]['catheter_meridiem'] === 'PM') ? 'selected' : ''; ?>>PM</option>
                   </select>
                 </div>
               </td>
@@ -2468,6 +2636,7 @@
                   class="datepicker"
                   placeholder="dd/mm/yyyy"
                   autocomplete="off"
+                  value="<?php echo isset($catheterRecords[2]['catheter_changed_on']) ? htmlspecialchars($catheterRecords[2]['catheter_changed_on']) : ''; ?>"
                 />
               </td>
               <td class="tg-0pky">
@@ -2477,6 +2646,7 @@
                   class="datepicker"
                   placeholder="dd/mm/yyyy"
                   autocomplete="off"
+                  value="<?php echo isset($catheterRecords[2]['catheter_removed_on']) ? htmlspecialchars($catheterRecords[2]['catheter_removed_on']) : ''; ?>"
                 />
               </td>
               <td class="tg-0pky">
@@ -2486,6 +2656,7 @@
                   class="datepicker"
                   placeholder="dd/mm/yyyy"
                   autocomplete="off"
+                  value="<?php echo isset($catheterRecords[2]['catheter_out_date']) ? htmlspecialchars($catheterRecords[2]['catheter_out_date']) : ''; ?>"
                 />
                 <br />
                 <div class="structured-time-input">
@@ -2498,6 +2669,7 @@
                     max="12"
                     maxlength="2"
                     autocomplete="off"
+                    value="<?php echo isset($catheterRecords[2]['catheter_out_hour']) ? htmlspecialchars($catheterRecords[2]['catheter_out_hour']) : ''; ?>"
                   />
                   <span>:</span>
                   <input
@@ -2509,14 +2681,15 @@
                     max="59"
                     maxlength="2"
                     autocomplete="off"
+                    value="<?php echo isset($catheterRecords[2]['catheter_out_minute']) ? htmlspecialchars($catheterRecords[2]['catheter_out_minute']) : ''; ?>"
                   />
                   <select
                     name="catheter_out_meridiem_3"
                     class="time-meridiem"
                     autocomplete="off"
                   >
-                    <option value="AM">AM</option>
-                    <option value="PM">PM</option>
+                    <option value="AM" <?php echo (isset($catheterRecords[2]['catheter_out_meridiem']) && $catheterRecords[2]['catheter_out_meridiem'] === 'AM') ? 'selected' : ''; ?>>AM</option>
+                    <option value="PM" <?php echo (isset($catheterRecords[2]['catheter_out_meridiem']) && $catheterRecords[2]['catheter_out_meridiem'] === 'PM') ? 'selected' : ''; ?>>PM</option>
                   </select>
                 </div>
               </td>
@@ -2526,7 +2699,7 @@
                   class="form-input medium"
                   rows="1"
                   oninput="autoGrow(this)"
-                ></textarea>
+                ><?php echo isset($catheterRecords[2]['total_catheter_days']) ? htmlspecialchars($catheterRecords[2]['total_catheter_days']) : ''; ?></textarea>
               </td>
             </tr>
           </tbody>
@@ -4041,9 +4214,285 @@
           ></textarea>
         </div>
       </div>
+
+      <!-- Success/Error Message (Initially Hidden) -->
+      <div id="alertMessage" style="display: none; text-align: center; margin: 20px auto; font-size: 16px; font-weight: bold; color: #28a745;">
+        <span id="alertText">Patient information saved successfully!</span>
+      </div>
+
+      <!-- Submit Button -->
+      <div
+        class="submit-section"
+        style="margin-top: 30px; text-align: center; margin-bottom: 40px"
+      >
+        <button
+          type="submit"
+          class="submit-button"
+          style="
+            background-color: #4caf50;
+            color: white;
+            padding: 15px 40px;
+            font-size: 18px;
+            font-weight: 700;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+          "
+          onmouseover="this.style.backgroundColor='#45a049'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 8px rgba(0, 0, 0, 0.15)';"
+          onmouseout="this.style.backgroundColor='#4CAF50'; this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 6px rgba(0, 0, 0, 0.1)';"
+        >
+          Submit Form
+        </button>
+      </div>
+
+      </form>
+      <!-- Form End -->
+
     </div>
 
     <script src="../assets/new_script.js"></script>
-    <!-- All CAUTI table functions are in new_script.js -->
+    <script>
+      // Store nurse info in sessionStorage if available from PHP session
+      <?php if (!empty($nurseInfoJson)): ?>
+      sessionStorage.setItem('nurseInfo', <?php echo $nurseInfoJson; ?>);
+      console.log('Nurse info stored in sessionStorage');
+      <?php endif; ?>
+
+      // Handle form submission with immediate feedback
+      document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('form[action="save_patient_info.php"]');
+        const alertMessage = document.getElementById('alertMessage');
+        const alertText = document.getElementById('alertText');
+        const submitButton = document.querySelector('.submit-button');
+
+        if (form) {
+          form.addEventListener('submit', function(e) {
+            e.preventDefault(); // Prevent default form submission
+            
+            // Disable submit button to prevent double submission
+            submitButton.disabled = true;
+            submitButton.style.opacity = '0.6';
+            submitButton.style.cursor = 'not-allowed';
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            
+            // Show loading message immediately
+            alertMessage.style.display = 'block';
+            alertMessage.style.color = '#007bff';
+            alertText.textContent = 'Saving patient information...';
+            
+            // Scroll to the alert message
+            alertMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
+            // Submit form data via AJAX
+            const formData = new FormData(form);
+            
+            fetch('save_patient_info.php', {
+              method: 'POST',
+              body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+              if (data.success) {
+                // Update message to success (without patient ID)
+                alertMessage.style.color = '#28a745';
+                alertText.textContent = 'Patient information saved successfully!';
+                
+                // Redirect to panel after 2 seconds
+                setTimeout(function() {
+                  window.location.href = 'cauti_panel.php';
+                }, 2000);
+              } else {
+                // Show error message from server
+                alertMessage.style.color = '#dc3545';
+                alertText.textContent = data.message || 'Error saving patient information.';
+                
+                // Re-enable submit button
+                submitButton.disabled = false;
+                submitButton.style.opacity = '1';
+                submitButton.style.cursor = 'pointer';
+                submitButton.innerHTML = 'Submit Form';
+              }
+            })
+            .catch(error => {
+              // Show error message
+              alertMessage.style.color = '#dc3545';
+              alertText.textContent = 'Network error. Please check your connection and try again.';
+              
+              // Re-enable submit button
+              submitButton.disabled = false;
+              submitButton.style.opacity = '1';
+              submitButton.style.cursor = 'pointer';
+              submitButton.innerHTML = 'Submit Form';
+            });
+          });
+        }
+      });
+
+      // Helper function to set form values (same as SSI form)
+      function setFormValue(name, value) {
+        if (value === null || value === undefined) return;
+
+        const element = document.querySelector(`[name="${name}"]`);
+        if (element) {
+          element.value = value;
+          // Trigger autoGrow for textareas
+          if (element.tagName === 'TEXTAREA') {
+            // Auto-grow if function exists
+            if (typeof autoGrow === 'function') {
+              autoGrow(element);
+            }
+          }
+        } else {
+          console.log(`Element not found for name: ${name}`);
+        }
+      }
+
+      // Function to fill form with patient data
+      function fillFormWithCautiData(patientData) {
+        console.log('Filling form with patient data:', patientData);
+        
+        const patient = patientData.patient;
+        const catheterRecords = patientData.catheter_records || [];
+
+        // Set basic patient info
+        setFormValue('name', patient.name);
+        setFormValue('age', patient.age);
+        setFormValue('sex', patient.sex);
+        setFormValue('uhid', patient.uhid);
+        setFormValue('bed', patient.bed_ward);
+        setFormValue('date_of_admission', patient.date_of_admission);
+        setFormValue('diagnosis', patient.diagnosis);
+        
+        // Pre-fill catheter records
+        catheterRecords.forEach((record, index) => {
+                  const rowNum = index + 1; // Row numbers start from 1
+                  
+                  // Catheter date
+                  if (record.catheter_date) {
+                    const dateInput = document.querySelector(`input[name="catheter_date_${rowNum}"]`);
+                    if (dateInput) dateInput.value = record.catheter_date;
+                  }
+                  
+                  // Catheter time
+                  if (record.catheter_hour) {
+                    const hourInput = document.querySelector(`input[name="catheter_hour_${rowNum}"]`);
+                    if (hourInput) hourInput.value = record.catheter_hour;
+                  }
+                  if (record.catheter_minute) {
+                    const minuteInput = document.querySelector(`input[name="catheter_minute_${rowNum}"]`);
+                    if (minuteInput) minuteInput.value = record.catheter_minute;
+                  }
+                  if (record.catheter_meridiem) {
+                    const meridiemSelect = document.querySelector(`select[name="catheter_meridiem_${rowNum}"]`);
+                    if (meridiemSelect) meridiemSelect.value = record.catheter_meridiem;
+                  }
+                  
+                  // Catheter changed on
+                  if (record.catheter_changed_on) {
+                    const changedInput = document.querySelector(`input[name="catheter_changed_on_${rowNum}"]`);
+                    if (changedInput) changedInput.value = record.catheter_changed_on;
+                  }
+                  
+                  // Catheter removed on
+                  if (record.catheter_removed_on) {
+                    const removedInput = document.querySelector(`input[name="catheter_removed_on_${rowNum}"]`);
+                    if (removedInput) removedInput.value = record.catheter_removed_on;
+                  }
+                  
+                  // Catheter out date
+                  if (record.catheter_out_date) {
+                    const outDateInput = document.querySelector(`input[name="catheter_out_date_${rowNum}"]`);
+                    if (outDateInput) outDateInput.value = record.catheter_out_date;
+                  }
+                  
+                  // Catheter out time
+                  if (record.catheter_out_hour) {
+                    const outHourInput = document.querySelector(`input[name="catheter_out_hour_${rowNum}"]`);
+                    if (outHourInput) outHourInput.value = record.catheter_out_hour;
+                  }
+                  if (record.catheter_out_minute) {
+                    const outMinuteInput = document.querySelector(`input[name="catheter_out_minute_${rowNum}"]`);
+                    if (outMinuteInput) outMinuteInput.value = record.catheter_out_minute;
+                  }
+                  if (record.catheter_out_meridiem) {
+                    const outMeridiemSelect = document.querySelector(`select[name="catheter_out_meridiem_${rowNum}"]`);
+                    if (outMeridiemSelect) outMeridiemSelect.value = record.catheter_out_meridiem;
+                  }
+                  
+                  // Total catheter days
+                  if (record.total_catheter_days) {
+                    const daysTextarea = document.querySelector(`textarea[name="total_catheter_days_${rowNum}"]`);
+                    if (daysTextarea) daysTextarea.value = record.total_catheter_days;
+                  }
+        });
+        
+        console.log(`Pre-filled ${catheterRecords.length} catheter record(s)`);
+      }
+
+      // Load patient data for editing (same pattern as SSI form)
+      function loadCautiPatientData(patientId) {
+        console.log('Loading patient data for ID:', patientId);
+        
+        // Show loading indicator
+        const loadingIndicator = document.getElementById('loadingPatientData');
+        if (loadingIndicator) {
+          loadingIndicator.style.display = 'block';
+          // Scroll to loading indicator
+          loadingIndicator.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        
+        // Test the URL being called
+        const url = `get_cauti_patient_data.php?patient_id=${patientId}`;
+        console.log('Calling URL:', url);
+        
+        fetch(url)
+          .then(response => {
+            console.log('Response status:', response.status);
+            return response.text(); // Get raw text first
+          })
+          .then(text => {
+            console.log('Raw response text:', text);
+            try {
+              const data = JSON.parse(text);
+              console.log('Parsed JSON data:', data);
+              
+              // Hide loading indicator
+              if (loadingIndicator) {
+                loadingIndicator.style.display = 'none';
+              }
+              
+              if (data.success) {
+                fillFormWithCautiData(data.data);
+                // Scroll to top of form after loading
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              } else {
+                console.error('Error loading patient data:', data.message);
+                alert('Error loading patient data: ' + data.message);
+              }
+            } catch (e) {
+              // Hide loading indicator on error
+              if (loadingIndicator) {
+                loadingIndicator.style.display = 'none';
+              }
+              console.error('Failed to parse JSON:', e);
+              console.error('Response was:', text);
+              alert('Error parsing patient data. Please try again.');
+            }
+          })
+          .catch(error => {
+            // Hide loading indicator on error
+            if (loadingIndicator) {
+              loadingIndicator.style.display = 'none';
+            }
+            console.error('Fetch error:', error);
+            alert('Network error. Please check your connection and try again.');
+          });
+      }
+
+      // No need for JavaScript loading - data is pre-filled via PHP!
+      // Patient data loads instantly with the page
+    </script>
   </body>
 </html>
