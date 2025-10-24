@@ -420,15 +420,20 @@
                     >UHID:
                     <input type="text" class="input-overlay" name="uhid" />
                   </label>
+                  <!-- UHID Validation Alert -->
                   <div
                     id="uhidFeedback"
                     style="
                       display: none;
+                      color: #dc3545;
                       font-size: 12px;
-                      margin-top: 2px;
+                      margin-top: 4px;
                       font-weight: bold;
                     "
-                  ></div>
+                  >
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span id="uhidFeedbackText"></span>
+                  </div>
                 </td>
                 <td class="tg-1wig" style="vertical-align: middle">
                   <label class="flex gap-2 items-center w-full">
@@ -2846,14 +2851,23 @@
           return `${day}/${month}/${year}`;
         }
 
-        // UHID validation function
+        // UHID validation function - Enhanced to check both SSI and CAUTI systems
         function checkUHIDAvailability(uhid) {
           if (!uhid.trim()) return;
 
           const formData = new FormData();
           formData.append("uhid", uhid);
 
-          fetch("../database/check_uhid.php", {
+          // Get patient_id if editing (for excluding current patient)
+          const patientIdInput = document.querySelector(
+            'input[name="patient_info[id]"]'
+          );
+          const patientId = patientIdInput ? patientIdInput.value : 0;
+          if (patientId) {
+            formData.append("patient_id", patientId);
+          }
+
+          fetch("check_uhid.php", {
             method: "POST",
             body: formData,
           })
@@ -2861,17 +2875,21 @@
             .then((data) => {
               const uhidInput = document.querySelector('input[name="uhid"]');
               const uhidFeedback = document.getElementById("uhidFeedback");
+              const uhidFeedbackText =
+                document.getElementById("uhidFeedbackText");
 
               if (data.success) {
                 if (data.available) {
+                  // UHID is available - show green border
                   uhidInput.style.borderColor = "#28a745";
                   uhidFeedback.style.display = "none";
+                  window.uhidExists = false;
                 } else {
+                  // UHID already exists - show red alert
                   uhidInput.style.borderColor = "#dc3545";
-                  uhidFeedback.textContent =
-                    "✗ UHID already exists. Please use a unique UHID.";
-                  uhidFeedback.style.color = "#dc3545";
+                  uhidFeedbackText.textContent = data.message;
                   uhidFeedback.style.display = "block";
+                  window.uhidExists = true;
                 }
               }
             })
@@ -3494,6 +3512,29 @@
                   showLoginPopup(
                     "Unable to verify your login status. Please try logging in again."
                   );
+                  return false;
+                }
+
+                // Check if UHID exists before submission
+                if (window.uhidExists === true) {
+                  const successAlert = document.getElementById("successAlert");
+                  successAlert.style.display = "block";
+                  successAlert.innerHTML = `<div style="background-color: #f8d7da; color: #721c24; padding: 15px; border-radius: 8px; border: 1px solid #f5c6cb; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);"><i class="fas fa-exclamation-triangle" style="margin-right: 8px; font-size: 18px"></i><span style="font-weight: bold; font-size: 16px">⚠️ Cannot submit: UHID already exists in the system!</span></div>`;
+
+                  // Scroll to alert
+                  successAlert.scrollIntoView({
+                    behavior: "smooth",
+                    block: "center",
+                  });
+
+                  // Focus on UHID field
+                  const uhidInput =
+                    document.querySelector('input[name="uhid"]');
+                  if (uhidInput) {
+                    uhidInput.focus();
+                    uhidInput.style.borderColor = "#dc3545";
+                  }
+
                   return false;
                 }
 

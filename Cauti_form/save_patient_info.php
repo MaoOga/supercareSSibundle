@@ -37,6 +37,7 @@ try {
     $bed_ward = isset($_POST['bed']) ? trim($_POST['bed']) : '';
     $date_of_admission = isset($_POST['date_of_admission']) ? trim($_POST['date_of_admission']) : '';
     $diagnosis = isset($_POST['diagnosis']) ? trim($_POST['diagnosis']) : '';
+    $nurse_notes = isset($_POST['nurse_notes']) ? trim($_POST['nurse_notes']) : '';
 
     // Validate required fields
     if (empty($name)) {
@@ -47,6 +48,48 @@ try {
         ]);
         exit;
     }
+    
+    if (empty($uhid)) {
+        $_SESSION['error'] = 'Patient UHID is required.';
+        echo json_encode([
+            'success' => false,
+            'message' => 'Patient UHID is required.'
+        ]);
+        exit;
+    }
+
+    // ===== SERVER-SIDE UHID DUPLICATE CHECK =====
+    // Check if UHID already exists in patients table (SSI Bundle)
+    $checkStmt = $pdo->prepare("SELECT COUNT(*) FROM patients WHERE uhid = ?");
+    $checkStmt->execute([$uhid]);
+    $ssiCount = $checkStmt->fetchColumn();
+    
+    // Check if UHID already exists in cauti_patient_info table (CAUTI)
+    // Exclude current patient if updating
+    if ($is_update) {
+        $checkStmt = $pdo->prepare("SELECT COUNT(*) FROM cauti_patient_info WHERE uhid = ? AND id != ?");
+        $checkStmt->execute([$uhid, $patient_id]);
+    } else {
+        $checkStmt = $pdo->prepare("SELECT COUNT(*) FROM cauti_patient_info WHERE uhid = ?");
+        $checkStmt->execute([$uhid]);
+    }
+    $cautiCount = $checkStmt->fetchColumn();
+    
+    // If UHID exists in either table, reject the submission
+    if ($ssiCount > 0 || $cautiCount > 0) {
+        $location = [];
+        if ($ssiCount > 0) $location[] = 'SSI Bundle';
+        if ($cautiCount > 0) $location[] = 'CAUTI';
+        $locationText = implode(' and ', $location);
+        
+        $_SESSION['error'] = "UHID already exists in {$locationText} system.";
+        echo json_encode([
+            'success' => false,
+            'message' => "⚠️ UHID already exists in {$locationText} system! Please use a unique UHID."
+        ]);
+        exit;
+    }
+    // ===== END UHID DUPLICATE CHECK =====
 
     // Convert date format if needed (dd/mm/yyyy to yyyy-mm-dd)
     if (!empty($date_of_admission)) {
@@ -74,7 +117,7 @@ try {
         $sql = "UPDATE cauti_patient_info 
                 SET name = :name, age = :age, sex = :sex, uhid = :uhid, 
                     bed_ward = :bed_ward, date_of_admission = :date_of_admission, 
-                    diagnosis = :diagnosis 
+                    diagnosis = :diagnosis, nurse_notes = :nurse_notes 
                 WHERE id = :patient_id";
         
         $stmt = $pdo->prepare($sql);
@@ -86,6 +129,7 @@ try {
             ':bed_ward' => $bed_ward,
             ':date_of_admission' => $date_of_admission,
             ':diagnosis' => $diagnosis,
+            ':nurse_notes' => $nurse_notes,
             ':patient_id' => $patient_id
         ]);
         
@@ -93,9 +137,9 @@ try {
     } else {
         // INSERT new record
     $sql = "INSERT INTO cauti_patient_info 
-            (name, age, sex, uhid, bed_ward, date_of_admission, diagnosis) 
+            (name, age, sex, uhid, bed_ward, date_of_admission, diagnosis, nurse_notes) 
             VALUES 
-                (:name, :age, :sex, :uhid, :bed_ward, :date_of_admission, :diagnosis)";
+                (:name, :age, :sex, :uhid, :bed_ward, :date_of_admission, :diagnosis, :nurse_notes)";
         
         $stmt = $pdo->prepare($sql);
         $result = $stmt->execute([
@@ -105,7 +149,8 @@ try {
             ':uhid' => $uhid,
             ':bed_ward' => $bed_ward,
             ':date_of_admission' => $date_of_admission,
-            ':diagnosis' => $diagnosis
+            ':diagnosis' => $diagnosis,
+            ':nurse_notes' => $nurse_notes
         ]);
         
         $inserted_id = $pdo->lastInsertId();
@@ -386,6 +431,200 @@ try {
             $urineRePusInsertCount++;
         }
         
+        // If updating, delete existing urine output records first
+        if ($is_update) {
+            $deleteStmt = $pdo->prepare("DELETE FROM cauti_urine_output WHERE patient_id = ?");
+            $deleteStmt->execute([$inserted_id]);
+        }
+        
+        // Now insert urine output data (multiple rows)
+        $urineOutputInsertCount = 0;
+        $urineOutputStmt = $pdo->prepare("
+            INSERT INTO cauti_urine_output 
+            (patient_id, output_date, output_time, amount) 
+            VALUES 
+            (:patient_id, :output_date, :output_time, :amount)
+        ");
+        
+        // Loop through up to 10 urine output rows (adjust as needed)
+        for ($i = 1; $i <= 10; $i++) {
+            $output_date = isset($_POST["urine_output_date_$i"]) ? trim($_POST["urine_output_date_$i"]) : '';
+            
+            // Skip if this row is empty (no date means empty row)
+            if (empty($output_date)) {
+                continue;
+            }
+            
+            // Get output time components
+            $output_hour = isset($_POST["urine_output_hour_$i"]) ? trim($_POST["urine_output_hour_$i"]) : '';
+            $output_minute = isset($_POST["urine_output_minute_$i"]) ? trim($_POST["urine_output_minute_$i"]) : '';
+            $output_meridiem = isset($_POST["urine_output_meridiem_$i"]) ? trim($_POST["urine_output_meridiem_$i"]) : 'AM';
+            
+            // Convert 12-hour time to 24-hour format
+            $output_time = null;
+            if (!empty($output_hour) && !empty($output_minute)) {
+                $hour_24 = intval($output_hour);
+                if ($output_meridiem === 'PM' && $hour_24 != 12) {
+                    $hour_24 += 12;
+                } elseif ($output_meridiem === 'AM' && $hour_24 == 12) {
+                    $hour_24 = 0;
+                }
+                $output_time = sprintf('%02d:%02d:00', $hour_24, intval($output_minute));
+            }
+            
+            // Convert date from dd/mm/yyyy to yyyy-mm-dd
+            $output_date_formatted = null;
+            if (!empty($output_date) && preg_match('/^(\d{2})\/(\d{2})\/(\d{4})$/', $output_date, $matches)) {
+                $output_date_formatted = $matches[3] . '-' . $matches[2] . '-' . $matches[1];
+            }
+            
+            $amount = isset($_POST["urine_output_amount_$i"]) ? trim($_POST["urine_output_amount_$i"]) : '';
+            
+            // Insert urine output record
+            $urineOutputStmt->execute([
+                ':patient_id' => $inserted_id,
+                ':output_date' => $output_date_formatted,
+                ':output_time' => $output_time,
+                ':amount' => $amount
+            ]);
+            
+            $urineOutputInsertCount++;
+        }
+        
+        // If updating, delete existing urine result records first
+        if ($is_update) {
+            $deleteStmt = $pdo->prepare("DELETE FROM cauti_urine_result WHERE patient_id = ?");
+            $deleteStmt->execute([$inserted_id]);
+        }
+        
+        // Now insert urine result data (multiple rows)
+        $urineResultInsertCount = 0;
+        $urineResultStmt = $pdo->prepare("
+            INSERT INTO cauti_urine_result 
+            (patient_id, result_date, color_of_urine, cloudy_urine, catheter_observation) 
+            VALUES 
+            (:patient_id, :result_date, :color_of_urine, :cloudy_urine, :catheter_observation)
+        ");
+        
+        // Loop through up to 10 urine result rows (adjust as needed)
+        for ($i = 1; $i <= 10; $i++) {
+            $result_date = isset($_POST["urine_result_date_$i"]) ? trim($_POST["urine_result_date_$i"]) : '';
+            
+            // Skip if this row is empty (no date means empty row)
+            if (empty($result_date)) {
+                continue;
+            }
+            
+            // Convert date from dd/mm/yyyy to yyyy-mm-dd
+            $result_date_formatted = null;
+            if (!empty($result_date) && preg_match('/^(\d{2})\/(\d{2})\/(\d{4})$/', $result_date, $matches)) {
+                $result_date_formatted = $matches[3] . '-' . $matches[2] . '-' . $matches[1];
+            }
+            
+            $color_of_urine = isset($_POST["urine_result_color_$i"]) ? trim($_POST["urine_result_color_$i"]) : '';
+            $cloudy_urine = isset($_POST["urine_result_cloudy_$i"]) ? trim($_POST["urine_result_cloudy_$i"]) : '';
+            $catheter_observation = isset($_POST["urine_result_catheter_obs_$i"]) ? trim($_POST["urine_result_catheter_obs_$i"]) : '';
+            
+            // Insert urine result record
+            $urineResultStmt->execute([
+                ':patient_id' => $inserted_id,
+                ':result_date' => $result_date_formatted,
+                ':color_of_urine' => $color_of_urine,
+                ':cloudy_urine' => $cloudy_urine,
+                ':catheter_observation' => $catheter_observation
+            ]);
+            
+            $urineResultInsertCount++;
+        }
+        
+        // If updating, delete existing creatinine level records first
+        if ($is_update) {
+            $deleteStmt = $pdo->prepare("DELETE FROM cauti_creatinine_level WHERE patient_id = ?");
+            $deleteStmt->execute([$inserted_id]);
+        }
+        
+        // Now insert creatinine level data (multiple rows)
+        $creatinineLevelInsertCount = 0;
+        $creatinineLevelStmt = $pdo->prepare("
+            INSERT INTO cauti_creatinine_level 
+            (patient_id, test_date, result) 
+            VALUES 
+            (:patient_id, :test_date, :result)
+        ");
+        
+        // Loop through up to 10 creatinine level rows (adjust as needed)
+        for ($i = 1; $i <= 10; $i++) {
+            $test_date = isset($_POST["creatinine_level_date_$i"]) ? trim($_POST["creatinine_level_date_$i"]) : '';
+            
+            // Skip if this row is empty (no date means empty row)
+            if (empty($test_date)) {
+                continue;
+            }
+            
+            // Convert date from dd/mm/yyyy to yyyy-mm-dd
+            $test_date_formatted = null;
+            if (!empty($test_date) && preg_match('/^(\d{2})\/(\d{2})\/(\d{4})$/', $test_date, $matches)) {
+                $test_date_formatted = $matches[3] . '-' . $matches[2] . '-' . $matches[1];
+            }
+            
+            $result = isset($_POST["creatinine_level_result_$i"]) ? trim($_POST["creatinine_level_result_$i"]) : '';
+            
+            // Insert creatinine level record
+            $creatinineLevelStmt->execute([
+                ':patient_id' => $inserted_id,
+                ':test_date' => $test_date_formatted,
+                ':result' => $result
+            ]);
+            
+            $creatinineLevelInsertCount++;
+        }
+        
+        // If updating, delete existing immuno suppressants records first
+        if ($is_update) {
+            $deleteStmt = $pdo->prepare("DELETE FROM cauti_immuno_suppressants WHERE patient_id = ?");
+            $deleteStmt->execute([$inserted_id]);
+        }
+        
+        // Now insert immuno suppressants data (multiple rows)
+        $immunoSuppressantsInsertCount = 0;
+        $immunoSuppressantsStmt = $pdo->prepare("
+            INSERT INTO cauti_immuno_suppressants 
+            (patient_id, record_date, injection_name, start_on, stop_on) 
+            VALUES 
+            (:patient_id, :record_date, :injection_name, :start_on, :stop_on)
+        ");
+        
+        // Loop through up to 10 immuno suppressants rows (adjust as needed)
+        for ($i = 1; $i <= 10; $i++) {
+            $record_date = isset($_POST["immuno_suppressants_date_$i"]) ? trim($_POST["immuno_suppressants_date_$i"]) : '';
+            
+            // Skip if this row is empty (no date means empty row)
+            if (empty($record_date)) {
+                continue;
+            }
+            
+            // Convert date from dd/mm/yyyy to yyyy-mm-dd
+            $record_date_formatted = null;
+            if (!empty($record_date) && preg_match('/^(\d{2})\/(\d{2})\/(\d{4})$/', $record_date, $matches)) {
+                $record_date_formatted = $matches[3] . '-' . $matches[2] . '-' . $matches[1];
+            }
+            
+            $injection_name = isset($_POST["immuno_suppressants_injection_name_$i"]) ? trim($_POST["immuno_suppressants_injection_name_$i"]) : '';
+            $start_on = isset($_POST["immuno_suppressants_start_on_$i"]) ? trim($_POST["immuno_suppressants_start_on_$i"]) : '';
+            $stop_on = isset($_POST["immuno_suppressants_stop_on_$i"]) ? trim($_POST["immuno_suppressants_stop_on_$i"]) : '';
+            
+            // Insert immuno suppressants record
+            $immunoSuppressantsStmt->execute([
+                ':patient_id' => $inserted_id,
+                ':record_date' => $record_date_formatted,
+                ':injection_name' => $injection_name,
+                ':start_on' => $start_on,
+                ':stop_on' => $stop_on
+            ]);
+            
+            $immunoSuppressantsInsertCount++;
+        }
+        
         $success_message = $is_update ? 'Patient information updated successfully!' : 'Patient information saved successfully!';
         $_SESSION['success'] = $success_message . ' Patient ID: ' . $inserted_id;
         $_SESSION['patient_id'] = $inserted_id;
@@ -399,6 +638,10 @@ try {
             'problem_records_saved' => $problemInsertCount,
             'urine_culture_records_saved' => $urineCultureInsertCount,
             'urine_re_pus_records_saved' => $urineRePusInsertCount,
+            'urine_output_records_saved' => $urineOutputInsertCount,
+            'urine_result_records_saved' => $urineResultInsertCount,
+            'creatinine_level_records_saved' => $creatinineLevelInsertCount,
+            'immuno_suppressants_records_saved' => $immunoSuppressantsInsertCount,
             'is_update' => $is_update
         ]);
         exit;

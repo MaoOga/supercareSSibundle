@@ -173,6 +173,118 @@ if ($patient_id > 0 && $pdo && $patientData) {
     }
 }
 
+// Initialize urine output records array
+$urineOutputRecords = [];
+
+// If editing, fetch urine output data
+if ($patient_id > 0 && $pdo && $patientData) {
+    try {
+        // Fetch urine output records
+        $stmt = $pdo->prepare("SELECT * FROM cauti_urine_output WHERE patient_id = ? ORDER BY id ASC");
+        $stmt->execute([$patient_id]);
+        $urineOutputRecords = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        // Format urine output data
+        foreach ($urineOutputRecords as &$record) {
+            // Format dates
+            if (!empty($record['output_date'])) {
+                $date_obj = new DateTime($record['output_date']);
+                $record['output_date'] = $date_obj->format('d/m/Y');
+            }
+            
+            // Convert time from 24-hour to 12-hour format
+            if (!empty($record['output_time'])) {
+                $time_obj = new DateTime($record['output_time']);
+                $hour = intval($time_obj->format('H'));
+                $minute = $time_obj->format('i');
+                $meridiem = ($hour >= 12) ? 'PM' : 'AM';
+                $hour_12 = ($hour > 12) ? ($hour - 12) : (($hour == 0) ? 12 : $hour);
+                $record['output_hour'] = $hour_12;
+                $record['output_minute'] = $minute;
+                $record['output_meridiem'] = $meridiem;
+            }
+        }
+        unset($record);
+    } catch (Exception $e) {
+        error_log("Error loading urine output data: " . $e->getMessage());
+    }
+}
+
+// Initialize urine result records array
+$urineResultRecords = [];
+
+// If editing, fetch urine result data
+if ($patient_id > 0 && $pdo && $patientData) {
+    try {
+        // Fetch urine result records
+        $stmt = $pdo->prepare("SELECT * FROM cauti_urine_result WHERE patient_id = ? ORDER BY id ASC");
+        $stmt->execute([$patient_id]);
+        $urineResultRecords = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        // Format urine result data
+        foreach ($urineResultRecords as &$record) {
+            // Format dates
+            if (!empty($record['result_date'])) {
+                $date_obj = new DateTime($record['result_date']);
+                $record['result_date'] = $date_obj->format('d/m/Y');
+            }
+        }
+        unset($record);
+    } catch (Exception $e) {
+        error_log("Error loading urine result data: " . $e->getMessage());
+    }
+}
+
+// Initialize creatinine level records array
+$creatinineLevelRecords = [];
+
+// If editing, fetch creatinine level data
+if ($patient_id > 0 && $pdo && $patientData) {
+    try {
+        // Fetch creatinine level records
+        $stmt = $pdo->prepare("SELECT * FROM cauti_creatinine_level WHERE patient_id = ? ORDER BY id ASC");
+        $stmt->execute([$patient_id]);
+        $creatinineLevelRecords = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        // Format creatinine level data
+        foreach ($creatinineLevelRecords as &$record) {
+            // Format dates
+            if (!empty($record['test_date'])) {
+                $date_obj = new DateTime($record['test_date']);
+                $record['test_date'] = $date_obj->format('d/m/Y');
+            }
+        }
+        unset($record);
+    } catch (Exception $e) {
+        error_log("Error loading creatinine level data: " . $e->getMessage());
+    }
+}
+
+// Initialize immuno suppressants records array
+$immunoSuppressantsRecords = [];
+
+// If editing, fetch immuno suppressants data
+if ($patient_id > 0 && $pdo && $patientData) {
+    try {
+        // Fetch immuno suppressants records
+        $stmt = $pdo->prepare("SELECT * FROM cauti_immuno_suppressants WHERE patient_id = ? ORDER BY id ASC");
+        $stmt->execute([$patient_id]);
+        $immunoSuppressantsRecords = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        // Format immuno suppressants data
+        foreach ($immunoSuppressantsRecords as &$record) {
+            // Format dates
+            if (!empty($record['record_date'])) {
+                $date_obj = new DateTime($record['record_date']);
+                $record['record_date'] = $date_obj->format('d/m/Y');
+            }
+        }
+        unset($record);
+    } catch (Exception $e) {
+        error_log("Error loading immuno suppressants data: " . $e->getMessage());
+    }
+}
+
 // Helper function to safely output value
 function getValue($data, $field, $default = '') {
     return isset($data[$field]) ? htmlspecialchars($data[$field]) : $default;
@@ -2293,8 +2405,13 @@ function getValue($data, $field, $default = '') {
             <td class="tg-1wig">
               <label class="flex gap-2 items-center w-full"
                 >UHID:
-                <input type="text" class="input-overlay" name="uhid" value="<?php echo getValue($patientData, 'uhid'); ?>" />
+                <input type="text" class="input-overlay" name="uhid" id="uhidInput" value="<?php echo getValue($patientData, 'uhid'); ?>" />
               </label>
+              <!-- UHID Validation Alert -->
+              <div id="uhidAlert" style="display: none; color: #dc3545; font-size: 12px; margin-top: 4px; font-weight: bold;">
+                <i class="fas fa-exclamation-triangle"></i> 
+                <span id="uhidAlertText"></span>
+              </div>
             </td>
             <td class="tg-1wig">
               <label class="flex gap-2 w-full" style="align-items: baseline;">
@@ -3629,6 +3746,7 @@ function getValue($data, $field, $default = '') {
                   class="datepicker"
                   placeholder="dd/mm/yyyy"
                   autocomplete="off"
+                  value="<?php echo getValue($urineOutputRecords[0] ?? null, 'output_date'); ?>"
                 />
               </td>
               <td class="tg-0pky">
@@ -3642,6 +3760,7 @@ function getValue($data, $field, $default = '') {
                     max="12"
                     maxlength="2"
                     autocomplete="off"
+                    value="<?php echo getValue($urineOutputRecords[0] ?? null, 'output_hour'); ?>"
                   />
                   <span>:</span>
                   <input
@@ -3653,14 +3772,15 @@ function getValue($data, $field, $default = '') {
                     max="59"
                     maxlength="2"
                     autocomplete="off"
+                    value="<?php echo getValue($urineOutputRecords[0] ?? null, 'output_minute'); ?>"
                   />
                   <select
                     name="urine_output_meridiem_1"
                     class="time-meridiem"
                     autocomplete="off"
                   >
-                    <option value="AM">AM</option>
-                    <option value="PM">PM</option>
+                    <option value="AM" <?php echo (getValue($urineOutputRecords[0] ?? null, 'output_meridiem') === 'AM') ? 'selected' : ''; ?>>AM</option>
+                    <option value="PM" <?php echo (getValue($urineOutputRecords[0] ?? null, 'output_meridiem') === 'PM') ? 'selected' : ''; ?>>PM</option>
                   </select>
                 </div>
               </td>
@@ -3670,7 +3790,7 @@ function getValue($data, $field, $default = '') {
                   class="form-input wide"
                   rows="1"
                   oninput="autoGrow(this)"
-                ></textarea>
+                ><?php echo getValue($urineOutputRecords[0] ?? null, 'amount'); ?></textarea>
               </td>
             </tr>
             <tr class="urine-output-row">
@@ -3681,6 +3801,7 @@ function getValue($data, $field, $default = '') {
                   class="datepicker"
                   placeholder="dd/mm/yyyy"
                   autocomplete="off"
+                  value="<?php echo getValue($urineOutputRecords[1] ?? null, 'output_date'); ?>"
                 />
               </td>
               <td class="tg-0pky">
@@ -3694,6 +3815,7 @@ function getValue($data, $field, $default = '') {
                     max="12"
                     maxlength="2"
                     autocomplete="off"
+                    value="<?php echo getValue($urineOutputRecords[1] ?? null, 'output_hour'); ?>"
                   />
                   <span>:</span>
                   <input
@@ -3705,14 +3827,15 @@ function getValue($data, $field, $default = '') {
                     max="59"
                     maxlength="2"
                     autocomplete="off"
+                    value="<?php echo getValue($urineOutputRecords[1] ?? null, 'output_minute'); ?>"
                   />
                   <select
                     name="urine_output_meridiem_2"
                     class="time-meridiem"
                     autocomplete="off"
                   >
-                    <option value="AM">AM</option>
-                    <option value="PM">PM</option>
+                    <option value="AM" <?php echo (getValue($urineOutputRecords[1] ?? null, 'output_meridiem') === 'AM') ? 'selected' : ''; ?>>AM</option>
+                    <option value="PM" <?php echo (getValue($urineOutputRecords[1] ?? null, 'output_meridiem') === 'PM') ? 'selected' : ''; ?>>PM</option>
                   </select>
                 </div>
               </td>
@@ -3722,7 +3845,7 @@ function getValue($data, $field, $default = '') {
                   class="form-input wide"
                   rows="1"
                   oninput="autoGrow(this)"
-                ></textarea>
+                ><?php echo getValue($urineOutputRecords[1] ?? null, 'amount'); ?></textarea>
               </td>
             </tr>
             <tr class="urine-output-row">
@@ -3733,6 +3856,7 @@ function getValue($data, $field, $default = '') {
                   class="datepicker"
                   placeholder="dd/mm/yyyy"
                   autocomplete="off"
+                  value="<?php echo getValue($urineOutputRecords[2] ?? null, 'output_date'); ?>"
                 />
               </td>
               <td class="tg-0pky">
@@ -3746,6 +3870,7 @@ function getValue($data, $field, $default = '') {
                     max="12"
                     maxlength="2"
                     autocomplete="off"
+                    value="<?php echo getValue($urineOutputRecords[2] ?? null, 'output_hour'); ?>"
                   />
                   <span>:</span>
                   <input
@@ -3757,14 +3882,15 @@ function getValue($data, $field, $default = '') {
                     max="59"
                     maxlength="2"
                     autocomplete="off"
+                    value="<?php echo getValue($urineOutputRecords[2] ?? null, 'output_minute'); ?>"
                   />
                   <select
                     name="urine_output_meridiem_3"
                     class="time-meridiem"
                     autocomplete="off"
                   >
-                    <option value="AM">AM</option>
-                    <option value="PM">PM</option>
+                    <option value="AM" <?php echo (getValue($urineOutputRecords[2] ?? null, 'output_meridiem') === 'AM') ? 'selected' : ''; ?>>AM</option>
+                    <option value="PM" <?php echo (getValue($urineOutputRecords[2] ?? null, 'output_meridiem') === 'PM') ? 'selected' : ''; ?>>PM</option>
                   </select>
                 </div>
               </td>
@@ -3774,7 +3900,7 @@ function getValue($data, $field, $default = '') {
                   class="form-input wide"
                   rows="1"
                   oninput="autoGrow(this)"
-                ></textarea>
+                ><?php echo getValue($urineOutputRecords[2] ?? null, 'amount'); ?></textarea>
               </td>
             </tr>
           </tbody>
@@ -3864,6 +3990,7 @@ function getValue($data, $field, $default = '') {
                   class="datepicker"
                   placeholder="dd/mm/yyyy"
                   autocomplete="off"
+                  value="<?php echo getValue($urineResultRecords[0] ?? null, 'result_date'); ?>"
                 />
               </td>
               <td class="tg-0pky">
@@ -3872,7 +3999,7 @@ function getValue($data, $field, $default = '') {
                   class="form-input medium"
                   rows="1"
                   oninput="autoGrow(this)"
-                ></textarea>
+                ><?php echo getValue($urineResultRecords[0] ?? null, 'color_of_urine'); ?></textarea>
               </td>
               <td class="tg-0pky">
                 <textarea
@@ -3880,7 +4007,7 @@ function getValue($data, $field, $default = '') {
                   class="form-input medium"
                   rows="1"
                   oninput="autoGrow(this)"
-                ></textarea>
+                ><?php echo getValue($urineResultRecords[0] ?? null, 'cloudy_urine'); ?></textarea>
               </td>
               <td class="tg-0pky">
                 <textarea
@@ -3888,7 +4015,7 @@ function getValue($data, $field, $default = '') {
                   class="form-input wide"
                   rows="1"
                   oninput="autoGrow(this)"
-                ></textarea>
+                ><?php echo getValue($urineResultRecords[0] ?? null, 'catheter_observation'); ?></textarea>
               </td>
             </tr>
             <tr class="urine-result-row">
@@ -3899,6 +4026,7 @@ function getValue($data, $field, $default = '') {
                   class="datepicker"
                   placeholder="dd/mm/yyyy"
                   autocomplete="off"
+                  value="<?php echo getValue($urineResultRecords[1] ?? null, 'result_date'); ?>"
                 />
               </td>
               <td class="tg-0pky">
@@ -3907,7 +4035,7 @@ function getValue($data, $field, $default = '') {
                   class="form-input medium"
                   rows="1"
                   oninput="autoGrow(this)"
-                ></textarea>
+                ><?php echo getValue($urineResultRecords[1] ?? null, 'color_of_urine'); ?></textarea>
               </td>
               <td class="tg-0pky">
                 <textarea
@@ -3915,7 +4043,7 @@ function getValue($data, $field, $default = '') {
                   class="form-input medium"
                   rows="1"
                   oninput="autoGrow(this)"
-                ></textarea>
+                ><?php echo getValue($urineResultRecords[1] ?? null, 'cloudy_urine'); ?></textarea>
               </td>
               <td class="tg-0pky">
                 <textarea
@@ -3923,7 +4051,7 @@ function getValue($data, $field, $default = '') {
                   class="form-input wide"
                   rows="1"
                   oninput="autoGrow(this)"
-                ></textarea>
+                ><?php echo getValue($urineResultRecords[1] ?? null, 'catheter_observation'); ?></textarea>
               </td>
             </tr>
             <tr class="urine-result-row">
@@ -3934,6 +4062,7 @@ function getValue($data, $field, $default = '') {
                   class="datepicker"
                   placeholder="dd/mm/yyyy"
                   autocomplete="off"
+                  value="<?php echo getValue($urineResultRecords[2] ?? null, 'result_date'); ?>"
                 />
               </td>
               <td class="tg-0pky">
@@ -3942,7 +4071,7 @@ function getValue($data, $field, $default = '') {
                   class="form-input medium"
                   rows="1"
                   oninput="autoGrow(this)"
-                ></textarea>
+                ><?php echo getValue($urineResultRecords[2] ?? null, 'color_of_urine'); ?></textarea>
               </td>
               <td class="tg-0pky">
                 <textarea
@@ -3950,7 +4079,7 @@ function getValue($data, $field, $default = '') {
                   class="form-input medium"
                   rows="1"
                   oninput="autoGrow(this)"
-                ></textarea>
+                ><?php echo getValue($urineResultRecords[2] ?? null, 'cloudy_urine'); ?></textarea>
               </td>
               <td class="tg-0pky">
                 <textarea
@@ -3958,7 +4087,7 @@ function getValue($data, $field, $default = '') {
                   class="form-input wide"
                   rows="1"
                   oninput="autoGrow(this)"
-                ></textarea>
+                ><?php echo getValue($urineResultRecords[2] ?? null, 'catheter_observation'); ?></textarea>
               </td>
             </tr>
           </tbody>
@@ -4026,6 +4155,7 @@ function getValue($data, $field, $default = '') {
                   class="datepicker"
                   placeholder="dd/mm/yyyy"
                   autocomplete="off"
+                  value="<?php echo getValue($creatinineLevelRecords[0] ?? null, 'test_date'); ?>"
                 />
               </td>
               <td class="tg-0pky">
@@ -4034,7 +4164,7 @@ function getValue($data, $field, $default = '') {
                   class="form-input wide"
                   rows="1"
                   oninput="autoGrow(this)"
-                ></textarea>
+                ><?php echo getValue($creatinineLevelRecords[0] ?? null, 'result'); ?></textarea>
               </td>
             </tr>
             <tr class="creatinine-level-row">
@@ -4045,6 +4175,7 @@ function getValue($data, $field, $default = '') {
                   class="datepicker"
                   placeholder="dd/mm/yyyy"
                   autocomplete="off"
+                  value="<?php echo getValue($creatinineLevelRecords[1] ?? null, 'test_date'); ?>"
                 />
               </td>
               <td class="tg-0pky">
@@ -4053,7 +4184,7 @@ function getValue($data, $field, $default = '') {
                   class="form-input wide"
                   rows="1"
                   oninput="autoGrow(this)"
-                ></textarea>
+                ><?php echo getValue($creatinineLevelRecords[1] ?? null, 'result'); ?></textarea>
               </td>
             </tr>
             <tr class="creatinine-level-row">
@@ -4064,6 +4195,7 @@ function getValue($data, $field, $default = '') {
                   class="datepicker"
                   placeholder="dd/mm/yyyy"
                   autocomplete="off"
+                  value="<?php echo getValue($creatinineLevelRecords[2] ?? null, 'test_date'); ?>"
                 />
               </td>
               <td class="tg-0pky">
@@ -4072,7 +4204,7 @@ function getValue($data, $field, $default = '') {
                   class="form-input wide"
                   rows="1"
                   oninput="autoGrow(this)"
-                ></textarea>
+                ><?php echo getValue($creatinineLevelRecords[2] ?? null, 'result'); ?></textarea>
               </td>
             </tr>
           </tbody>
@@ -4164,6 +4296,7 @@ function getValue($data, $field, $default = '') {
                   class="datepicker"
                   placeholder="dd/mm/yyyy"
                   autocomplete="off"
+                  value="<?php echo getValue($immunoSuppressantsRecords[0] ?? null, 'record_date'); ?>"
                 />
               </td>
               <td class="tg-0pky">
@@ -4172,7 +4305,7 @@ function getValue($data, $field, $default = '') {
                   class="form-input wide"
                   rows="1"
                   oninput="autoGrow(this)"
-                ></textarea>
+                ><?php echo getValue($immunoSuppressantsRecords[0] ?? null, 'injection_name'); ?></textarea>
               </td>
               <td class="tg-0pky">
                 <input
@@ -4180,6 +4313,7 @@ function getValue($data, $field, $default = '') {
                   name="immuno_suppressants_start_on_1"
                   class="form-input"
                   autocomplete="off"
+                  value="<?php echo getValue($immunoSuppressantsRecords[0] ?? null, 'start_on'); ?>"
                 />
               </td>
               <td class="tg-0pky">
@@ -4188,6 +4322,7 @@ function getValue($data, $field, $default = '') {
                   name="immuno_suppressants_stop_on_1"
                   class="form-input"
                   autocomplete="off"
+                  value="<?php echo getValue($immunoSuppressantsRecords[0] ?? null, 'stop_on'); ?>"
                 />
               </td>
             </tr>
@@ -4199,6 +4334,7 @@ function getValue($data, $field, $default = '') {
                   class="datepicker"
                   placeholder="dd/mm/yyyy"
                   autocomplete="off"
+                  value="<?php echo getValue($immunoSuppressantsRecords[1] ?? null, 'record_date'); ?>"
                 />
               </td>
               <td class="tg-0pky">
@@ -4207,7 +4343,7 @@ function getValue($data, $field, $default = '') {
                   class="form-input wide"
                   rows="1"
                   oninput="autoGrow(this)"
-                ></textarea>
+                ><?php echo getValue($immunoSuppressantsRecords[1] ?? null, 'injection_name'); ?></textarea>
               </td>
               <td class="tg-0pky">
                 <input
@@ -4215,6 +4351,7 @@ function getValue($data, $field, $default = '') {
                   name="immuno_suppressants_start_on_2"
                   class="form-input"
                   autocomplete="off"
+                  value="<?php echo getValue($immunoSuppressantsRecords[1] ?? null, 'start_on'); ?>"
                 />
               </td>
               <td class="tg-0pky">
@@ -4223,6 +4360,7 @@ function getValue($data, $field, $default = '') {
                   name="immuno_suppressants_stop_on_2"
                   class="form-input"
                   autocomplete="off"
+                  value="<?php echo getValue($immunoSuppressantsRecords[1] ?? null, 'stop_on'); ?>"
                 />
               </td>
             </tr>
@@ -4234,6 +4372,7 @@ function getValue($data, $field, $default = '') {
                   class="datepicker"
                   placeholder="dd/mm/yyyy"
                   autocomplete="off"
+                  value="<?php echo getValue($immunoSuppressantsRecords[2] ?? null, 'record_date'); ?>"
                 />
               </td>
               <td class="tg-0pky">
@@ -4242,7 +4381,7 @@ function getValue($data, $field, $default = '') {
                   class="form-input wide"
                   rows="1"
                   oninput="autoGrow(this)"
-                ></textarea>
+                ><?php echo getValue($immunoSuppressantsRecords[2] ?? null, 'injection_name'); ?></textarea>
               </td>
               <td class="tg-0pky">
                 <input
@@ -4250,6 +4389,7 @@ function getValue($data, $field, $default = '') {
                   name="immuno_suppressants_start_on_3"
                   class="form-input"
                   autocomplete="off"
+                  value="<?php echo getValue($immunoSuppressantsRecords[2] ?? null, 'start_on'); ?>"
                 />
               </td>
               <td class="tg-0pky">
@@ -4258,6 +4398,7 @@ function getValue($data, $field, $default = '') {
                   name="immuno_suppressants_stop_on_3"
                   class="form-input"
                   autocomplete="off"
+                  value="<?php echo getValue($immunoSuppressantsRecords[2] ?? null, 'stop_on'); ?>"
                 />
               </td>
             </tr>
@@ -4320,7 +4461,7 @@ function getValue($data, $field, $default = '') {
               font-weight: bold;
               letter-spacing: 0.5px;
             "
-          ></textarea>
+          ><?php echo getValue($patientData, 'nurse_notes'); ?></textarea>
         </div>
       </div>
 
@@ -4380,6 +4521,87 @@ function getValue($data, $field, $default = '') {
           form.addEventListener('submit', function(e) {
             e.preventDefault(); // Prevent default form submission
             
+            // ===== CLIENT-SIDE VALIDATION =====
+            // Check required fields: Name and UHID
+            const nameInput = document.querySelector('textarea[name="name"]');
+            const uhidInput = document.querySelector('input[name="uhid"]');
+            
+            const patientName = nameInput ? nameInput.value.trim() : '';
+            const patientUHID = uhidInput ? uhidInput.value.trim() : '';
+            
+            // Validate Name
+            if (!patientName) {
+              alertMessage.style.display = 'block';
+              alertMessage.style.color = '#dc3545';
+              alertText.textContent = '⚠️ Patient Name is required!';
+              alertMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              
+              // Highlight the Name field
+              if (nameInput) {
+                nameInput.style.border = '2px solid #dc3545';
+                nameInput.focus();
+                setTimeout(() => {
+                  nameInput.style.border = '';
+                }, 3000);
+              }
+              return false;
+            }
+            
+            // Validate UHID
+            if (!patientUHID) {
+              alertMessage.style.display = 'block';
+              alertMessage.style.color = '#dc3545';
+              alertText.textContent = '⚠️ Patient UHID is required!';
+              alertMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              
+              // Highlight the UHID field
+              if (uhidInput) {
+                uhidInput.style.border = '2px solid #dc3545';
+                uhidInput.focus();
+                setTimeout(() => {
+                  uhidInput.style.border = '';
+                }, 3000);
+              }
+              return false;
+            }
+            
+            // ===== SYNCHRONOUS UHID CHECK ON SUBMIT =====
+            // Make a synchronous check to ensure UHID doesn't exist before submitting
+            const patientIdField = document.getElementById('patient_id_hidden');
+            const patientId = patientIdField ? patientIdField.value : 0;
+            
+            // Use XMLHttpRequest for synchronous request (fetch doesn't support sync)
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', `../forms/check_uhid.php?uhid=${encodeURIComponent(patientUHID)}&patient_id=${patientId}`, false); // false = synchronous
+            xhr.send();
+            
+            if (xhr.status === 200) {
+              const checkResult = JSON.parse(xhr.responseText);
+              if (checkResult.success && checkResult.exists) {
+                // UHID already exists - block submission
+                alertMessage.style.display = 'block';
+                alertMessage.style.color = '#dc3545';
+                alertText.textContent = checkResult.message || '⚠️ Cannot submit: UHID already exists in the system!';
+                alertMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                
+                // Show alert below UHID field
+                uhidExists = true;
+                uhidAlertText.textContent = checkResult.message;
+                uhidAlert.style.display = 'block';
+                
+                // Highlight the UHID field
+                if (uhidInput) {
+                  uhidInput.style.border = '2px solid #dc3545';
+                  uhidInput.focus();
+                  setTimeout(() => {
+                    uhidInput.style.border = '';
+                  }, 3000);
+                }
+                return false;
+              }
+            }
+            // ===== END SYNCHRONOUS UHID CHECK =====
+            
             // Disable submit button to prevent double submission
             submitButton.disabled = true;
             submitButton.style.opacity = '0.6';
@@ -4437,6 +4659,112 @@ function getValue($data, $field, $default = '') {
             });
           });
         }
+        
+        // ===== UHID DUPLICATE CHECKING =====
+        const uhidInput = document.getElementById('uhidInput');
+        const uhidAlert = document.getElementById('uhidAlert');
+        const uhidAlertText = document.getElementById('uhidAlertText');
+        let uhidExists = false;
+        
+        if (uhidInput) {
+          // Prevent form submission when Enter is pressed in UHID field
+          uhidInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.keyCode === 13) {
+              e.preventDefault();
+              console.log('Enter key blocked in UHID field');
+              return false;
+            }
+          });
+          
+          // Check UHID on input (immediately - no debounce)
+          uhidInput.addEventListener('input', function() {
+            const uhid = this.value.trim();
+            
+            // If empty, hide alert and reset
+            if (!uhid) {
+              uhidAlert.style.display = 'none';
+              uhidExists = false;
+              uhidInput.style.border = '';
+              return;
+            }
+            
+            // Show "checking..." indicator immediately
+            uhidAlertText.textContent = 'Checking UHID...';
+            uhidAlert.style.display = 'block';
+            uhidAlert.style.color = '#007bff'; // Blue for checking
+            uhidInput.style.border = '2px solid #007bff';
+            
+            // Check immediately - no delay
+            checkUHID(uhid);
+          });
+          
+          // Also check on blur (when field loses focus)
+          uhidInput.addEventListener('blur', function() {
+            const uhid = this.value.trim();
+            if (uhid) {
+              checkUHID(uhid);
+            }
+          });
+        }
+        
+        function checkUHID(uhid) {
+          // Get current patient_id if editing
+          const patientIdField = document.getElementById('patient_id_hidden');
+          const patientId = patientIdField ? patientIdField.value : 0;
+          
+          // Make AJAX request to check UHID
+          fetch(`../forms/check_uhid.php?uhid=${encodeURIComponent(uhid)}&patient_id=${patientId}`)
+            .then(response => response.json())
+            .then(data => {
+              if (data.success && data.exists) {
+                // UHID already exists - show RED alert
+                uhidExists = true;
+                
+                if (uhidAlertText) {
+                  uhidAlertText.textContent = data.message;
+                }
+                if (uhidAlert) {
+                  uhidAlert.style.display = 'block';
+                  uhidAlert.style.color = '#dc3545'; // RED for error
+                }
+                
+                // Add red border to input
+                uhidInput.style.border = '2px solid #dc3545';
+              } else if (data.success && !data.exists) {
+                // UHID is available - show GREEN confirmation
+                uhidExists = false;
+                
+                if (uhidAlertText) {
+                  uhidAlertText.textContent = '✓ UHID is available';
+                }
+                if (uhidAlert) {
+                  uhidAlert.style.display = 'block';
+                  uhidAlert.style.color = '#28a745'; // GREEN for success
+                }
+                
+                // Add green border to input
+                if (uhidInput) {
+                  uhidInput.style.border = '2px solid #28a745';
+                }
+                
+                // Hide success message after 2 seconds
+                setTimeout(function() {
+                  if (uhidAlert) uhidAlert.style.display = 'none';
+                  if (uhidInput) uhidInput.style.border = '';
+                }, 2000);
+              } else {
+                // Hide alert on error
+                if (uhidAlert) uhidAlert.style.display = 'none';
+                if (uhidInput) uhidInput.style.border = '';
+              }
+            })
+            .catch(error => {
+              console.error('Error checking UHID:', error);
+              if (uhidAlert) uhidAlert.style.display = 'none';
+              if (uhidInput) uhidInput.style.border = '';
+            });
+        }
+        // ===== END UHID CHECKING =====
       });
 
       // Helper function to set form values (same as SSI form)
@@ -4830,6 +5158,189 @@ function getValue($data, $field, $default = '') {
             }
             
             console.log('Additional urine re pus rows created and populated!');
+          }
+        <?php endif; ?>
+        
+        <?php if (!empty($urineOutputRecords) && count($urineOutputRecords) > 3): ?>
+          // We have more than 3 urine output records - need to create additional rows
+          const additionalUrineOutputRecords = <?php echo json_encode(array_slice($urineOutputRecords, 3)); ?>;
+          const urineOutputTableBody = document.querySelector('#urine-output-table tbody');
+          
+          if (additionalUrineOutputRecords && additionalUrineOutputRecords.length > 0) {
+            console.log('Creating', additionalUrineOutputRecords.length, 'additional urine output rows...');
+            
+            additionalUrineOutputRecords.forEach((record, index) => {
+              const rowNum = index + 4; // Start from row 4 (since we have 3 static rows)
+              
+              // Create new row
+              const newRow = document.createElement('tr');
+              newRow.className = 'urine-output-row';
+              newRow.innerHTML = `
+                <td class="tg-0pky">
+                  <input type="text" name="urine_output_date_${rowNum}" class="datepicker" placeholder="dd/mm/yyyy" autocomplete="off" value="${record.output_date || ''}">
+                </td>
+                <td class="tg-0pky">
+                  <div class="structured-time-input">
+                    <input type="number" name="urine_output_hour_${rowNum}" class="time-hour" placeholder="HH" min="1" max="12" maxlength="2" autocomplete="off" value="${record.output_hour || ''}">
+                    <span>:</span>
+                    <input type="number" name="urine_output_minute_${rowNum}" class="time-minute" placeholder="MM" min="0" max="59" maxlength="2" autocomplete="off" value="${record.output_minute || ''}">
+                    <select name="urine_output_meridiem_${rowNum}" class="time-meridiem" autocomplete="off">
+                      <option value="AM" ${record.output_meridiem === 'AM' ? 'selected' : ''}>AM</option>
+                      <option value="PM" ${record.output_meridiem === 'PM' ? 'selected' : ''}>PM</option>
+                    </select>
+                  </div>
+                </td>
+                <td class="tg-0pky">
+                  <textarea name="urine_output_amount_${rowNum}" class="form-input wide" rows="1" oninput="autoGrow(this)">${record.amount || ''}</textarea>
+                </td>
+              `;
+              
+              urineOutputTableBody.appendChild(newRow);
+            });
+            
+            // Re-initialize datepickers for new rows
+            if (typeof jQuery !== 'undefined' && jQuery.fn.datepicker) {
+              jQuery('.datepicker').datepicker({
+                dateFormat: 'dd/mm/yy',
+                changeMonth: true,
+                changeYear: true,
+                yearRange: '-100:+0'
+              });
+            }
+            
+            console.log('Additional urine output rows created and populated!');
+          }
+        <?php endif; ?>
+        
+        <?php if (!empty($urineResultRecords) && count($urineResultRecords) > 3): ?>
+          // We have more than 3 urine result records - need to create additional rows
+          const additionalUrineResultRecords = <?php echo json_encode(array_slice($urineResultRecords, 3)); ?>;
+          const urineResultTableBody = document.querySelector('#urine-result-table tbody');
+          
+          if (additionalUrineResultRecords && additionalUrineResultRecords.length > 0) {
+            console.log('Creating', additionalUrineResultRecords.length, 'additional urine result rows...');
+            
+            additionalUrineResultRecords.forEach((record, index) => {
+              const rowNum = index + 4; // Start from row 4 (since we have 3 static rows)
+              
+              // Create new row
+              const newRow = document.createElement('tr');
+              newRow.className = 'urine-result-row';
+              newRow.innerHTML = `
+                <td class="tg-0pky">
+                  <input type="text" name="urine_result_date_${rowNum}" class="datepicker" placeholder="dd/mm/yyyy" autocomplete="off" value="${record.result_date || ''}">
+                </td>
+                <td class="tg-0pky">
+                  <textarea name="urine_result_color_${rowNum}" class="form-input medium" rows="1" oninput="autoGrow(this)">${record.color_of_urine || ''}</textarea>
+                </td>
+                <td class="tg-0pky">
+                  <textarea name="urine_result_cloudy_${rowNum}" class="form-input medium" rows="1" oninput="autoGrow(this)">${record.cloudy_urine || ''}</textarea>
+                </td>
+                <td class="tg-0pky">
+                  <textarea name="urine_result_catheter_obs_${rowNum}" class="form-input wide" rows="1" oninput="autoGrow(this)">${record.catheter_observation || ''}</textarea>
+                </td>
+              `;
+              
+              urineResultTableBody.appendChild(newRow);
+            });
+            
+            // Re-initialize datepickers for new rows
+            if (typeof jQuery !== 'undefined' && jQuery.fn.datepicker) {
+              jQuery('.datepicker').datepicker({
+                dateFormat: 'dd/mm/yy',
+                changeMonth: true,
+                changeYear: true,
+                yearRange: '-100:+0'
+              });
+            }
+            
+            console.log('Additional urine result rows created and populated!');
+          }
+        <?php endif; ?>
+        
+        <?php if (!empty($creatinineLevelRecords) && count($creatinineLevelRecords) > 3): ?>
+          // We have more than 3 creatinine level records - need to create additional rows
+          const additionalCreatinineLevelRecords = <?php echo json_encode(array_slice($creatinineLevelRecords, 3)); ?>;
+          const creatinineLevelTableBody = document.querySelector('#creatinine-level-table tbody');
+          
+          if (additionalCreatinineLevelRecords && additionalCreatinineLevelRecords.length > 0) {
+            console.log('Creating', additionalCreatinineLevelRecords.length, 'additional creatinine level rows...');
+            
+            additionalCreatinineLevelRecords.forEach((record, index) => {
+              const rowNum = index + 4; // Start from row 4 (since we have 3 static rows)
+              
+              // Create new row
+              const newRow = document.createElement('tr');
+              newRow.className = 'creatinine-level-row';
+              newRow.innerHTML = `
+                <td class="tg-0pky">
+                  <input type="text" name="creatinine_level_date_${rowNum}" class="datepicker" placeholder="dd/mm/yyyy" autocomplete="off" value="${record.test_date || ''}">
+                </td>
+                <td class="tg-0pky">
+                  <textarea name="creatinine_level_result_${rowNum}" class="form-input wide" rows="1" oninput="autoGrow(this)">${record.result || ''}</textarea>
+                </td>
+              `;
+              
+              creatinineLevelTableBody.appendChild(newRow);
+            });
+            
+            // Re-initialize datepickers for new rows
+            if (typeof jQuery !== 'undefined' && jQuery.fn.datepicker) {
+              jQuery('.datepicker').datepicker({
+                dateFormat: 'dd/mm/yy',
+                changeMonth: true,
+                changeYear: true,
+                yearRange: '-100:+0'
+              });
+            }
+            
+            console.log('Additional creatinine level rows created and populated!');
+          }
+        <?php endif; ?>
+        
+        <?php if (!empty($immunoSuppressantsRecords) && count($immunoSuppressantsRecords) > 3): ?>
+          // We have more than 3 immuno suppressants records - need to create additional rows
+          const additionalImmunoSuppressantsRecords = <?php echo json_encode(array_slice($immunoSuppressantsRecords, 3)); ?>;
+          const immunoSuppressantsTableBody = document.querySelector('#immuno-suppressants-table tbody');
+          
+          if (additionalImmunoSuppressantsRecords && additionalImmunoSuppressantsRecords.length > 0) {
+            console.log('Creating', additionalImmunoSuppressantsRecords.length, 'additional immuno suppressants rows...');
+            
+            additionalImmunoSuppressantsRecords.forEach((record, index) => {
+              const rowNum = index + 4; // Start from row 4 (since we have 3 static rows)
+              
+              // Create new row
+              const newRow = document.createElement('tr');
+              newRow.className = 'immuno-suppressants-row';
+              newRow.innerHTML = `
+                <td class="tg-0pky">
+                  <input type="text" name="immuno_suppressants_date_${rowNum}" class="datepicker" placeholder="dd/mm/yyyy" autocomplete="off" value="${record.record_date || ''}">
+                </td>
+                <td class="tg-0pky">
+                  <textarea name="immuno_suppressants_injection_name_${rowNum}" class="form-input wide" rows="1" oninput="autoGrow(this)">${record.injection_name || ''}</textarea>
+                </td>
+                <td class="tg-0pky">
+                  <input type="text" name="immuno_suppressants_start_on_${rowNum}" class="form-input" autocomplete="off" value="${record.start_on || ''}">
+                </td>
+                <td class="tg-0pky">
+                  <input type="text" name="immuno_suppressants_stop_on_${rowNum}" class="form-input" autocomplete="off" value="${record.stop_on || ''}">
+                </td>
+              `;
+              
+              immunoSuppressantsTableBody.appendChild(newRow);
+            });
+            
+            // Re-initialize datepickers for new rows
+            if (typeof jQuery !== 'undefined' && jQuery.fn.datepicker) {
+              jQuery('.datepicker').datepicker({
+                dateFormat: 'dd/mm/yy',
+                changeMonth: true,
+                changeYear: true,
+                yearRange: '-100:+0'
+              });
+            }
+            
+            console.log('Additional immuno suppressants rows created and populated!');
           }
         <?php endif; ?>
       });

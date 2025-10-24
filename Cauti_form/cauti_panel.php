@@ -39,10 +39,73 @@ try {
             } else {
                 $patient['catheter_date'] = 'N/A';
             }
-            // Add dummy status for now (you can calculate these based on actual data)
-            $patient['catheter_status'] = 'Active';
-            $patient['cauti_status'] = 'Negative';
-            $patient['review_status'] = 'Pending';
+            
+            // Calculate actual status based on data
+            $patient_id = $patient['patient_id'];
+            
+            // Check if patient has catheter data and get latest removal status
+            $catheterStmt = $pdo->prepare("
+                SELECT 
+                    catheter_removed_on, 
+                    catheter_out_date 
+                FROM cauti_catheter 
+                WHERE patient_id = ? 
+                ORDER BY id DESC 
+                LIMIT 1
+            ");
+            $catheterStmt->execute([$patient_id]);
+            $latestCatheter = $catheterStmt->fetch(PDO::FETCH_ASSOC);
+            
+            // Check if patient has problem data
+            $problemStmt = $pdo->prepare("SELECT COUNT(*) as count FROM cauti_problem WHERE patient_id = ?");
+            $problemStmt->execute([$patient_id]);
+            $problemCount = $problemStmt->fetch(PDO::FETCH_ASSOC)['count'];
+            
+            // Determine catheter status based on removal/out dates
+            if ($latestCatheter) {
+                // If catheter has been removed or taken out, mark as Removed
+                if (!empty($latestCatheter['catheter_removed_on']) || !empty($latestCatheter['catheter_out_date'])) {
+                    $patient['catheter_status'] = 'Removed';
+                } else {
+                    $patient['catheter_status'] = 'Active';
+                }
+            } else {
+                // No catheter records at all
+                $patient['catheter_status'] = 'N/A';
+            }
+            
+            // Determine CAUTI status (check if any problem exists)
+            if ($problemCount > 0) {
+                $patient['cauti_status'] = 'Positive';
+            } else {
+                $patient['cauti_status'] = 'Negative';
+            }
+            
+            // Determine review status based on completeness
+            // Check how many sections are filled
+            $hasBasicInfo = !empty($patient['uhid']) && !empty($patient['name']);
+            $hasDiagnosis = !empty($patient['diagnosis']);
+            $hasCatheterData = ($latestCatheter !== false);
+            $hasProblemData = ($problemCount > 0);
+            
+            // Count filled sections (out of 4: basic, diagnosis, catheter, problems)
+            $filledSections = 0;
+            if ($hasBasicInfo) $filledSections++;
+            if ($hasDiagnosis) $filledSections++;
+            if ($hasCatheterData) $filledSections++;
+            if ($hasProblemData) $filledSections++;
+            
+            // Determine status based on completeness
+            if ($filledSections >= 3 && $hasDiagnosis && $hasCatheterData) {
+                // Has diagnosis, catheter, and at least one more section
+                $patient['review_status'] = 'Completed';
+            } elseif ($filledSections >= 2) {
+                // Has basic info + at least one clinical section
+                $patient['review_status'] = 'In Progress';
+            } else {
+                // Only basic info, missing all clinical data
+                $patient['review_status'] = 'Pending';
+            }
 
             if ($patient['catheter_status'] === 'Active') $statistics['active_catheters']++;
             if ($patient['cauti_status'] === 'Positive') $statistics['cauti_cases']++;
@@ -832,6 +895,10 @@ try {
                           <?php elseif ($catheterStatus === 'Removed'): ?>
                             <span class="bg-gray-100 text-gray-800 px-2 py-1 rounded-full text-xs font-semibold">
                               <i class="fas fa-check mr-1"></i>Catheter Removed
+                            </span>
+                          <?php elseif ($catheterStatus === 'N/A'): ?>
+                            <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-xs font-semibold">
+                              <i class="fas fa-info-circle mr-1"></i>No Catheter Data
                             </span>
                           <?php endif; ?>
                           

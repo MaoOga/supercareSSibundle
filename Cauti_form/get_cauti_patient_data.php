@@ -190,13 +190,93 @@ try {
     }
     unset($record); // Break the reference
 
+    // Fetch urine output records for this patient
+    $stmt = $pdo->prepare("SELECT * FROM cauti_urine_output WHERE patient_id = ? ORDER BY id ASC");
+    $stmt->execute([$patient_id]);
+    $urine_output_records = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Format urine output data for display
+    foreach ($urine_output_records as &$record) {
+        // Format dates (yyyy-mm-dd to dd/mm/yyyy)
+        if (!empty($record['output_date'])) {
+            $date_obj = new DateTime($record['output_date']);
+            $record['output_date'] = $date_obj->format('d/m/Y');
+        }
+        
+        // Format time (24-hour to 12-hour with AM/PM)
+        if (!empty($record['output_time'])) {
+            $time_obj = new DateTime($record['output_time']);
+            $hour_24 = (int)$time_obj->format('H');
+            $minute = $time_obj->format('i');
+            
+            // Convert 24-hour to 12-hour
+            $meridiem = ($hour_24 >= 12) ? 'PM' : 'AM';
+            $hour_12 = ($hour_24 % 12);
+            if ($hour_12 == 0) $hour_12 = 12;
+            
+            $record['output_hour'] = $hour_12;
+            $record['output_minute'] = $minute;
+            $record['output_meridiem'] = $meridiem;
+        }
+    }
+    unset($record); // Break the reference
+
+    // Fetch urine result records for this patient
+    $stmt = $pdo->prepare("SELECT * FROM cauti_urine_result WHERE patient_id = ? ORDER BY id ASC");
+    $stmt->execute([$patient_id]);
+    $urine_result_records = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Format urine result data for display
+    foreach ($urine_result_records as &$record) {
+        // Format dates (yyyy-mm-dd to dd/mm/yyyy)
+        if (!empty($record['result_date'])) {
+            $date_obj = new DateTime($record['result_date']);
+            $record['result_date'] = $date_obj->format('d/m/Y');
+        }
+    }
+    unset($record); // Break the reference
+
+    // Fetch creatinine level records for this patient
+    $stmt = $pdo->prepare("SELECT * FROM cauti_creatinine_level WHERE patient_id = ? ORDER BY id ASC");
+    $stmt->execute([$patient_id]);
+    $creatinine_level_records = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Format creatinine level data for display
+    foreach ($creatinine_level_records as &$record) {
+        // Format dates (yyyy-mm-dd to dd/mm/yyyy)
+        if (!empty($record['test_date'])) {
+            $date_obj = new DateTime($record['test_date']);
+            $record['test_date'] = $date_obj->format('d/m/Y');
+        }
+    }
+    unset($record); // Break the reference
+
+    // Fetch immuno suppressants records for this patient
+    $stmt = $pdo->prepare("SELECT * FROM cauti_immuno_suppressants WHERE patient_id = ? ORDER BY id ASC");
+    $stmt->execute([$patient_id]);
+    $immuno_suppressants_records = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Format immuno suppressants data for display
+    foreach ($immuno_suppressants_records as &$record) {
+        // Format dates (yyyy-mm-dd to dd/mm/yyyy)
+        if (!empty($record['record_date'])) {
+            $date_obj = new DateTime($record['record_date']);
+            $record['record_date'] = $date_obj->format('d/m/Y');
+        }
+    }
+    unset($record); // Break the reference
+
     // Prepare response data
     $responseData = [
         'patient' => $patient,
         'catheter_records' => $catheter_records,
         'problem_records' => $problem_records,
         'urine_culture_records' => $urine_culture_records,
-        'urine_re_pus_records' => $urine_re_pus_records
+        'urine_re_pus_records' => $urine_re_pus_records,
+        'urine_output_records' => $urine_output_records,
+        'urine_result_records' => $urine_result_records,
+        'creatinine_level_records' => $creatinine_level_records,
+        'immuno_suppressants_records' => $immuno_suppressants_records
     ];
 
     // Return success response

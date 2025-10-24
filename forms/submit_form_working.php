@@ -49,23 +49,39 @@ try {
     }
     error_log("Post-operative related keys: " . implode(', ', $postOpKeys));
     
+    // ===== SERVER-SIDE UHID DUPLICATE CHECK (checks both SSI and CAUTI tables) =====
     if ($isUpdate) {
-        // For updates, check if UHID exists for a different patient
+        // For updates, check if UHID exists for a different patient in patients table
         $uhidCheckStmt = $pdo->prepare("SELECT COUNT(*) FROM patients WHERE uhid = ? AND patient_id != ?");
         $uhidCheckStmt->execute([$formData['uhid'], $patientId]);
-        $uhidExists = $uhidCheckStmt->fetchColumn() > 0;
+        $ssiCount = $uhidCheckStmt->fetchColumn();
     } else {
-        // For new records, check if UHID already exists
+        // For new records, check if UHID already exists in patients table
         $uhidCheckStmt = $pdo->prepare("SELECT COUNT(*) FROM patients WHERE uhid = ?");
         $uhidCheckStmt->execute([$formData['uhid']]);
-        $uhidExists = $uhidCheckStmt->fetchColumn() > 0;
+        $ssiCount = $uhidCheckStmt->fetchColumn();
     }
     
-    if ($uhidExists) {
+    // Also check if UHID exists in cauti_patient_info table (CAUTI system)
+    $cautiCheckStmt = $pdo->prepare("SELECT COUNT(*) FROM cauti_patient_info WHERE uhid = ?");
+    $cautiCheckStmt->execute([$formData['uhid']]);
+    $cautiCount = $cautiCheckStmt->fetchColumn();
+    
+    // If UHID exists in either table, reject the submission
+    if ($ssiCount > 0 || $cautiCount > 0) {
+        $location = [];
+        if ($ssiCount > 0) $location[] = 'SSI Bundle';
+        if ($cautiCount > 0) $location[] = 'CAUTI';
+        $locationText = implode(' and ', $location);
+        
         $pdo->rollBack();
-        echo json_encode(['success' => false, 'message' => 'UHID already exists. Please use a unique UHID.']);
+        echo json_encode([
+            'success' => false, 
+            'message' => "⚠️ UHID already exists in {$locationText} system! Please use a unique UHID."
+        ]);
         exit;
     }
+    // ===== END UHID DUPLICATE CHECK =====
 
     // Handle patients table
     if ($isUpdate) {
